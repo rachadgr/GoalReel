@@ -1,0 +1,94 @@
+{
+  "schema": "goalreel.source_manifest.v1",
+  "core_invariant": "THE EVENT IS IMMUTABLE. ONLY THE CAMERA VIEWPOINT MAY CHANGE.",
+  "video": {
+    "path": "assets/SOURCE_MASTER_1000006866.mp4",
+    "duration_s": 16.133333,
+    "width": 1024,
+    "height": 576,
+    "fps": 30.0,
+    "frames": 484,
+    "video_codec": "h264",
+    "pixel_format": "yuv420p",
+    "audio_codec": "aac",
+    "audio_sample_rate": 44100,
+    "audio_channels": 2,
+    "size_bytes": 1733902
+  },
+  "analysis": {
+    "frames_read": 484,
+    "sharpness": [
+      {
+        "frame": 0,
+        "laplacian_variance": 291.0591709019105
+      },
+      {
+        "frame": 30,
+        "laplacian_variance": 253.15923534333706
+      },
+      {
+        "frame": 60,
+        "laplacian_variance": 324.52742957668437
+      },
+      {
+        "frame": 90,
+        "laplacian_variance": 337.12497103752077
+      },
+      {
+        "frame": 120,
+        "laplacian_variance": 494.93629586640276
+      },
+      {
+        "frame": 150,
+        "laplacian_variance": 387.0902557726691
+      },
+      {
+        "frame": 180,
+        "laplacian_variance": 380.5499016927917
+      },
+      {
+        "frame": 210,
+        "laplacian_variance": 365.8041846636154
+      },
+      {
+        "frame": 240,
+        "laplacian_variance": 360.3089945879908
+      },
+      {
+        "frame": 270,
+        "laplacian_variance": 351.36130218575767
+      },
+      {
+        "frame": 300,
+        "laplacian_variance": 305.8807095827069
+      },
+      {
+        "frame": 330,
+        "laplacian_variance": 284.7211398086769
+      },
+      {
+        "frame": 360,
+        "laplacian_variance": 109.24695350487292
+      },
+      {
+        "frame": 390,
+        "laplacian_variance": 140.65110694821408
+      },
+      {
+        "frame": 420,
+        "laplacian_variance": 3423.0729891869587
+      },
+      {
+        "frame": 450,
+        "laplacian_variance": 242.80939721987568
+      },
+      {
+        "frame": 480,
+        "laplacian_variance": 146.7146186980269
+      }
+    ],
+    "motion_mean": 8.045354846211064,
+    "motion_p95": 19.604813808865014
+  },
+  "sampled_frame_count": 17
+}

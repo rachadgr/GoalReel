@@ -1,0 +1,64 @@
+{
+  "schema": "goalreel.backends.v1",
+  "device": "auto",
+  "backends": [
+    {
+      "name": "yolo",
+      "status": "MODEL_UNAVAILABLE",
+      "message": "Custom football YOLO checkpoint is missing",
+      "evidence": "UNKNOWN",
+      "metrics": {
+        "required": "models/best.pt"
+      },
+      "artifacts": []
+    },
+    {
+      "name": "reid",
+      "status": "MODEL_UNAVAILABLE",
+      "message": "torchreid unavailable: No module named 'torchreid'",
+      "evidence": "UNKNOWN",
+      "metrics": {},
+      "artifacts": []
+    },
+    {
+      "name": "sam2.1",
+      "status": "MODEL_UNAVAILABLE",
+      "message": "SAM2 runtime unavailable: No module named 'sam2'",
+      "evidence": "UNKNOWN",
+      "metrics": {},
+      "artifacts": []
+    },
+    {
+      "name": "depth_anything_v2",
+      "status": "MODEL_UNAVAILABLE",
+      "message": "No module named 'torch'",
+      "evidence": "UNKNOWN",
+      "metrics": {},
+      "artifacts": []
+    },
+    {
+      "name": "jersey_ocr",
+      "status": "MODEL_UNAVAILABLE",
+      "message": "No OCR backend configured",
+      "evidence": "UNKNOWN",
+      "metrics": {},
+      "artifacts": []
+    },
+    {
+      "name": "pose",
+      "status": "MODEL_UNAVAILABLE",
+      "message": "No pose checkpoint configured",
+      "evidence": "UNKNOWN",
+      "metrics": {},
+      "artifacts": []
+    }
+  ],
+  "summary": {
+    "yolo": "MODEL_UNAVAILABLE",
+    "reid": "MODEL_UNAVAILABLE",
+    "sam2.1": "MODEL_UNAVAILABLE",
+    "depth_anything_v2": "MODEL_UNAVAILABLE",
+    "jersey_ocr": "MODEL_UNAVAILABLE",
+    "pose": "MODEL_UNAVAILABLE"
+  }
+}

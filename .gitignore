@@ -1,0 +1,51 @@
+# --- Python ---------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- Environnement --------------------------------------------------------
+.venv/
+venv/
+.env
+
+# --- Exécutions intermédiaires --------------------------------------------
+runs/
+outputs/_frames/
+*.log
+
+# --- Checkpoints / poids volumineux (voir MODELS.md + scripts/download_models.sh)
+# Les fichiers > 100 Mo ne peuvent pas être poussés sur GitHub sans Git LFS.
+checkpoints/**/*.pt
+checkpoints/**/*.pth
+checkpoints/**/*.pth.tar
+checkpoints/**/*.pkl
+models/*.pt
+models/*.pth
+models/*.safetensors
+models/*.onnx
+
+# On conserve la structure des dossiers vides :
+!checkpoints/**/.gitkeep
+!models/.gitkeep
+!outputs/.gitkeep
+
+# --- Médias volumineux ----------------------------------------------------
+*.mp4
+*.mov
+*.mkv
+*.avi
+*.webm
+
+# --- Node / web -----------------------------------------------------------
+web/node_modules/
+web/dist/
+
+# --- OS -------------------------------------------------------------------
+.DS_Store
+Thumbs.db

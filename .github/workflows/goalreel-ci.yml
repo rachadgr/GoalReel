@@ -1,0 +1,114 @@
+# =============================================================================
+# GoalReel — Virtual Cinema Engine
+# Pipeline CI/CD GitHub Actions
+# -----------------------------------------------------------------------------
+# Déclencheurs :
+#   - push sur main (hors docs)
+#   - pull_request vers main
+#   - lancement manuel (workflow_dispatch)
+#
+# Étapes :
+#   1. Analyse syntaxique de tous les modules du package
+#   2. Scan du runtime interdit (politique de conformite "No-GenAI")
+#   3. Tests unitaires (pytest)
+#   4. Exécution réelle du pipeline (analyze + render-vertical)
+#   5. Publication des artefacts (rapport, rendu vertical)
+# =============================================================================
+name: GoalReel CI
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: goalreel-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-verify:
+    name: Build & Verify (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.11" ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install system dependencies (FFmpeg)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          ffmpeg -version | head -n1
+          ffprobe -version | head -n1
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install pytest
+
+      - name: Compile check (all modules)
+        run: python -m compileall -q goalreel run_goalreel.py
+
+      - name: Forbidden runtime scan (policy gate)
+        run: python scripts/check_no_gemini.py
+
+      - name: Unit tests
+        run: python -m pytest -q
+
+      - name: Pipeline — analyze source
+        run: |
+          python -m goalreel.cli.main analyze \
+            assets/SOURCE_MASTER_1000006866.mp4 \
+            --out runs/source --every 30
+
+      - name: Pipeline — render vertical
+        run: |
+          python -m goalreel.cli.main render-vertical \
+            assets/SOURCE_MASTER_1000006866.mp4 \
+            --out runs/source/render/baseline.mp4
+
+      - name: Full orchestration → outputs/
+        run: |
+          python run_goalreel.py --video assets/SOURCE_MASTER_1000006866.mp4 --out outputs --every 30
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: goalreel-outputs
+          path: |
+            outputs/**
+            runs/**
+          if-no-files-found: warn
+          retention-days: 14
+
+  policy-gate:
+    name: Policy Gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Enforce forbidden-runtime policy
+        run: python scripts/check_no_gemini.py

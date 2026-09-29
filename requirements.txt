@@ -1,0 +1,39 @@
+# =============================================================================
+# GoalReel — Virtual Cinema Engine
+# Dépendances Python (alignées sur pyproject.toml)
+# =============================================================================
+# Installation :
+#   python -m pip install -r requirements.txt
+#
+# Le projet cible Python >= 3.10 (testé 3.10–3.12).
+# Les backends optionnels (yolo / ocr / reid) sont commentés ci-dessous :
+# décommentez uniquement ceux que vous utilisez réellement.
+# =============================================================================
+
+# --- Cœur du pipeline -------------------------------------------------------
+numpy>=1.24
+opencv-python>=4.8
+scipy>=1.10
+pydantic>=2.0
+PyYAML>=6.0
+torch>=2.1
+torchvision>=0.16
+
+# --- Tests ------------------------------------------------------------------
+pytest>=8.0
+
+# --- Backends optionnels (mettre à jour au besoin) --------------------------
+# yolo   : détection football (best.pt)
+# ultralytics>=8.3
+#
+# ocr    : lecture des numéros de maillot
+# easyocr>=1.7
+#
+# reid   : ré-identification joueur (OSNet x1.0)
+# torchreid>=0.2.5
+#
+# sam2   : segmentation SAM 2.1
+# git+https://github.com/facebookresearch/sam2.git
+#
+# depth  : Depth Anything V2
+# timm>=0.9
