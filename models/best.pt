@@ -1,0 +1,20 @@
+GOALREEL_PLACEHOLDER_CHECKPOINT
+# =============================================================================
+# models/best.pt — PLACEHOLDER (à remplacer)
+# -----------------------------------------------------------------------------
+# Ce fichier N'EST PAS un modèle YOLO entraîné. C'est un marqueur de structure
+# qui documente l'emplacement attendu du détecteur football custom.
+#
+# ⚠️ Politique de vérité GoalReel : aucun faux poids, aucune fausse détection.
+#    Tant que ce placeholder est en place, l'étape YOLO renvoie proprement
+#    `MODEL_UNAVAILABLE` (jamais de sortie simulée).
+#
+# Pour activer la détection :
+#   1) Entraînez (ou obtenez) un modèle YOLO football custom (joueurs, ballon,
+#      arbitres, buts) — référence : https://github.com/ultralytics/ultralytics
+#   2) Exportez le meilleur checkpoint et REMPLACEZ ce fichier par le vrai
+#      `best.pt` binaire.
+#   3) Ou définissez GOALREEL_YOLO_WEIGHTS vers un chemin absolu valide.
+#
+# Voir MODELS.md → section « best.pt » pour les détails.
+# =============================================================================

@@ -5,10 +5,11 @@
     {
       "name": "yolo",
       "status": "MODEL_UNAVAILABLE",
-      "message": "Custom football YOLO checkpoint is missing",
+      "message": "Custom football YOLO checkpoint is a placeholder (not a trained model)",
       "evidence": "UNKNOWN",
       "metrics": {
-        "required": "models/best.pt"
+        "required": "models/best.pt",
+        "placeholder": true
       },
       "artifacts": []
     },

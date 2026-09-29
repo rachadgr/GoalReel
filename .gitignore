@@ -30,6 +30,10 @@ models/*.pth
 models/*.safetensors
 models/*.onnx
 
+# Exception : le placeholder de structure models/best.pt est versionné
+# (marqueur texte explicite, PAS un vrai modèle — voir MODELS.md).
+!models/best.pt
+
 # On conserve la structure des dossiers vides :
 !checkpoints/**/.gitkeep
 !models/.gitkeep
