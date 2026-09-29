@@ -30,52 +30,60 @@ sys.path.insert(0, str(ROOT))
 from goalreel.core.ffprobe import probe                      # noqa: E402
 from goalreel.core.io import write_json                      # noqa: E402
 from goalreel.source.analysis import analyze_video           # noqa: E402
-from goalreel.vision.yolo_detector import FootballYOLO       # noqa: E402
-from goalreel.vision.reid import PlayerReID                  # noqa: E402
-from goalreel.vision.sam2 import SAM21                       # noqa: E402
-from goalreel.vision.depth import DepthAnythingV2            # noqa: E402
-from goalreel.vision.ocr import JerseyOCR                    # noqa: E402
-from goalreel.vision.pose import PoseBackend                 # noqa: E402
 from goalreel.scene.camera import CameraEstimator            # noqa: E402
 from goalreel.events.football import FootballEventEngine     # noqa: E402
 from goalreel.events.hero import score_hero                  # noqa: E402
 from goalreel.source.ffmpeg import render_vertical           # noqa: E402
 from goalreel.qc.final import final_qc                       # noqa: E402
+from goalreel.models.manager import ModelManager             # noqa: E402
+from goalreel.services.analysis_pipeline import AnalysisPipeline  # noqa: E402
 
 
 def _stage_to_dict(stage):
     return stage.to_dict() if hasattr(stage, "to_dict") else dict(stage)
 
 
-def build_backend_status(models: Path, checkpoints: Path) -> dict:
-    """Interroge chaque back-end et renvoie son état RÉEL (jamais simulé)."""
-    yolo = FootballYOLO(os.getenv("GOALREEL_YOLO_WEIGHTS", str(models / "best.pt"))).load()
-    reid = PlayerReID(os.getenv("GOALREEL_REID_WEIGHTS",
-                                str(checkpoints / "osnet_x1_0_market1501.pth.tar"))).load()
-    sam2 = SAM21(os.getenv("GOALREEL_SAM2_CHECKPOINT",
-                           str(checkpoints / "sam2.1_hiera_tiny.pt")),
-                 os.getenv("GOALREEL_SAM2_CONFIG")).load()
-    depth = DepthAnythingV2(os.getenv("GOALREEL_DEPTH_CHECKPOINT",
-                                      str(checkpoints / "depth_anything_v2_vits.pth")),
-                            os.getenv("GOALREEL_DEPTH_CONFIG")).load()
-    ocr = JerseyOCR(os.getenv("GOALREEL_OCR_BACKEND")).load()
-    pose = PoseBackend().load()
+def build_backend_status(models: Path, checkpoints: Path,
+                         manager: ModelManager | None = None) -> dict:
+    """Interroge chaque back-end via le ModelManager et renvoie son état RÉEL.
 
-    stages = [yolo, reid, sam2, depth, ocr, pose]
+    Le ModelManager gère le chargement paresseux, le cache, le choix du
+    périphérique et les états. La sortie reste compatible ``backends.v1``.
+    """
+    manager = manager or ModelManager()
+    # Chargement best-effort de chaque modèle (aucune exception ne remonte).
+    for name in manager.settings.models:
+        manager.try_stage(name)
+    statuses = manager.statuses()
+    backends = [
+        {
+            "name": name,
+            "stage": st["stage"],
+            "status": st["status"],
+            "device": st["device"],
+            "path": st["path"],
+            "message": st["message"],
+            "metrics": {"avg_infer_ms": st["avg_infer_ms"], "load_time_s": st["load_time_s"]},
+        }
+        for name, st in statuses.items()
+    ]
     return {
-        "schema": "goalreel.backends.v1",
-        "device": os.getenv("GOALREEL_DEVICE", "auto"),
-        "backends": [_stage_to_dict(s) for s in stages],
-        "summary": {
-            s.name: s.status for s in stages
-        },
+        "schema": "goalreel.backends.v2",
+        "device": manager.health()["device"],
+        "cuda": manager.health()["cuda"],
+        "torch": manager.health()["torch"],
+        "backends": backends,
+        "summary": {name: st["status"] for name, st in statuses.items()},
     }
 
 
-def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15) -> dict:
+def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
+        manager: ModelManager | None = None, analyze: bool = True,
+        max_frames: int = 0, stages: list[str] | None = None) -> dict:
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     video = str(video)
+    manager = manager or ModelManager()
 
     # 1) Sonde + analyse de la source --------------------------------------
     info = probe(video)
@@ -91,16 +99,35 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15)
     write_json(out / "source_manifest.json", source_manifest)
 
     # 2) État réel des back-ends -------------------------------------------
-    backend_status = build_backend_status(models, checkpoints)
+    backend_status = build_backend_status(models, checkpoints, manager)
     write_json(out / "backend_status.json", backend_status)
+
+    # 2b) Analyse réelle par modèles (détection, suivi, reid, depth, ...) ---
+    analysis_report = None
+    if analyze:
+        pipeline = AnalysisPipeline(manager)
+        analysis_report = pipeline.run(video, every=every, max_frames=max_frames,
+                                       stages=stages)
+        write_json(out / "analysis_report.json", {
+            "schema": "goalreel.analysis.v1",
+            "stages": analysis_report["stages"],
+            "model_status": manager.statuses(),
+        })
 
     # 3) Estimation caméra (preuve optique réelle) -------------------------
     camera = _stage_to_dict(CameraEstimator().estimate(video))
 
     # 4) Événements (contrainte par la preuve) -----------------------------
-    # Sans trajectoires/piste d'inférence disponibles, l'engine n'invente aucun
-    # événement : il renvoie une liste vide (comportement voulu).
-    events = FootballEventEngine().infer(tracks={})
+    # Les trajectoires issues du suivi réel alimentent l'engine. En leur
+    # absence, aucun événement n'est inventé (comportement voulu).
+    tracks = {}
+    if analysis_report and analysis_report.get("records", {}).get("tracks"):
+        by_id: dict[int, list] = {}
+        for frame_idx, tracked in analysis_report["records"]["tracks"].items():
+            for t in tracked:
+                by_id.setdefault(t["track_id"], []).append({"frame": frame_idx, **t})
+        tracks = by_id
+    events = FootballEventEngine().infer(tracks=tracks)
     event_timeline = {
         "schema": "goalreel.event_timeline.v1",
         "camera_estimation": camera,
@@ -117,19 +144,32 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15)
     }
     write_json(out / "hero_moment.json", hero_moment)
 
+    # 5b) Novel-view / caméra virtuelle (état réel du backend) -------------
+    from goalreel.generation.novel_view.planner import NovelViewPlanner
+    novel_view_status = NovelViewPlanner().status()
+    write_json(out / "novel_view_status.json", {
+        "schema": "goalreel.novel_view.v1",
+        **novel_view_status,
+    })
+
     # 6) Rendu vertical final ----------------------------------------------
     final_path = out / "final_reel.mp4"
     render_vertical(video, str(final_path))
     qc = final_qc(str(final_path))
 
+    outputs = {
+        "source_manifest": str(out / "source_manifest.json"),
+        "backend_status": str(out / "backend_status.json"),
+        "event_timeline": str(out / "event_timeline.json"),
+        "hero_moment": str(out / "hero_moment.json"),
+        "novel_view_status": str(out / "novel_view_status.json"),
+        "final_reel": str(final_path),
+    }
+    if analysis_report is not None:
+        outputs["analysis_report"] = str(out / "analysis_report.json")
     return {
-        "outputs": {
-            "source_manifest": str(out / "source_manifest.json"),
-            "backend_status": str(out / "backend_status.json"),
-            "event_timeline": str(out / "event_timeline.json"),
-            "hero_moment": str(out / "hero_moment.json"),
-            "final_reel": str(final_path),
-        },
+        "outputs": outputs,
+        "backend_summary": backend_status["summary"],
         "final_qc": qc,
     }
 
@@ -143,10 +183,18 @@ def main() -> None:
     ap.add_argument("--checkpoints", default="checkpoints",
                     help="dossier des checkpoints (défaut: checkpoints)")
     ap.add_argument("--every", type=int, default=15, help="échantillonnage 1 frame sur N")
+    ap.add_argument("--max-frames", type=int, default=0,
+                    help="plafond de frames analysées (0 = illimité)")
+    ap.add_argument("--stages", default=None,
+                    help="étapes à exécuter (ex: detection,tracking,reid,depth)")
+    ap.add_argument("--no-analyze", action="store_true",
+                    help="désactiver l'analyse par modèles (manifest + rendu seulement)")
     args = ap.parse_args()
+    stages = args.stages.split(",") if args.stages else None
 
     report = run(args.video, Path(args.out), Path(args.models),
-                 Path(args.checkpoints), args.every)
+                 Path(args.checkpoints), args.every, analyze=not args.no_analyze,
+                 max_frames=args.max_frames, stages=stages)
     print(json.dumps(report, indent=2, ensure_ascii=False))
 
 

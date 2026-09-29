@@ -19,9 +19,14 @@ dependencies = [
 
 [project.optional-dependencies]
 dev=["pytest>=8.0"]
+# NOTE: reid utilise une architecture OSNet VENDORISÉE (vendor/osnet) —
+# torchreid n'est plus nécessaire. depth utilise un code Depth-Anything-V2
+# VENDORISÉ (vendor/depth_anything_v2) — timm n'est plus nécessaire.
 yolo=["ultralytics>=8.3"]
 ocr=["easyocr>=1.7"]
-reid=["torchreid>=0.2.5"]
+sam2=["git+https://github.com/facebookresearch/sam2.git"]
+# Novel-view (caméra virtuelle) : installer depuis third_party/stable-virtual-camera
+# seva=["-e", "third_party/stable-virtual-camera"]
 
 [tool.pytest.ini_options]
 pythonpath=["."]

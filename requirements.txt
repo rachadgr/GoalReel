@@ -23,17 +23,18 @@ torchvision>=0.16
 pytest>=8.0
 
 # --- Backends optionnels (mettre à jour au besoin) --------------------------
-# yolo   : détection football (best.pt)
+# yolo   : détection joueurs/ballon (yolov8s.pt ou best.pt custom)
 # ultralytics>=8.3
 #
 # ocr    : lecture des numéros de maillot
 # easyocr>=1.7
 #
-# reid   : ré-identification joueur (OSNet x1.0)
-# torchreid>=0.2.5
-#
 # sam2   : segmentation SAM 2.1
 # git+https://github.com/facebookresearch/sam2.git
 #
-# depth  : Depth Anything V2
-# timm>=0.9
+# NOTE : reid (OSNet x1.0) et depth (Depth Anything V2) n'exigent AUCUNE
+# dépendance externe supplémentaire : leurs architectures sont VENDORISÉES
+# dans vendor/ (torchreid et timm ne sont plus requis).
+#
+# seva   : caméra virtuelle / novel view (Stable Virtual Camera)
+#   pip install -e third_party/stable-virtual-camera   # + GPU recommandé

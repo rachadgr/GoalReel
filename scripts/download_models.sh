@@ -14,7 +14,13 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CKPT="$ROOT/checkpoints"
 MODELS="$ROOT/models"
-mkdir -p "$CKPT/RIFE" "$MODELS"
+mkdir -p "$CKPT/RIFE" "$MODELS" \
+         "$MODELS/detection" "$MODELS/segmentation" "$MODELS/depth" \
+         "$MODELS/reid" "$MODELS/interpolation" "$MODELS/super_resolution" "$MODELS/pose"
+
+# NOTE : les modèles fournis par l'utilisateur (yolov8s, sam2.1, depth,
+# osnet) sont déjà présents sous models/*/. Ce script ne télécharge que les
+# poids encore manquants (RIFE, et checkpoints publics optionnels).
 
 dl () {  # dl <url> <dest>
   local url="$1" dest="$2"

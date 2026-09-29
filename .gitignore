@@ -30,9 +30,21 @@ models/*.pth
 models/*.safetensors
 models/*.onnx
 
+# Modèles fournis localement (poids volumineux) — non versionnés
+models/detection/*.pt
+models/segmentation/*.pt
+models/depth/*.pth
+models/reid/*.pth
+models/interpolation/*
+models/super_resolution/*
+models/pose/*
+
 # Exception : le placeholder de structure models/best.pt est versionné
 # (marqueur texte explicite, PAS un vrai modèle — voir MODELS.md).
 !models/best.pt
+
+# Cache modèles + logs d'inférence
+.model_cache/
 
 # On conserve la structure des dossiers vides :
 !checkpoints/**/.gitkeep
