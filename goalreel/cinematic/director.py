@@ -51,6 +51,8 @@ from .edit_plan import (
     ACTION_LEN,
     ANTICIPATION,
     ANTICIPATION_LEN,
+    BOUNDARY_CONTINUOUS,
+    BOUNDARY_REAL_CUT,
     BUILD_UP,
     CAM_ANTICIPATION_FOLLOW,
     CAM_CELEBRATION_FRAMING,
@@ -60,6 +62,9 @@ from .edit_plan import (
     CAM_REACTION_FRAMING,
     CAM_STABLE_FOLLOW,
     CAMERA_CROP_DELTA,
+    CAMERA_RESET_AT_CUT,
+    CAMERA_RESET_NONE,
+    CAMERA_RESET_WITHIN_SHOT,
     CELEBRATION,
     CLIMAX,
     CLIMAX_HALF,
@@ -80,6 +85,9 @@ from .edit_plan import (
     PHASE_ORDER,
     REACTION,
     REACTION_MIN,
+    REL_NEW_IDENTITY,
+    REL_SAME_CANONICAL_IDENTITY,
+    REL_UNKNOWN,
     SECONDARY,
     SHOT_CELEBRATION,
     SHOT_FINAL_HERO,
@@ -89,6 +97,7 @@ from .edit_plan import (
     SHOT_MEDIUM,
     SHOT_OUTRO,
     SHOT_REACTION,
+    SHOT_CONTEXT_SCHEMA,
     SHOT_WIDE,
     SPEED_MAX,
     SPEED_MIN,
@@ -103,6 +112,16 @@ from .evidence_model import (
     track_frame_centers,
 )
 from .speed_design import speed_curve
+from .shot_context import (
+    REAL_CUT,
+    build_cut_boundaries,
+    context_of_frame,
+    identity_by_track,
+    moving_range,
+    post_cut_candidate,
+    shot_contexts,
+    split_segments_at_cuts,
+)
 from .transitions import resolve_transitions
 from ..tracking.continuity import (
     active_track_at,
@@ -375,12 +394,23 @@ def _phase_shot(phase: str, start: int, end: int, tracks: dict[Any, list],
                 is_last_phase: bool, boundary: str,
                 hero_evidence: dict[str, Any],
                 hero_lineage_identity: dict[str, Any] | None = None,
-                canonical_id: int | None = None) -> Shot | None:
-    """Construit un :class:`Shot` pour une phase sur ``[start, end]``."""
+                canonical_id: int | None = None,
+                cut_info: dict[str, Any] | None = None,
+                hero_moving_range: tuple[int, int] | None = None) -> Shot | None:
+    """Construit un :class:`Shot` pour une phase sur ``[start, end]``.
+
+    CUT-AWARE V2.3 : ``cut_info`` porte la frontière de plan (``shot_context_id``,
+    ``boundary_type``, ``cut_before``/``cut_after``, ``identity_relation``,
+    ``internal_cut_frames``). ``hero_moving_range`` est la plage de **mouvement
+    réel** du héros : un plan n'est centré sur le héros que si sa preuve de
+    suivi (non gelée) recouvre réellement le plan. Un plan post-coupe n'hérite
+    donc jamais du cadrage du sujet d'avant-coupe.
+    """
     n = end - start + 1
     if n < MIN_SHOT_FRAMES:
         return None
 
+    cut_info = cut_info or {}
     framing = PHASE_FRAMING.get(phase, {"shot": SHOT_WIDE,
                                        "camera": CAM_STABLE_FOLLOW})
     shot_type = framing["shot"]
@@ -394,20 +424,25 @@ def _phase_shot(phase: str, start: int, end: int, tracks: dict[Any, list],
         crop_start, crop_end = _clamp_crop(base_crop), _clamp_crop(base_crop + delta)
 
     # Sujet suivi : le héros pour les phases héros ; sinon la trajectoire réelle
-    # dominante à la première frame du plan (jamais inventée).
+    # dominante à la première frame du plan (jamais inventée). CUT-AWARE : le
+    # héros ne peut centrer un plan que si sa preuve de MOUVEMENT recouvre le plan.
     hero_centric = phase in HERO_CENTRIC_PHASES
     hero_known = hero_track is not None and hero_track in {int(k) for k in tracks}
-    if hero_centric and hero_known:
+    hero_covers = bool(hero_moving_range is not None
+                       and hero_moving_range[0] <= end
+                       and hero_moving_range[1] >= start)
+    if hero_centric and hero_known and hero_covers:
         selected: int | None = int(hero_track)
     else:
         selected = dominant_track_at(tracks, start)
     targets = track_targets(tracks, selected, start, end,
-                            identity=(hero_lineage_identity if hero_centric else None),
+                            identity=(hero_lineage_identity
+                                      if (hero_centric and hero_covers) else None),
                             canonical_id=canonical_id)
 
     # Identité visée : identité canonique héros pour les plans centrés héros,
     # fragment de suivi brut sinon (distinction explicite exigée).
-    if hero_centric and hero_known and hero_lineage_identity is not None:
+    if hero_centric and hero_known and hero_covers and hero_lineage_identity is not None:
         target_identity = "CANONICAL_HERO_IDENTITY"
         canonical_identity_id: int | None = canonical_id
         active_fragment = _active_fragment_at(hero_lineage_identity, selected, start)
@@ -439,16 +474,34 @@ def _phase_shot(phase: str, start: int, end: int, tracks: dict[Any, list],
             evidence.append(f"active_fragment:{active_fragment}")
     if boundary == "REAL_SOURCE_CUT":
         evidence.append("source_cut_boundary")
+    # --- preuve cut-aware ---------------------------------------------------
+    if cut_info.get("boundary_type") == BOUNDARY_REAL_CUT:
+        evidence.append("boundary_layer:REAL_CUT")
+    if cut_info.get("cut_before") is not None:
+        evidence.append(f"cut_before:{cut_info['cut_before']}")
+    if cut_info.get("cut_after") is not None:
+        evidence.append(f"cut_after:{cut_info['cut_after']}")
+    if cut_info.get("internal_cut_frames"):
+        evidence.append("internal_cut:no_blend;camera_reset")
+    if cut_info.get("camera_reset"):
+        evidence.append("camera_reset:true")
+    if cut_info.get("identity_relation") not in (None, REL_UNKNOWN):
+        evidence.append(f"identity_relation:{cut_info['identity_relation']}")
     evidence.append(f"speed:{curve.behavior}")
 
     reason = f"{phase} on tracked evidence; transition={t_reason}"
     if hero_centric and not hero_known:
         reason += "; hero track unavailable -> real dominant track used"
+    if hero_centric and hero_known and not hero_covers:
+        reason += ("; hero not moving in this shot (post-cut) -> real dominant "
+                   "subject used, no cross-cut handoff")
     if target_identity == "CANONICAL_HERO_IDENTITY" and active_fragment is not None \
             and active_fragment != canonical_identity_id:
         reason += f"; follows canonical hero via active fragment {active_fragment}"
     if selected is None:
         reason += "; no tracked subject at shot start (wide-safe framing)"
+    if cut_info.get("boundary_type") == BOUNDARY_REAL_CUT:
+        reason += f"; real source cut boundary at {start} (camera reset)"
 
     return Shot(
         shot_id=f"SHOT_{index + 1:03d}",
@@ -481,6 +534,14 @@ def _phase_shot(phase: str, start: int, end: int, tracks: dict[Any, list],
         canonical_identity_id=canonical_identity_id,
         active_fragment=(int(active_fragment) if active_fragment is not None else None),
         targets=targets,
+        # --- CUT-AWARE V2.3 -------------------------------------------------
+        shot_context_id=cut_info.get("shot_context_id"),
+        boundary_type=cut_info.get("boundary_type", BOUNDARY_CONTINUOUS),
+        cut_before=cut_info.get("cut_before"),
+        cut_after=cut_info.get("cut_after"),
+        identity_relation=cut_info.get("identity_relation", REL_UNKNOWN),
+        camera_reset=bool(cut_info.get("camera_reset", False)),
+        internal_cut_frames=list(cut_info.get("internal_cut_frames", []) or []),
     )
 
 
@@ -490,22 +551,54 @@ def _segments_to_shots(segments: list[tuple[int, int, str]],
                        motion_interp: str, real_cuts: list[int],
                        hero_evidence: dict[str, Any],
                        hero_lineage_identity: dict[str, Any] | None = None,
-                       canonical_id: int | None = None) -> list[Shot]:
-    """Transforme des segments ``(start, end, phase)`` en :class:`Shot` ordonnés."""
+                       canonical_id: int | None = None,
+                       shot_context_map: list[dict[str, Any]] | None = None,
+                       identity_relations: dict[int, str] | None = None,
+                       hero_moving_range: tuple[int, int] | None = None
+                       ) -> list[Shot]:
+    """Transforme des segments ``(start, end, phase)`` en :class:`Shot` ordonnés.
+
+    CUT-AWARE V2.3 : chaque plan reçoit son ``shot_context_id`` (contexte de plan
+    délimité par des coupes RÉELLES), son ``boundary_type`` (``CONTINUOUS`` ou
+    ``REAL_CUT``), les frames de coupe avant/après, la ``identity_relation``
+    (``UNKNOWN``/``NEW_IDENTITY``/``SAME_CANONICAL_IDENTITY``) et
+    ``camera_reset`` (vrai dès qu'une coupe réelle sépare ce plan du précédent).
+    """
     shots: list[Shot] = []
     prev_phase: str | None = None
+    relations = identity_relations or {}
     for i, (s, e, ph) in enumerate(segments):
         # Une coupe RÉELLE de la source tombant dans le plan est enregistrée :
         # c'est une frontière de plan mesurée, jamais supposée.
-        boundary = ("REAL_SOURCE_CUT"
-                    if any(int(s) <= int(c) <= int(e) for c in real_cuts)
-                    else "CONTINUOUS")
+        inner_cuts = sorted(int(c) for c in real_cuts if int(s) <= int(c) <= int(e))
+        boundary = ("REAL_SOURCE_CUT" if inner_cuts else "CONTINUOUS")
+        # Frontière AVANT ce plan (coupe réelle exacte) et contexte de plan.
+        boundary_before = [int(c) for c in real_cuts if int(c) == int(s)]
+        cut_before = int(s) if boundary_before else None
+        cut_after = int(e) + 1 if (int(e) + 1) in {int(c) for c in real_cuts} else None
+        ctx_id = context_of_frame(shot_context_map or [], int(s)) if shot_context_map else None
+        cut_info = {
+            "shot_context_id": ctx_id,
+            "boundary_type": (BOUNDARY_REAL_CUT if cut_before is not None
+                              else BOUNDARY_CONTINUOUS),
+            "cut_before": cut_before,
+            "cut_after": cut_after,
+            "identity_relation": relations.get(int(s), REL_UNKNOWN),
+            "camera_reset": bool(cut_before is not None),
+            # Coupes internes non scindées (trop proches d'un bord) : le
+            # renderer interdit tout blend les traversant et réinitialise la
+            # caméra à leur niveau.
+            "internal_cut_frames": ([c for c in inner_cuts] if cut_before is None
+                                    else [c for c in inner_cuts if c != cut_before]),
+        }
         shot = _phase_shot(ph, s, e, tracks, hero_track, hero_event, fps,
                            rife_available, motion_interp, real_cuts, len(shots),
                            prev_phase, is_last_phase=(i == len(segments) - 1),
                            boundary=boundary, hero_evidence=hero_evidence,
                            hero_lineage_identity=hero_lineage_identity,
-                           canonical_id=canonical_id)
+                           canonical_id=canonical_id,
+                           cut_info=cut_info,
+                           hero_moving_range=hero_moving_range)
         if shot is None:
             continue
         shots.append(shot)
@@ -661,6 +754,22 @@ def allocate_output_frames(shots: list[Shot], total_frames: int) -> dict[str, An
 # ---------------------------------------------------------------------------
 def _absent(phase: str, reason: str, detail: str = "") -> dict[str, Any]:
     return {"phase": phase, "reason": reason, "detail": detail}
+
+
+def _cut_evidence(cut_model: dict[str, Any], shots: list[Shot]) -> dict[str, Any]:
+    """Résumé cut-aware sérialisable de ce que le plan a réellement consommé."""
+    cut_shots = [s for s in shots if s.boundary_type == BOUNDARY_REAL_CUT]
+    return {
+        "model": cut_model.get("model", "cut_aware_v2.3"),
+        "real_cuts": list(cut_model.get("real_cuts", [])),
+        "real_cut_count": int(cut_model.get("real_cut_count", 0)),
+        "measured_cut_count": int(cut_model.get("measured_cut_count", 0)),
+        "shot_context_count": len(cut_model.get("shot_contexts", [])),
+        "shots_with_cut_boundary": [s.shot_id for s in cut_shots],
+        "identity_relations": dict(cut_model.get("identity_relations", {})),
+        "hero_moving_range": cut_model.get("hero_moving_range"),
+        "cut_boundaries": cut_model.get("boundaries", []),
+    }
 
 
 def _phase_of_fallback(f: dict[str, Any]) -> str | None:
@@ -885,6 +994,7 @@ def build_edit_plan(video: str, tracks: dict[Any, list] | None = None,
                     rife_available: bool = False,
                     motion_interpolation: str = "TEMPORAL_RESAMPLE_NO_RIFE",
                     continuity: dict[str, Any] | None = None,
+                    embeddings: dict[int, Any] | None = None,
                     ) -> EditPlan:
     """Construit le plan de montage cinématique — déterministe, piloté par la preuve.
 
@@ -946,6 +1056,35 @@ def build_edit_plan(video: str, tracks: dict[Any, list] | None = None,
     hero_frames = plan_tracks.get(hero_track, []) if hero_track is not None else []
     hero_supported = bool(presence.get("present")) and is_person_sized(hero_frames)
 
+    # --- CUT-AWARE V2.3 : frontières mesurées + segmentation en contextes ----
+    # Les coupes RÉELLES mesurées sur la source deviennent des frontières
+    # cinématiques légitimes. La relation d'identité à travers une coupe est
+    # calculée séparément de la pertinence cinématique (voir shot_context).
+    hero_moving = moving_range(plan_tracks, hero_track)
+    boundaries = build_cut_boundaries(scene, plan_tracks, embeddings=embeddings)
+    contexts = shot_contexts(
+        scene, plan_tracks, hero_track=hero_track, hero_event=hero_event,
+        hero_identity=hero_ident, continuity=continuity, boundaries=boundaries,
+        total_frames=total_frames, fps=fps)
+    identity_relations = {int(c["cut_before"]): c["identity_relation"]
+                          for c in contexts if c.get("cut_before") is not None}
+    measured_cuts = sorted({int(c) for c in real_cuts})
+    cut_journal: list[dict[str, Any]] = []
+    cut_model = {
+        "schema": SHOT_CONTEXT_SCHEMA,
+        "boundaries": boundaries,
+        "real_cuts": [int(b["cut_frame"]) for b in boundaries
+                      if b.get("type") == REAL_CUT],
+        "real_cut_count": sum(1 for b in boundaries if b.get("type") == REAL_CUT),
+        "measured_cut_count": len(measured_cuts),
+        "shot_contexts": contexts,
+        "identity_relations": {str(k): v for k, v in sorted(identity_relations.items())},
+        "hero_moving_range": ([int(hero_moving[0]), int(hero_moving[1])]
+                              if hero_moving else None),
+        "model": "cut_aware_v2.3",
+        "evidence_source": "VISIBLE_FROM_SOURCE",
+    }
+
     # --- Cas sans héros réellement suivi : plan minimal honnête --------------
     if not hero_supported:
         fallbacks = [{
@@ -961,10 +1100,13 @@ def build_edit_plan(video: str, tracks: dict[Any, list] | None = None,
                         (HOOK_FRAMES, total_frames - 1, OUTRO)]
         else:
             segments = [(0, total_frames - 1, HOOK)]
+        segments, cut_journal = split_segments_at_cuts(segments, real_cuts)
         shots = _segments_to_shots(
             segments, tracks=plan_tracks, hero_track=None, hero_event=None, fps=fps,
             rife_available=rife_available, motion_interp=motion_interpolation,
-            real_cuts=real_cuts, hero_evidence={"confidence": 0.0})
+            real_cuts=real_cuts, hero_evidence={"confidence": 0.0},
+            shot_context_map=contexts, identity_relations=identity_relations,
+            hero_moving_range=hero_moving)
         phases_present = sorted({s.phase for s in shots},
                                key=lambda p: PHASE_ORDER.index(p))
         plan = EditPlan(
@@ -984,7 +1126,12 @@ def build_edit_plan(video: str, tracks: dict[Any, list] | None = None,
             continuity_links=continuity_links,
             continuity_confidence=continuity_conf,
             continuity_evidence=continuity_evid,
-            camera_follow_mode="NONE")
+            camera_follow_mode="NONE",
+            cut_boundaries=boundaries,
+            shot_contexts=contexts,
+            cut_model=cut_model,
+            cut_journal=cut_journal)
+        plan.evidence_used["cut_aware"] = _cut_evidence(cut_model, shots)
         plan.time_map = allocate_output_frames(shots, total_frames)
         plan.duration_preserved = bool(plan.time_map.get("duration_preserved"))
         plan.claims = {
@@ -992,6 +1139,7 @@ def build_edit_plan(video: str, tracks: dict[Any, list] | None = None,
             "interpolation_mode": ("rife" if rife_available else motion_interpolation),
             "novel_view": "NOT_USED", "generated_pixels": False,
             "real_source_only": True,
+            "cut_aware": True,
         }
         return plan
 
@@ -1041,6 +1189,11 @@ def build_edit_plan(video: str, tracks: dict[Any, list] | None = None,
         fallbacks.append({"stage": "timeline", "reason": "NO_SEGMENTS",
                           "detail": "aucun segment candidat résolu"})
         segments = [(0, total_frames - 1, HOOK)]
+    # CUT-AWARE V2.3 : une coupe RÉELLE est une frontière de plan. Les segments
+    # du director qui la chevauchent sont scindés (aucun plan ne franchit une
+    # coupe réelle) ; les coupes trop proches d'un bord sont conservées comme
+    # frontières internes (le renderer interdit alors tout blend à travers).
+    segments, cut_journal = split_segments_at_cuts(segments, measured_cuts)
 
     shots = _segments_to_shots(segments, tracks=plan_tracks, hero_track=hero_track,
                               hero_event=hero_event, fps=fps,
@@ -1049,7 +1202,10 @@ def build_edit_plan(video: str, tracks: dict[Any, list] | None = None,
                               real_cuts=real_cuts,
                               hero_evidence={"confidence": hero_conf},
                               hero_lineage_identity=hero_ident,
-                              canonical_id=hero_track)
+                              canonical_id=hero_track,
+                              shot_context_map=contexts,
+                              identity_relations=identity_relations,
+                              hero_moving_range=hero_moving)
 
     phases_present = sorted({s.phase for s in shots},
                             key=lambda p: PHASE_ORDER.index(p) if p in PHASE_ORDER else 99)
@@ -1093,7 +1249,13 @@ def build_edit_plan(video: str, tracks: dict[Any, list] | None = None,
         continuity_confidence=continuity_conf,
         continuity_evidence=continuity_evid,
         camera_follow_mode=camera_follow_mode,
+        cut_boundaries=boundaries,
+        shot_contexts=contexts,
+        cut_model=cut_model,
+        cut_journal=cut_journal,
     )
+    # Cut-aware : preuve de segmentation consignée (frontières, contextes).
+    plan.evidence_used["cut_aware"] = _cut_evidence(cut_model, shots)
     # Preuve de continuité consignée (identité canonique, lignée, contrat caméra).
     plan.evidence_used["hero_identity"] = {
         "canonical_track_id": (hero_ident or {}).get("canonical_track_id"),

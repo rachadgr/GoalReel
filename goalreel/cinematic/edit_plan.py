@@ -183,6 +183,41 @@ CAMERA_CROP_DELTA: dict[str, float] = {
 # ---------------------------------------------------------------------------
 CUT_DIFF_THRESHOLD = 18.0
 
+# ---------------------------------------------------------------------------
+# CUT-AWARE V2.3 — vocabulaire partagé (frontières, relation d'identité,
+# réinitialisation caméra). Ces valeurs sont la référence unique consommée par
+# le module ``shot_context``, le director, le renderer et la QA.
+#
+# Distinction FONDAMENTALE : une **fragmentation de suivi** (même personne,
+# nouveau ``track_id``) n'est PAS une **frontière de plan** (un montage). La
+# frontière de plan est mesurée sur la source (coupe réelle) ; la relation
+# d'identité à travers cette frontière est calculée séparément.
+# ---------------------------------------------------------------------------
+BOUNDARY_CONTINUOUS = "CONTINUOUS"
+BOUNDARY_REAL_CUT = "REAL_CUT"
+
+# Relation d'identité canonique entre deux contextes de plan séparés par une
+# coupe. ``SAME_CANONICAL_IDENTITY`` n'est écrit que si la continuité le prouve.
+REL_SAME_CANONICAL_IDENTITY = "SAME_CANONICAL_IDENTITY"
+REL_NEW_IDENTITY = "NEW_IDENTITY"
+REL_UNKNOWN = "UNKNOWN"
+IDENTITY_RELATIONS: tuple[str, ...] = (
+    REL_SAME_CANONICAL_IDENTITY, REL_NEW_IDENTITY, REL_UNKNOWN,
+)
+
+# Réinitialisation du contexte caméra (état : cible, échelle, crop).
+CAMERA_RESET_NONE = "NONE"
+CAMERA_RESET_AT_CUT = "AT_CUT"
+CAMERA_RESET_WITHIN_SHOT = "WITHIN_SHOT"
+
+# Schémas des artefacts cut-aware.
+SHOT_CONTEXT_SCHEMA = "goalreel.shot_context.v2.3"
+CUT_MODEL_SCHEMA = "goalreel.cut_model.v2.3"
+
+# Types de plans explicitement admis après une coupe réelle (preuve requise).
+POST_CUT_PHASES: tuple[str, ...] = (REACTION, CELEBRATION, SECONDARY,
+                                    FINAL_HERO, CLIMAX)
+
 # Une trajectoire « taille personne » : le sujet suivi en plan large est un
 # joueur, pas un blob large de premier plan.
 PERSON_MAX_WIDTH = 90.0
@@ -279,6 +314,26 @@ class Shot:
     active_fragment: int | None = None
     # Cibles caméra réelles (frame -> centre source réel suivi), preuve suivie.
     targets: list[dict[str, Any]] = field(default_factory=list)
+    # --- CUT-AWARE V2.3 -----------------------------------------------------
+    # Contexte de plan (segment délimité par des coupes RÉELLES mesurées). Un
+    # plan ne franchit jamais une coupe réelle : la frontière physique sépare
+    # ``shot_context_id`` distincts.
+    shot_context_id: str | None = None
+    # Type de frontière AVANT ce plan : ``CONTINUOUS`` ou ``REAL_CUT`` (coupe
+    # réelle mesurée sur la source).
+    boundary_type: str = BOUNDARY_CONTINUOUS
+    # Coupe réelle exacte AVANT / APRÈS ce plan (frame mesurée) — ``None`` sans.
+    cut_before: int | None = None
+    cut_after: int | None = None
+    # Relation d'identité canonique avec le contexte précédent (prouvée
+    # séparément de la pertinence cinématique).
+    identity_relation: str = REL_UNKNOWN
+    # Le contexte caméra est-il réinitialisé à l'entrée de ce plan ? (aucune
+    # coordonnée/crop du plan précédent n'est transportée à travers une coupe).
+    camera_reset: bool = False
+    # Sous-ensemble des coupes réelles INTERNES au plan (coupe trop proche d'un
+    # bord pour scinder ; le renderer interdit tout blend à travers elles).
+    internal_cut_frames: list[int] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         d = asdict(self)
@@ -296,7 +351,7 @@ class Shot:
 class EditPlan:
     """Plan de montage complet, déterministe et explicable."""
 
-    schema: str = "goalreel.cinematic_edit_plan.v1"
+    schema: str = "goalreel.cinematic_edit_plan.v2.3_cut_aware"
     source_video: str = ""
     source_width: int = 0
     source_height: int = 0
@@ -330,6 +385,19 @@ class EditPlan:
     phases_present: list[str] = field(default_factory=list)
     phases_absent: list[dict[str, Any]] = field(default_factory=list)
     shots: list[Shot] = field(default_factory=list)
+    # --- CUT-AWARE V2.3 -----------------------------------------------------
+    # Frontières de plan mesurées (représentation cut-aware propre, confiance
+    # issue de termes réellement disponibles).
+    cut_boundaries: list[dict[str, Any]] = field(default_factory=list)
+    # Contextes de plan : partition de la source autour des coupes réelles.
+    shot_contexts: list[dict[str, Any]] = field(default_factory=list)
+    # Modèle de coupe mesuré (frontières, contextes, relations d'identité,
+    # plage de mouvement réelle du héros).
+    cut_model: dict[str, Any] = field(default_factory=dict)
+    # Journal du découpage des segments aux coupes réelles (audit).
+    cut_journal: list[dict[str, Any]] = field(default_factory=list)
+    schema_legacy: str = "goalreel.cinematic_edit_plan.v1"
+    manager: str = "goalreel.cinematic_director.v2.3_cut_aware"
 
     def to_dict(self) -> dict[str, Any]:
         d = asdict(self)
