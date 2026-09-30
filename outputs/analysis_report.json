@@ -45,9 +45,9 @@
         "samples": 2,
         "first": {
           "frame": 0,
-          "min": 0.36994579434394836,
-          "max": 7.29331111907959,
-          "mean": 3.116159677505493
+          "min": 0.36994612216949463,
+          "max": 7.2933125495910645,
+          "mean": 3.1161601543426514
         }
       },
       "artifacts": []
@@ -81,9 +81,9 @@
       "device": "cpu",
       "loaded": true,
       "message": "YOLO loaded (80 classes, COCO/generic)",
-      "load_time_s": 1.1258,
+      "load_time_s": 0.2593,
       "infer_count": 484,
-      "avg_infer_ms": 161.093,
+      "avg_infer_ms": 92.516,
       "last_error": null,
       "meta": {
         "checkpoint": "/home/user/GoalReel/models/detection/yolov8s.pt",
@@ -129,9 +129,9 @@
       "device": "cpu",
       "loaded": true,
       "message": "Depth Anything V2 loaded (vendored); missing=0 unexpected=0",
-      "load_time_s": 1.3247,
+      "load_time_s": 1.7669,
       "infer_count": 2,
-      "avg_infer_ms": 3361.912,
+      "avg_infer_ms": 2560.164,
       "last_error": null,
       "meta": {
         "checkpoint": "/home/user/GoalReel/models/depth/depth_anything_v2_vits.pth",
@@ -151,9 +151,9 @@
       "device": "cpu",
       "loaded": true,
       "message": "OSNet x1.0 loaded; missing=0 unexpected=0",
-      "load_time_s": 0.1028,
+      "load_time_s": 0.1004,
       "infer_count": 28,
-      "avg_infer_ms": 58.626,
+      "avg_infer_ms": 52.604,
       "last_error": null,
       "meta": {
         "checkpoint": "/home/user/GoalReel/models/reid/osnet_x1_0_imagenet.pth",
@@ -171,15 +171,17 @@
       "stage": "interpolation",
       "path": "/home/user/GoalReel/checkpoints/RIFE/flownet.pkl",
       "status": "MODEL_UNAVAILABLE",
-      "truth": "INCOMPATIBLE",
+      "truth": "CHECKPOINT_MISSING",
       "device": "cpu",
       "loaded": false,
-      "message": "RIFE checkpoint incompatible with vendored IFNet: Error(s) in loading state_dict for IFNet:\n\tsize mismatch for block0.conv0.0.0.weight: copying a param with shape torch.Size([45, 11, 3, 3]) from checkpoint, the shape in current model is torch.Size([120, 6, 3, 3]).\n\tsize mismatch for block0.conv0.0.0.bias: copying a param with shape torch.Size([45]) from checkpoint, the shape in current model is torch.Size([120]).\n\tsize mismatch for block0.conv0.0.1.weight: copying a param with shape torch.Size([45]) from checkpoint, the shape in current model is torch.Size([120]).\n\tsize mismatch for block0.conv0.1.0.weight: copying a param with shape torch.Size([90, 45, 3, 3]) from checkpoint, the shape in current model is torch.Size([240, 120, 3, 3]).\n\tsize mismatch for block0.conv0.1.0.bias: copying a param with shape torch.Size([90]) from checkpoint, the shape in current model is torch.Size([240]).\n\tsize mismatch for block0.conv0.1.1.weight: copying a param with shape torch.Size([90]) from checkpoint, the shape in current model is torch.Size([240]).\n\tsize mismatch for block1.conv0.0.0.weight: copying a param with shape torch.Size([45, 11, 3, 3]) from checkpoint, the shape in current model is torch.Size([75, 17, 3, 3]).\n\tsize mismatch for block1.conv0.0.0.bias: copying a param with shape torch.Size([45]) from checkpoint, the shape in current model is torch.Size([75]).\n\tsize mismatch for block1.conv0.0.1.weight: copying a param with shape torch.Size([45]) from checkpoint, the shape in current model is torch.Size([75]).\n\tsize mismatch for block1.conv0.1.0.weight: copying a param with shape torch.Size([90, 45, 3, 3]) from checkpoint, the shape in current model is torch.Size([150, 75, 3, 3]).\n\tsize mismatch for block1.conv0.1.0.bias: copying a param with shape torch.Size([90]) from checkpoint, the shape in current model is torch.Size([150]).\n\tsize mismatch for block1.conv0.1.1.weight: copying a param with shape torch.Size([90]) from checkpoint, the shape in current model is torch.Size([150]).\n\tsize mismatch for block2.conv0.0.0.weight: copying a param with shape torch.Size([45, 11, 3, 3]) from checkpoint, the shape in current model is torch.Size([45, 17, 3, 3]).\n\tsize mismatch for block_tea.conv0.0.0.weight: copying a param with shape torch.Size([45, 14, 3, 3]) from checkpoint, the shape in current model is torch.Size([45, 20, 3, 3]).",
+      "message": "Checkpoint missing",
       "load_time_s": 0.0,
       "infer_count": 0,
       "avg_infer_ms": 0.0,
       "last_error": null,
-      "meta": {}
+      "meta": {
+        "required": "/home/user/GoalReel/checkpoints/RIFE/flownet.pkl"
+      }
     },
     "super_resolution": {
       "name": "super_resolution",

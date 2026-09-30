@@ -2,30 +2,326 @@
   "schema": "goalreel.hero_moment.v1",
   "status": "OK",
   "event": {
-    "event_id": "MOTION_2",
+    "event_id": "MOTION_9",
     "kind": "player_motion",
-    "start_frame": 0,
-    "peak_frame": 181,
+    "start_frame": 22,
+    "peak_frame": 192,
     "end_frame": 361,
     "confidence": 0.99,
     "evidence": [
-      "track:2",
-      "displacement:546.23"
+      "track:9",
+      "displacement:450.11"
     ],
     "status": "INFERRED"
   },
-  "score": 0.99,
-  "track_id": 2,
-  "method": "evidence_score",
+  "score": 0.710808,
+  "track_id": 9,
+  "method": "multi_evidence_v2",
   "ranked_by": [
-    "evidence",
+    "score",
     "persistence",
     "amplitude",
     "event_id"
   ],
   "candidates": 50,
+  "weights": {
+    "amplitude": 0.26087,
+    "persistence": 0.226087,
+    "continuity": 0.069565,
+    "event_proximity": 0.104348,
+    "spatial_relevance": 0.104348,
+    "event_confidence": 0.104348,
+    "ball_proximity": 0.130435
+  },
+  "ball_evidence": true,
+  "focus_peak_frame": 328,
   "selection": {
-    "persistence_frames": 362,
-    "amplitude_px": 546.23
-  }
+    "persistence_frames": 340,
+    "amplitude_px": 450.11,
+    "continuity": 1.0,
+    "event_confidence": 0.99,
+    "spatial_relevance": 0.6335,
+    "ball_proximity_score": 0.6718,
+    "ball_min_dist_px": 55.69,
+    "event_peak_frame": 192,
+    "breakdown": {
+      "amplitude": {
+        "value": 0.600059,
+        "weight": 0.26087,
+        "contribution": 0.156537
+      },
+      "persistence": {
+        "value": 0.73913,
+        "weight": 0.226087,
+        "contribution": 0.167108
+      },
+      "continuity": {
+        "value": 1.0,
+        "weight": 0.069565,
+        "contribution": 0.069565
+      },
+      "event_proximity": {
+        "value": 0.580422,
+        "weight": 0.104348,
+        "contribution": 0.060566
+      },
+      "spatial_relevance": {
+        "value": 0.633479,
+        "weight": 0.104348,
+        "contribution": 0.066102
+      },
+      "event_confidence": {
+        "value": 0.99,
+        "weight": 0.104348,
+        "contribution": 0.103304
+      },
+      "ball_proximity": {
+        "value": 0.6718,
+        "weight": 0.130435,
+        "contribution": 0.087626
+      }
+    }
+  },
+  "ranked": [
+    {
+      "event_id": "MOTION_9",
+      "track_id": 9,
+      "score": 0.710808,
+      "signals": {
+        "amplitude": 0.600059,
+        "persistence": 0.73913,
+        "continuity": 1.0,
+        "event_proximity": 0.580422,
+        "spatial_relevance": 0.633479,
+        "event_confidence": 0.99,
+        "ball_proximity": 0.6718
+      },
+      "raw": {
+        "persistence_frames": 340,
+        "amplitude_px": 450.11,
+        "continuity": 1.0,
+        "event_confidence": 0.99,
+        "spatial_relevance": 0.6335,
+        "event_peak_frame": 192,
+        "ball_proximity_score": 0.6718,
+        "ball_min_dist_px": 55.69
+      }
+    },
+    {
+      "event_id": "MOTION_2",
+      "track_id": 2,
+      "score": 0.709926,
+      "signals": {
+        "amplitude": 0.645486,
+        "persistence": 0.751037,
+        "continuity": 1.0,
+        "event_proximity": 0.555437,
+        "spatial_relevance": 0.690172,
+        "event_confidence": 0.99,
+        "ball_proximity": 0.528172
+      },
+      "raw": {
+        "persistence_frames": 362,
+        "amplitude_px": 546.23,
+        "continuity": 1.0,
+        "event_confidence": 0.99,
+        "spatial_relevance": 0.6902,
+        "event_peak_frame": 181,
+        "ball_proximity_score": 0.5282,
+        "ball_min_dist_px": 89.37
+      }
+    },
+    {
+      "event_id": "MOTION_6",
+      "track_id": 6,
+      "score": 0.700858,
+      "signals": {
+        "amplitude": 0.548431,
+        "persistence": 0.699248,
+        "continuity": 1.0,
+        "event_proximity": 0.484809,
+        "spatial_relevance": 0.798989,
+        "event_confidence": 0.99,
+        "ball_proximity": 0.711985
+      },
+      "raw": {
+        "persistence_frames": 279,
+        "amplitude_px": 364.35,
+        "continuity": 1.0,
+        "event_confidence": 0.99,
+        "spatial_relevance": 0.799,
+        "event_peak_frame": 147,
+        "ball_proximity_score": 0.712,
+        "ball_min_dist_px": 47.56
+      }
+    },
+    {
+      "event_id": "MOTION_18",
+      "track_id": 18,
+      "score": 0.696665,
+      "signals": {
+        "amplitude": 0.46817,
+        "persistence": 0.683377,
+        "continuity": 1.0,
+        "event_proximity": 0.608962,
+        "spatial_relevance": 0.71355,
+        "event_confidence": 0.880295,
+        "ball_proximity": 0.924656
+      },
+      "raw": {
+        "persistence_frames": 259,
+        "amplitude_px": 264.09,
+        "continuity": 1.0,
+        "event_confidence": 0.8803,
+        "spatial_relevance": 0.7136,
+        "event_peak_frame": 204,
+        "ball_proximity_score": 0.9247,
+        "ball_min_dist_px": 10.97
+      }
+    },
+    {
+      "event_id": "MOTION_37",
+      "track_id": 37,
+      "score": 0.67472,
+      "signals": {
+        "amplitude": 0.494694,
+        "persistence": 0.518072,
+        "continuity": 1.0,
+        "event_proximity": 0.88338,
+        "spatial_relevance": 0.686715,
+        "event_confidence": 0.979013,
+        "ball_proximity": 0.712857
+      },
+      "raw": {
+        "persistence_frames": 129,
+        "amplitude_px": 293.7,
+        "continuity": 1.0,
+        "event_confidence": 0.979,
+        "spatial_relevance": 0.6867,
+        "event_peak_frame": 297,
+        "ball_proximity_score": 0.7129,
+        "ball_min_dist_px": 47.39
+      }
+    },
+    {
+      "event_id": "MOTION_51",
+      "track_id": 51,
+      "score": 0.667083,
+      "signals": {
+        "amplitude": 0.50636,
+        "persistence": 0.518072,
+        "continuity": 1.0,
+        "event_proximity": 0.694891,
+        "spatial_relevance": 0.516044,
+        "event_confidence": 0.99,
+        "ball_proximity": 0.909513
+      },
+      "raw": {
+        "persistence_frames": 129,
+        "amplitude_px": 307.73,
+        "continuity": 1.0,
+        "event_confidence": 0.99,
+        "spatial_relevance": 0.516,
+        "event_peak_frame": 419,
+        "ball_proximity_score": 0.9095,
+        "ball_min_dist_px": 13.28
+      }
+    },
+    {
+      "event_id": "MOTION_1",
+      "track_id": 1,
+      "score": 0.667003,
+      "signals": {
+        "amplitude": 0.553319,
+        "persistence": 0.683377,
+        "continuity": 1.0,
+        "event_proximity": 0.45113,
+        "spatial_relevance": 0.713051,
+        "event_confidence": 0.99,
+        "ball_proximity": 0.565855
+      },
+      "raw": {
+        "persistence_frames": 259,
+        "amplitude_px": 371.62,
+        "continuity": 1.0,
+        "event_confidence": 0.99,
+        "spatial_relevance": 0.7131,
+        "event_peak_frame": 129,
+        "ball_proximity_score": 0.5659,
+        "ball_min_dist_px": 79.72
+      }
+    },
+    {
+      "event_id": "MOTION_49",
+      "track_id": 49,
+      "score": 0.659118,
+      "signals": {
+        "amplitude": 0.713467,
+        "persistence": 0.533074,
+        "continuity": 1.0,
+        "event_proximity": 0.706099,
+        "spatial_relevance": 0.324086,
+        "event_confidence": 0.99,
+        "ball_proximity": 0.552825
+      },
+      "raw": {
+        "persistence_frames": 137,
+        "amplitude_px": 747.0,
+        "continuity": 1.0,
+        "event_confidence": 0.99,
+        "spatial_relevance": 0.3241,
+        "event_peak_frame": 415,
+        "ball_proximity_score": 0.5528,
+        "ball_min_dist_px": 82.98
+      }
+    },
+    {
+      "event_id": "MOTION_58",
+      "track_id": 58,
+      "score": 0.648804,
+      "signals": {
+        "amplitude": 0.665723,
+        "persistence": 0.43128,
+        "continuity": 1.0,
+        "event_proximity": 0.644036,
+        "spatial_relevance": 0.430913,
+        "event_confidence": 0.99,
+        "ball_proximity": 0.709874
+      },
+      "raw": {
+        "persistence_frames": 91,
+        "amplitude_px": 597.46,
+        "continuity": 1.0,
+        "event_confidence": 0.99,
+        "spatial_relevance": 0.4309,
+        "event_peak_frame": 438,
+        "ball_proximity_score": 0.7099,
+        "ball_min_dist_px": 47.97
+      }
+    },
+    {
+      "event_id": "MOTION_40",
+      "track_id": 40,
+      "score": 0.641174,
+      "signals": {
+        "amplitude": 0.505636,
+        "persistence": 0.44186,
+        "continuity": 1.0,
+        "event_proximity": 0.945539,
+        "spatial_relevance": 0.703305,
+        "event_confidence": 0.99,
+        "ball_proximity": 0.494093
+      },
+      "raw": {
+        "persistence_frames": 95,
+        "amplitude_px": 306.84,
+        "continuity": 1.0,
+        "event_confidence": 0.99,
+        "spatial_relevance": 0.7033,
+        "event_peak_frame": 314,
+        "ball_proximity_score": 0.4941,
+        "ball_min_dist_px": 98.7
+      }
+    }
+  ]
 }

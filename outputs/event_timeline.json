@@ -395,7 +395,7 @@
       "start_frame": 0,
       "peak_frame": 29,
       "end_frame": 58,
-      "confidence": 0.26126134942199625,
+      "confidence": 0.2612612985625261,
       "evidence": [
         "track:3",
         "displacement:78.38"
@@ -460,7 +460,7 @@
       "start_frame": 28,
       "peak_frame": 51,
       "end_frame": 73,
-      "confidence": 0.1745118517216671,
+      "confidence": 0.17451193771975335,
       "evidence": [
         "track:11",
         "displacement:52.35"
@@ -473,7 +473,7 @@
       "start_frame": 75,
       "peak_frame": 204,
       "end_frame": 333,
-      "confidence": 0.8802950714983467,
+      "confidence": 0.8802950605304829,
       "evidence": [
         "track:18",
         "displacement:264.09"
@@ -499,7 +499,7 @@
       "start_frame": 85,
       "peak_frame": 142,
       "end_frame": 198,
-      "confidence": 0.5198641829391218,
+      "confidence": 0.519863893474021,
       "evidence": [
         "track:20",
         "displacement:155.96"
@@ -512,7 +512,7 @@
       "start_frame": 95,
       "peak_frame": 228,
       "end_frame": 361,
-      "confidence": 0.37458630658935765,
+      "confidence": 0.37458633086283877,
       "evidence": [
         "track:21",
         "displacement:112.38"
@@ -551,7 +551,7 @@
       "start_frame": 128,
       "peak_frame": 245,
       "end_frame": 361,
-      "confidence": 0.37509878111425266,
+      "confidence": 0.3750988727886871,
       "evidence": [
         "track:27",
         "displacement:112.53"
@@ -564,7 +564,7 @@
       "start_frame": 129,
       "peak_frame": 184,
       "end_frame": 238,
-      "confidence": 0.2530303306932187,
+      "confidence": 0.2530304025779642,
       "evidence": [
         "track:28",
         "displacement:75.91"
@@ -590,7 +590,7 @@
       "start_frame": 163,
       "peak_frame": 232,
       "end_frame": 301,
-      "confidence": 0.49706862639753996,
+      "confidence": 0.4970685860403728,
       "evidence": [
         "track:30",
         "displacement:149.12"
@@ -603,7 +603,7 @@
       "start_frame": 214,
       "peak_frame": 234,
       "end_frame": 253,
-      "confidence": 0.13406628809662013,
+      "confidence": 0.13406662715522027,
       "evidence": [
         "track:32",
         "displacement:40.22"
@@ -616,7 +616,7 @@
       "start_frame": 215,
       "peak_frame": 288,
       "end_frame": 361,
-      "confidence": 0.40680941256542474,
+      "confidence": 0.4068094633393273,
       "evidence": [
         "track:33",
         "displacement:122.04"
@@ -668,7 +668,7 @@
       "start_frame": 239,
       "peak_frame": 300,
       "end_frame": 361,
-      "confidence": 0.31818125687204574,
+      "confidence": 0.31818117217952113,
       "evidence": [
         "track:38",
         "displacement:95.45"
@@ -681,7 +681,7 @@
       "start_frame": 255,
       "peak_frame": 308,
       "end_frame": 360,
-      "confidence": 0.7206594705300757,
+      "confidence": 0.7206592670990217,
       "evidence": [
         "track:39",
         "displacement:216.20"
@@ -707,7 +707,7 @@
       "start_frame": 332,
       "peak_frame": 408,
       "end_frame": 483,
-      "confidence": 0.7814994429298963,
+      "confidence": 0.7814990084090285,
       "evidence": [
         "track:48",
         "displacement:234.45"
@@ -798,7 +798,7 @@
       "start_frame": 391,
       "peak_frame": 416,
       "end_frame": 440,
-      "confidence": 0.4874841509974948,
+      "confidence": 0.48748411993732854,
       "evidence": [
         "track:57",
         "displacement:146.25"
@@ -863,7 +863,7 @@
       "start_frame": 402,
       "peak_frame": 439,
       "end_frame": 476,
-      "confidence": 0.3541543452376403,
+      "confidence": 0.3541543766499488,
       "evidence": [
         "track:62",
         "displacement:106.25"
@@ -876,7 +876,7 @@
       "start_frame": 405,
       "peak_frame": 438,
       "end_frame": 471,
-      "confidence": 0.23780740770163494,
+      "confidence": 0.2378075569477294,
       "evidence": [
         "track:63",
         "displacement:71.34"
@@ -889,7 +889,7 @@
       "start_frame": 408,
       "peak_frame": 446,
       "end_frame": 483,
-      "confidence": 0.25691657541723356,
+      "confidence": 0.25691661119253667,
       "evidence": [
         "track:64",
         "displacement:77.07"
@@ -915,7 +915,7 @@
       "start_frame": 409,
       "peak_frame": 440,
       "end_frame": 471,
-      "confidence": 0.4028066338128466,
+      "confidence": 0.4028066329029636,
       "evidence": [
         "track:66",
         "displacement:120.84"
@@ -928,7 +928,7 @@
       "start_frame": 415,
       "peak_frame": 449,
       "end_frame": 483,
-      "confidence": 0.590022916773048,
+      "confidence": 0.5900229433934022,
       "evidence": [
         "track:68",
         "displacement:177.01"
@@ -941,7 +941,7 @@
       "start_frame": 417,
       "peak_frame": 437,
       "end_frame": 456,
-      "confidence": 0.2736979788157049,
+      "confidence": 0.27369795986834444,
       "evidence": [
         "track:69",
         "displacement:82.11"
@@ -954,7 +954,7 @@
       "start_frame": 424,
       "peak_frame": 454,
       "end_frame": 483,
-      "confidence": 0.4890647732568638,
+      "confidence": 0.4890647713270449,
       "evidence": [
         "track:71",
         "displacement:146.72"
@@ -967,7 +967,7 @@
       "start_frame": 442,
       "peak_frame": 463,
       "end_frame": 483,
-      "confidence": 0.413522486801468,
+      "confidence": 0.4135225115649855,
       "evidence": [
         "track:75",
         "displacement:124.06"
@@ -980,7 +980,7 @@
       "start_frame": 455,
       "peak_frame": 469,
       "end_frame": 483,
-      "confidence": 0.2662168719714072,
+      "confidence": 0.26621673267123463,
       "evidence": [
         "track:77",
         "displacement:79.87"
@@ -993,7 +993,7 @@
       "start_frame": 460,
       "peak_frame": 472,
       "end_frame": 483,
-      "confidence": 0.14383299500514565,
+      "confidence": 0.1438330074285839,
       "evidence": [
         "track:78",
         "displacement:43.15"
@@ -1006,7 +1006,7 @@
       "start_frame": 475,
       "peak_frame": 479,
       "end_frame": 483,
-      "confidence": 0.16087025730493779,
+      "confidence": 0.16087023647259152,
       "evidence": [
         "track:80",
         "displacement:48.26"
@@ -1015,5 +1015,12 @@
     }
   ],
   "count": 50,
-  "policy": "NO_EVENT_WITHOUT_EVIDENCE"
+  "policy": "NO_EVENT_WITHOUT_EVIDENCE",
+  "evidence_summary": {
+    "tracked_subjects": 82,
+    "detected_persons": 5778,
+    "detected_balls": 47,
+    "ball_class": "sports ball (COCO)",
+    "note": "YOLOv8s is generic COCO: 'person' and 'sports ball' are real detections; football events are inferred from tracked motion. 'referee'/'goal' classes do not exist and are never invented."
+  }
 }

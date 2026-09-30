@@ -5,7 +5,7 @@
     "available": false,
     "count": 0
   },
-  "torch": "2.6.0+cpu",
+  "torch": "2.14.0+cpu",
   "backends": [
     {
       "name": "detector",
@@ -17,7 +17,7 @@
       "message": "YOLO loaded (80 classes, COCO/generic)",
       "metrics": {
         "avg_infer_ms": 0.0,
-        "load_time_s": 1.1258,
+        "load_time_s": 0.2593,
         "margin": {
           "checkpoint": "/home/user/GoalReel/models/detection/yolov8s.pt",
           "num_classes": 80,
@@ -63,7 +63,7 @@
       "message": "Depth Anything V2 loaded (vendored); missing=0 unexpected=0",
       "metrics": {
         "avg_infer_ms": 0.0,
-        "load_time_s": 1.3247,
+        "load_time_s": 1.7669,
         "margin": {
           "checkpoint": "/home/user/GoalReel/models/depth/depth_anything_v2_vits.pth",
           "source": "vendored",
@@ -84,7 +84,7 @@
       "message": "OSNet x1.0 loaded; missing=0 unexpected=0",
       "metrics": {
         "avg_infer_ms": 0.0,
-        "load_time_s": 0.1028,
+        "load_time_s": 0.1004,
         "margin": {
           "checkpoint": "/home/user/GoalReel/models/reid/osnet_x1_0_imagenet.pth",
           "backbone": "osnet_x1_0",
@@ -101,14 +101,16 @@
       "name": "interpolation",
       "stage": "interpolation",
       "status": "MODEL_UNAVAILABLE",
-      "truth": "INCOMPATIBLE",
+      "truth": "CHECKPOINT_MISSING",
       "device": "cpu",
       "path": "/home/user/GoalReel/checkpoints/RIFE/flownet.pkl",
-      "message": "RIFE checkpoint incompatible with vendored IFNet: Error(s) in loading state_dict for IFNet:\n\tsize mismatch for block0.conv0.0.0.weight: copying a param with shape torch.Size([45, 11, 3, 3]) from checkpoint, the shape in current model is torch.Size([120, 6, 3, 3]).\n\tsize mismatch for block0.conv0.0.0.bias: copying a param with shape torch.Size([45]) from checkpoint, the shape in current model is torch.Size([120]).\n\tsize mismatch for block0.conv0.0.1.weight: copying a param with shape torch.Size([45]) from checkpoint, the shape in current model is torch.Size([120]).\n\tsize mismatch for block0.conv0.1.0.weight: copying a param with shape torch.Size([90, 45, 3, 3]) from checkpoint, the shape in current model is torch.Size([240, 120, 3, 3]).\n\tsize mismatch for block0.conv0.1.0.bias: copying a param with shape torch.Size([90]) from checkpoint, the shape in current model is torch.Size([240]).\n\tsize mismatch for block0.conv0.1.1.weight: copying a param with shape torch.Size([90]) from checkpoint, the shape in current model is torch.Size([240]).\n\tsize mismatch for block1.conv0.0.0.weight: copying a param with shape torch.Size([45, 11, 3, 3]) from checkpoint, the shape in current model is torch.Size([75, 17, 3, 3]).\n\tsize mismatch for block1.conv0.0.0.bias: copying a param with shape torch.Size([45]) from checkpoint, the shape in current model is torch.Size([75]).\n\tsize mismatch for block1.conv0.0.1.weight: copying a param with shape torch.Size([45]) from checkpoint, the shape in current model is torch.Size([75]).\n\tsize mismatch for block1.conv0.1.0.weight: copying a param with shape torch.Size([90, 45, 3, 3]) from checkpoint, the shape in current model is torch.Size([150, 75, 3, 3]).\n\tsize mismatch for block1.conv0.1.0.bias: copying a param with shape torch.Size([90]) from checkpoint, the shape in current model is torch.Size([150]).\n\tsize mismatch for block1.conv0.1.1.weight: copying a param with shape torch.Size([90]) from checkpoint, the shape in current model is torch.Size([150]).\n\tsize mismatch for block2.conv0.0.0.weight: copying a param with shape torch.Size([45, 11, 3, 3]) from checkpoint, the shape in current model is torch.Size([45, 17, 3, 3]).\n\tsize mismatch for block_tea.conv0.0.0.weight: copying a param with shape torch.Size([45, 14, 3, 3]) from checkpoint, the shape in current model is torch.Size([45, 20, 3, 3]).",
+      "message": "Checkpoint missing",
       "metrics": {
         "avg_infer_ms": 0.0,
         "load_time_s": 0.0,
-        "margin": {}
+        "margin": {
+          "required": "/home/user/GoalReel/checkpoints/RIFE/flownet.pkl"
+        }
       }
     },
     {
@@ -169,7 +171,7 @@
     "segmenter": "DEPENDENCY_MISSING",
     "depth": "READY",
     "reid": "READY",
-    "interpolation": "INCOMPATIBLE",
+    "interpolation": "CHECKPOINT_MISSING",
     "super_resolution": "DISABLED",
     "virtual_camera": "DISABLED",
     "pose": "CHECKPOINT_MISSING"

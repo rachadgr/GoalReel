@@ -47,12 +47,28 @@ def run_analysis(video, out, models='models', every=15, manager=None,
 
     # Trajectoires réelles -> événements (sinon aucun événement inventé).
     tracks = {}
-    rec_tracks = report.get('records', {}).get('tracks') or {}
+    records = report.get('records', {}) or {}
+    rec_tracks = records.get('tracks') or {}
     for frame_idx, tracked in rec_tracks.items():
         for t in tracked:
             tracks.setdefault(t['track_id'], []).append({'frame': frame_idx, **t})
+
+    # Preuve ballon RÉELLE (classe COCO ``sports ball``) ; itération triée.
+    ball_detections = []
+    rec_dets = records.get('detections') or {}
+    for frame_idx in sorted(rec_dets, key=lambda k: int(k)):
+        for d in rec_dets[frame_idx]:
+            if d.get('class_name') == 'sports ball' and d.get('bbox') is not None:
+                ball_detections.append({
+                    'frame': int(frame_idx),
+                    'bbox': [float(v) for v in d['bbox']],
+                    'confidence': float(d.get('confidence', 0.0)),
+                })
+
     events = FootballEventEngine().infer(tracks=tracks)
-    hero = score_hero(events, track_stats=track_stats(tracks))
+    hero = score_hero(events, track_stats=track_stats(tracks), tracks=tracks,
+                      ball_detections=ball_detections,
+                      width=info.width, height=info.height)
 
     final_report = {
         'schema': 'goalreel.report.v2',

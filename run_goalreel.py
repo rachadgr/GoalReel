@@ -125,12 +125,28 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
     # Les trajectoires issues du suivi réel alimentent l'engine. En leur
     # absence, aucun événement n'est inventé (comportement voulu).
     tracks = {}
-    if analysis_report and analysis_report.get("records", {}).get("tracks"):
+    records = (analysis_report or {}).get("records", {}) or {}
+    if records.get("tracks"):
         by_id: dict[int, list] = {}
-        for frame_idx, tracked in analysis_report["records"]["tracks"].items():
+        for frame_idx, tracked in records["tracks"].items():
             for t in tracked:
                 by_id.setdefault(t["track_id"], []).append({"frame": frame_idx, **t})
         tracks = by_id
+
+    # Preuve ballon RÉELLE (classe COCO ``sports ball``) : utilisée pour la
+    # proximité ballon du classement héros, uniquement quand elle existe.
+    # Aucune position de ballon n'est inventée. Itération triée => déterminisme.
+    ball_detections: list[dict] = []
+    dets = records.get("detections") or {}
+    for frame_idx in sorted(dets, key=lambda k: int(k)):
+        for d in dets[frame_idx]:
+            if d.get("class_name") == "sports ball" and d.get("bbox") is not None:
+                ball_detections.append({
+                    "frame": int(frame_idx),
+                    "bbox": [float(v) for v in d["bbox"]],
+                    "confidence": float(d.get("confidence", 0.0)),
+                })
+
     events = FootballEventEngine().infer(tracks=tracks)
     event_timeline = {
         "schema": "goalreel.event_timeline.v1",
@@ -138,18 +154,34 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
         "events": events,
         "count": len(events),
         "policy": "NO_EVENT_WITHOUT_EVIDENCE",
+        "evidence_summary": {
+            "tracked_subjects": len(tracks),
+            "detected_persons": sum(
+                1 for items in dets.values() for d in items
+                if d.get("class_name") == "person") if dets else 0,
+            "detected_balls": len(ball_detections),
+            "ball_class": "sports ball (COCO)",
+            "note": ("YOLOv8s is generic COCO: 'person' and 'sports ball' are real "
+                     "detections; football events are inferred from tracked motion. "
+                     "'referee'/'goal' classes do not exist and are never invented."),
+        },
     }
     write_json(out / "event_timeline.json", event_timeline)
 
-    # 5) Moment héro --------------------------------------------------------
-    # Le héros est choisi à partir des événements RÉELS, en tenant compte de la
-    # persistance et de l'amplitude réelles des trajectoires suivies (aucun
-    # événement inventé). Le ``track_id`` retenu pilote ensuite la caméra 9:16
-    # afin que celle-ci suive RÉELLEMENT le sujet du moment héros.
+    # 5) Moment héro (intelligence multi-preuves V2) ------------------------
+    # Le héros est choisi à partir d'un score explicable combinant des preuves
+    # RÉELLES : amplitude + persistance + continuité des trajectoires suivies,
+    # proximité temporelle au pic d'action réel, pertinence spatiale, et
+    # proximité au ballon UNIQUEMENT si une détection de ballon réelle existe.
+    # Aucun événement/ballon/identité n'est inventé. Le ``track_id`` retenu
+    # pilote ensuite la caméra 9:16 afin que celle-ci suive RÉELLEMENT le sujet
+    # du moment héros (hero_track == followed_track).
     tstats = track_stats(tracks)
     hero_moment = {
         "schema": "goalreel.hero_moment.v1",
-        **score_hero(events, track_stats=tstats),
+        **score_hero(events, track_stats=tstats, tracks=tracks,
+                     ball_detections=ball_detections,
+                     width=info.width, height=info.height),
     }
     write_json(out / "hero_moment.json", hero_moment)
 
@@ -161,15 +193,19 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
         **novel_view_status,
     })
 
-    # 5c) Reframe 9:16 piloté par la PREUVE de suivi -----------------------
+    # 5c) Reframe 9:16 piloté par la PREUVE de suivi + timing cinématique ----
     # Si de vraies trajectoires existent, la caméra 9:16 SUIT réellement le
-    # sujet suivi (pan horizontal). Le sujet suivi est celui du MOMENT HÉROS
-    # lorsqu'il est disponible (cohérence caméra <-> événement) ; sinon le plus
-    # persistant. Sinon => fallback statique (jamais un faux suivi). On ne
-    # réinvente rien : coordonnées issues du suivi ByteTrack.
+    # sujet suivi (pan horizontal) et sa ligne temporelle est structurée en
+    # phases autour de l'événement héros (anticipation → hero_moment → réaction
+    # → célébration). Le sujet suivi est celui du MOMENT HÉROS lorsqu'il est
+    # disponible (cohérence événement <-> caméra) ; sinon le plus persistant
+    # (fallback documenté). Sinon => fallback statique (jamais un faux suivi).
+    # Aucune coordonnée inventée : centres issus du suivi ByteTrack, les frames
+    # sans suivi maintiennent la dernière position réelle connue.
     from goalreel.cinematic.reframe import build_reframe_targets
     reframe_targets, reframe_meta = build_reframe_targets(
-        tracks, preferred_track=hero_moment.get("track_id"))
+        tracks, preferred_track=hero_moment.get("track_id"),
+        hero_event=hero_moment.get("event"), width=info.width)
     write_json(out / "camera_reframe.json", {
         "schema": "goalreel.camera_reframe.v1",
         **reframe_meta,
