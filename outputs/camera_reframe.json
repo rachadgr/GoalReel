@@ -1,0 +1,9 @@
+{
+  "schema": "goalreel.camera_reframe.v1",
+  "source": "REAL_TRACKS",
+  "mode": "FOLLOW_TRACKED_SUBJECT",
+  "followed_track": 2,
+  "followed_track_frames": 362,
+  "target_frames": 362,
+  "targets_count": 362
+}

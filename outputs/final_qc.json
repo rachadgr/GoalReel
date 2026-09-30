@@ -1,0 +1,27 @@
+{
+  "schema": "goalreel.final_qc.v1",
+  "status": "OK",
+  "errors": [],
+  "video": {
+    "path": "outputs/final_reel.mp4",
+    "duration_s": 16.133333,
+    "width": 1080,
+    "height": 1920,
+    "fps": 30.0,
+    "frames": 484,
+    "video_codec": "h264",
+    "pixel_format": "yuv420p",
+    "audio_codec": "aac",
+    "audio_sample_rate": 44100,
+    "audio_channels": 2,
+    "size_bytes": 12983783
+  },
+  "reframe": {
+    "source": "REAL_TRACKS",
+    "mode": "FOLLOW_TRACKED_SUBJECT",
+    "followed_track": 2,
+    "followed_track_frames": 362,
+    "target_frames": 362,
+    "targets_count": 362
+  }
+}

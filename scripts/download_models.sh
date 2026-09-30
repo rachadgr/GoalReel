@@ -2,9 +2,10 @@
 # =============================================================================
 # GoalReel — Téléchargement des checkpoints officiels
 # =============================================================================
-# Télécharge les poids publics vers checkpoints/ dans le but de reproduire
-# exactement l'arborescence requise. Les poids ne sont PAS commités sur GitHub
-# (voir .gitignore) car leur taille dépasse la limite de 100 Mo/fichier.
+# Télécharge les poids publics vers les chemins EXACTS attendus par le registre
+# (models/registry.json) et par goalreel/config.py. Les poids ne sont PAS
+# commités sur GitHub (voir .gitignore) car leur taille dépasse la limite de
+# 100 Mo/fichier.
 #
 # Usage :
 #   bash scripts/download_models.sh            # tout télécharger
@@ -14,13 +15,11 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CKPT="$ROOT/checkpoints"
 MODELS="$ROOT/models"
-mkdir -p "$CKPT/RIFE" "$MODELS" \
+
+# Arborescence EXACTE du registre (models/registry.json).
+mkdir -p "$CKPT/RIFE" \
          "$MODELS/detection" "$MODELS/segmentation" "$MODELS/depth" \
          "$MODELS/reid" "$MODELS/interpolation" "$MODELS/super_resolution" "$MODELS/pose"
-
-# NOTE : les modèles fournis par l'utilisateur (yolov8s, sam2.1, depth,
-# osnet) sont déjà présents sous models/*/. Ce script ne télécharge que les
-# poids encore manquants (RIFE, et checkpoints publics optionnels).
 
 dl () {  # dl <url> <dest>
   local url="$1" dest="$2"
@@ -33,22 +32,38 @@ dl () {  # dl <url> <dest>
 want () { [[ $# -eq 0 || " ${TARGETS[*]} " == *" $1 "* ]]; }
 TARGETS=("$@")
 
+# --- Détection (YOLOv8s, COCO générique) -----------------------------------
+if want yolo; then
+  dl "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov8s.pt" \
+     "$MODELS/detection/yolov8s.pt"
+fi
+
 # --- SAM 2.1 (Meta, Hiera Tiny) --------------------------------------------
 if want sam2; then
   dl "https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_tiny.pt" \
-     "$CKPT/sam2.1_hiera_tiny.pt"
+     "$MODELS/segmentation/sam2.1_hiera_tiny.pt"
 fi
 
 # --- Depth Anything V2 (Small / ViT-S) -------------------------------------
 if want depth; then
   dl "https://huggingface.co/depth-anything/Depth-Anything-V2-Small/resolve/main/depth_anything_v2_vits.pth" \
-     "$CKPT/depth_anything_v2_vits.pth"
+     "$MODELS/depth/depth_anything_v2_vits.pth"
 fi
 
-# --- OSNet x1.0 Market-1501 (Re-ID) ----------------------------------------
+# --- OSNet x1.0 (backbone ImageNet) ----------------------------------------
+# Chemin EXACT du registre (models/reid/osnet_x1_0_imagenet.pth) : il s'agit des
+# poids ImageNet fournis par l'auteur de torchreid (torchreid.models.osnet).
+#   doc : https://kaiyangzhou.github.io/deep-person-reid/
 if want reid; then
-  dl "https://huggingface.co/MYerassyl/retail-heat-osnet/resolve/main/osnet_x1_0_market1501.pth" \
-     "$CKPT/osnet_x1_0_market1501.pth.tar"
+  if [[ -f "$MODELS/reid/osnet_x1_0_imagenet.pth" ]]; then
+    echo "[skip] $MODELS/reid/osnet_x1_0_imagenet.pth déjà présent"
+  else
+    echo "[warn] osnet_x1_0_imagenet.pth non téléchargeable automatiquement ici"
+    echo "       (poids torchreid ImageNet ; l'URL historique est un lien Google Drive)."
+    echo "       Déposez le fichier dans models/reid/ ou utilisez gdown avec l'ID 1LaG1EJpHrxdAxKnSCJ_i0u-nbxSAeiFY."
+    echo "       Variante publique équivalente : osnet_x1_0 Market-1501 (mêmes backbones, "
+    echo "       tête 751 classes) — le checkpoint ImageNet 1000 classes est celui documenté."
+  fi
 fi
 
 # --- RIFE flownet ----------------------------------------------------------
@@ -58,17 +73,12 @@ if want rife; then
 fi
 
 # --- YOLO football custom (best.pt) ----------------------------------------
-# best.pt est un modèle YOLO football ENTRAÎNÉ SUR MESURE : il n'existe pas de
-# poids public équivalent. Fournissez votre propre checkpoint ici, ou
-# entraînez-en un (voir MODELS.md → section "best.pt").
-if want yolo; then
-  if [[ -f "$MODELS/best.pt" ]]; then
-    echo "[skip] models/best.pt déjà présent"
-  else
-    echo "[warn] models/best.pt absent : modèle custom football requis."
-    echo "       Le pipeline le signalera proprement comme MODEL_UNAVAILABLE."
-    echo "       Placez votre best.pt dans models/ avant l'inférence."
-  fi
+# models/best.pt est un PLACEHOLDER (marqueur texte) : il n'est PAS un vrai
+# modèle. Pour un détecteur football entraîné sur mesure, fournissez votre
+# propre checkpoint et pointez GOALREEL_DETECTOR_WEIGHTS dessus
+# (ou déposez-le sur models/detection/yolov8s.pt pour remplacer le COCO).
+if want yolo-custom; then
+  echo "[info] Pour un détecteur football : export GOALREEL_DETECTOR_WEIGHTS=/chemin/votre_best.pt"
 fi
 
 echo "Terminé."

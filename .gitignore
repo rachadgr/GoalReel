@@ -11,12 +11,15 @@ dist/
 
 # --- Environnement --------------------------------------------------------
 .venv/
+.venv-goalreel/
+.venv*/
 venv/
 .env
 
 # --- Exécutions intermédiaires --------------------------------------------
 runs/
 outputs/_frames/
+outputs/_validation/
 *.log
 
 # --- Checkpoints / poids volumineux (voir MODELS.md + scripts/download_models.sh)

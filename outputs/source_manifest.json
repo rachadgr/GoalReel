@@ -23,40 +23,1940 @@
         "laplacian_variance": 290.9223949151476
       },
       {
+        "frame": 1,
+        "laplacian_variance": 255.46168587490183
+      },
+      {
+        "frame": 2,
+        "laplacian_variance": 257.9370073609623
+      },
+      {
+        "frame": 3,
+        "laplacian_variance": 251.03331094938846
+      },
+      {
+        "frame": 4,
+        "laplacian_variance": 279.4117907693978
+      },
+      {
+        "frame": 5,
+        "laplacian_variance": 248.67828534119246
+      },
+      {
+        "frame": 6,
+        "laplacian_variance": 258.79083515961224
+      },
+      {
+        "frame": 7,
+        "laplacian_variance": 254.82513038261882
+      },
+      {
+        "frame": 8,
+        "laplacian_variance": 277.15596301015466
+      },
+      {
+        "frame": 9,
+        "laplacian_variance": 267.2483752738932
+      },
+      {
+        "frame": 10,
+        "laplacian_variance": 258.4151055481699
+      },
+      {
+        "frame": 11,
+        "laplacian_variance": 254.43336730533176
+      },
+      {
+        "frame": 12,
+        "laplacian_variance": 273.28657593575514
+      },
+      {
+        "frame": 13,
+        "laplacian_variance": 248.0459663630521
+      },
+      {
+        "frame": 14,
+        "laplacian_variance": 250.96356566567374
+      },
+      {
+        "frame": 15,
+        "laplacian_variance": 244.4381942306099
+      },
+      {
+        "frame": 16,
+        "laplacian_variance": 265.2456130427452
+      },
+      {
+        "frame": 17,
+        "laplacian_variance": 239.02562205221815
+      },
+      {
+        "frame": 18,
+        "laplacian_variance": 247.2831108251121
+      },
+      {
+        "frame": 19,
+        "laplacian_variance": 248.64451128350186
+      },
+      {
+        "frame": 20,
+        "laplacian_variance": 264.18618322659376
+      },
+      {
+        "frame": 21,
+        "laplacian_variance": 249.97568897812997
+      },
+      {
+        "frame": 22,
+        "laplacian_variance": 248.11406946402727
+      },
+      {
+        "frame": 23,
+        "laplacian_variance": 245.47344647216562
+      },
+      {
+        "frame": 24,
+        "laplacian_variance": 266.3962819580144
+      },
+      {
+        "frame": 25,
+        "laplacian_variance": 245.5470879076071
+      },
+      {
+        "frame": 26,
+        "laplacian_variance": 252.0521299772074
+      },
+      {
+        "frame": 27,
+        "laplacian_variance": 239.12156402980796
+      },
+      {
+        "frame": 28,
+        "laplacian_variance": 262.4708458617025
+      },
+      {
+        "frame": 29,
+        "laplacian_variance": 240.2328100944668
+      },
+      {
+        "frame": 30,
+        "laplacian_variance": 253.1314186179597
+      },
+      {
+        "frame": 31,
+        "laplacian_variance": 251.50314739096999
+      },
+      {
+        "frame": 32,
+        "laplacian_variance": 271.4661903571636
+      },
+      {
+        "frame": 33,
+        "laplacian_variance": 252.69010169082034
+      },
+      {
+        "frame": 34,
+        "laplacian_variance": 259.1371478988433
+      },
+      {
+        "frame": 35,
+        "laplacian_variance": 263.09274601232676
+      },
+      {
+        "frame": 36,
+        "laplacian_variance": 277.182538703633
+      },
+      {
+        "frame": 37,
+        "laplacian_variance": 264.0216324064006
+      },
+      {
+        "frame": 38,
+        "laplacian_variance": 266.0525301636806
+      },
+      {
+        "frame": 39,
+        "laplacian_variance": 255.81297102287402
+      },
+      {
+        "frame": 40,
+        "laplacian_variance": 282.41134179658314
+      },
+      {
+        "frame": 41,
+        "laplacian_variance": 261.4806619733572
+      },
+      {
+        "frame": 42,
+        "laplacian_variance": 273.7771759811375
+      },
+      {
+        "frame": 43,
+        "laplacian_variance": 267.3459365681435
+      },
+      {
+        "frame": 44,
+        "laplacian_variance": 292.7908615867268
+      },
+      {
+        "frame": 45,
+        "laplacian_variance": 270.32779881157796
+      },
+      {
+        "frame": 46,
+        "laplacian_variance": 274.8791059451408
+      },
+      {
+        "frame": 47,
+        "laplacian_variance": 269.6092389420244
+      },
+      {
+        "frame": 48,
+        "laplacian_variance": 285.29191500976117
+      },
+      {
+        "frame": 49,
+        "laplacian_variance": 269.55418751522166
+      },
+      {
+        "frame": 50,
+        "laplacian_variance": 286.22129104237854
+      },
+      {
+        "frame": 51,
+        "laplacian_variance": 281.2393181074934
+      },
+      {
+        "frame": 52,
+        "laplacian_variance": 308.4190484512753
+      },
+      {
+        "frame": 53,
+        "laplacian_variance": 285.2865745946736
+      },
+      {
+        "frame": 54,
+        "laplacian_variance": 290.1521341498498
+      },
+      {
+        "frame": 55,
+        "laplacian_variance": 285.25716498052344
+      },
+      {
+        "frame": 56,
+        "laplacian_variance": 317.12964474639773
+      },
+      {
+        "frame": 57,
+        "laplacian_variance": 302.1364548352553
+      },
+      {
+        "frame": 58,
+        "laplacian_variance": 304.707024095577
+      },
+      {
+        "frame": 59,
+        "laplacian_variance": 304.4536030871282
+      },
+      {
         "frame": 60,
         "laplacian_variance": 324.4972869918946
+      },
+      {
+        "frame": 61,
+        "laplacian_variance": 294.4274187768654
+      },
+      {
+        "frame": 62,
+        "laplacian_variance": 305.2892323953566
+      },
+      {
+        "frame": 63,
+        "laplacian_variance": 298.0541094603638
+      },
+      {
+        "frame": 64,
+        "laplacian_variance": 316.70898276231725
+      },
+      {
+        "frame": 65,
+        "laplacian_variance": 283.27665617674546
+      },
+      {
+        "frame": 66,
+        "laplacian_variance": 296.8673401314875
+      },
+      {
+        "frame": 67,
+        "laplacian_variance": 289.54427902482126
+      },
+      {
+        "frame": 68,
+        "laplacian_variance": 314.3670798041082
+      },
+      {
+        "frame": 69,
+        "laplacian_variance": 284.35544686536537
+      },
+      {
+        "frame": 70,
+        "laplacian_variance": 311.8194419998233
+      },
+      {
+        "frame": 71,
+        "laplacian_variance": 329.4354678315576
+      },
+      {
+        "frame": 72,
+        "laplacian_variance": 353.96048221095276
+      },
+      {
+        "frame": 73,
+        "laplacian_variance": 330.0869969416088
+      },
+      {
+        "frame": 74,
+        "laplacian_variance": 360.0286916097005
+      },
+      {
+        "frame": 75,
+        "laplacian_variance": 341.5064532639068
+      },
+      {
+        "frame": 76,
+        "laplacian_variance": 405.65362543364364
+      },
+      {
+        "frame": 77,
+        "laplacian_variance": 402.0631393958458
+      },
+      {
+        "frame": 78,
+        "laplacian_variance": 403.84202856707304
+      },
+      {
+        "frame": 79,
+        "laplacian_variance": 405.99667577272754
+      },
+      {
+        "frame": 80,
+        "laplacian_variance": 469.64926803449777
+      },
+      {
+        "frame": 81,
+        "laplacian_variance": 427.8962227229236
+      },
+      {
+        "frame": 82,
+        "laplacian_variance": 402.7659050930797
+      },
+      {
+        "frame": 83,
+        "laplacian_variance": 415.61039424658884
+      },
+      {
+        "frame": 84,
+        "laplacian_variance": 451.0590756982565
+      },
+      {
+        "frame": 85,
+        "laplacian_variance": 394.6055646532497
+      },
+      {
+        "frame": 86,
+        "laplacian_variance": 372.3045188364699
+      },
+      {
+        "frame": 87,
+        "laplacian_variance": 350.67647325058675
+      },
+      {
+        "frame": 88,
+        "laplacian_variance": 386.8146267137749
+      },
+      {
+        "frame": 89,
+        "laplacian_variance": 318.33706843218033
+      },
+      {
+        "frame": 90,
+        "laplacian_variance": 337.1123944044913
+      },
+      {
+        "frame": 91,
+        "laplacian_variance": 325.91573392079835
+      },
+      {
+        "frame": 92,
+        "laplacian_variance": 375.6643703264604
+      },
+      {
+        "frame": 93,
+        "laplacian_variance": 344.1361565443624
+      },
+      {
+        "frame": 94,
+        "laplacian_variance": 352.0874480235241
+      },
+      {
+        "frame": 95,
+        "laplacian_variance": 354.55905403186466
+      },
+      {
+        "frame": 96,
+        "laplacian_variance": 382.76565726432534
+      },
+      {
+        "frame": 97,
+        "laplacian_variance": 363.10733468414077
+      },
+      {
+        "frame": 98,
+        "laplacian_variance": 388.45610899863374
+      },
+      {
+        "frame": 99,
+        "laplacian_variance": 379.46869345726503
+      },
+      {
+        "frame": 100,
+        "laplacian_variance": 456.0737828141377
+      },
+      {
+        "frame": 101,
+        "laplacian_variance": 428.6977712778737
+      },
+      {
+        "frame": 102,
+        "laplacian_variance": 456.8283946241861
+      },
+      {
+        "frame": 103,
+        "laplacian_variance": 449.8895545282867
+      },
+      {
+        "frame": 104,
+        "laplacian_variance": 509.28353741385297
+      },
+      {
+        "frame": 105,
+        "laplacian_variance": 456.7722900459129
+      },
+      {
+        "frame": 106,
+        "laplacian_variance": 467.75764715068766
+      },
+      {
+        "frame": 107,
+        "laplacian_variance": 453.92200842002745
+      },
+      {
+        "frame": 108,
+        "laplacian_variance": 518.474684665037
+      },
+      {
+        "frame": 109,
+        "laplacian_variance": 463.8856031678036
+      },
+      {
+        "frame": 110,
+        "laplacian_variance": 474.47354056251265
+      },
+      {
+        "frame": 111,
+        "laplacian_variance": 446.3793837006813
+      },
+      {
+        "frame": 112,
+        "laplacian_variance": 520.5388406710326
+      },
+      {
+        "frame": 113,
+        "laplacian_variance": 453.1725364069391
+      },
+      {
+        "frame": 114,
+        "laplacian_variance": 462.4599113104905
+      },
+      {
+        "frame": 115,
+        "laplacian_variance": 459.8549956720707
+      },
+      {
+        "frame": 116,
+        "laplacian_variance": 510.67199625240147
+      },
+      {
+        "frame": 117,
+        "laplacian_variance": 457.035760473138
+      },
+      {
+        "frame": 118,
+        "laplacian_variance": 459.31786820582215
+      },
+      {
+        "frame": 119,
+        "laplacian_variance": 452.69744178355836
       },
       {
         "frame": 120,
         "laplacian_variance": 494.36309342748586
       },
       {
+        "frame": 121,
+        "laplacian_variance": 432.3276192421685
+      },
+      {
+        "frame": 122,
+        "laplacian_variance": 452.02230156792535
+      },
+      {
+        "frame": 123,
+        "laplacian_variance": 434.2188431906175
+      },
+      {
+        "frame": 124,
+        "laplacian_variance": 492.25923419699797
+      },
+      {
+        "frame": 125,
+        "laplacian_variance": 424.664416522604
+      },
+      {
+        "frame": 126,
+        "laplacian_variance": 441.70826581727283
+      },
+      {
+        "frame": 127,
+        "laplacian_variance": 409.4930913695968
+      },
+      {
+        "frame": 128,
+        "laplacian_variance": 461.7830537395712
+      },
+      {
+        "frame": 129,
+        "laplacian_variance": 419.1840748622709
+      },
+      {
+        "frame": 130,
+        "laplacian_variance": 402.91469179873104
+      },
+      {
+        "frame": 131,
+        "laplacian_variance": 398.4898057983538
+      },
+      {
+        "frame": 132,
+        "laplacian_variance": 442.500176427495
+      },
+      {
+        "frame": 133,
+        "laplacian_variance": 387.1032902850154
+      },
+      {
+        "frame": 134,
+        "laplacian_variance": 402.8728299434814
+      },
+      {
+        "frame": 135,
+        "laplacian_variance": 379.58070976597287
+      },
+      {
+        "frame": 136,
+        "laplacian_variance": 441.08397975967574
+      },
+      {
+        "frame": 137,
+        "laplacian_variance": 376.78909207135143
+      },
+      {
+        "frame": 138,
+        "laplacian_variance": 395.4102161659135
+      },
+      {
+        "frame": 139,
+        "laplacian_variance": 394.81835749659996
+      },
+      {
+        "frame": 140,
+        "laplacian_variance": 427.00180201636005
+      },
+      {
+        "frame": 141,
+        "laplacian_variance": 395.621238131582
+      },
+      {
+        "frame": 142,
+        "laplacian_variance": 389.46811400683896
+      },
+      {
+        "frame": 143,
+        "laplacian_variance": 390.93556117905405
+      },
+      {
+        "frame": 144,
+        "laplacian_variance": 426.3024725064745
+      },
+      {
+        "frame": 145,
+        "laplacian_variance": 376.33311724742975
+      },
+      {
+        "frame": 146,
+        "laplacian_variance": 399.8308604659461
+      },
+      {
+        "frame": 147,
+        "laplacian_variance": 377.65294670102037
+      },
+      {
+        "frame": 148,
+        "laplacian_variance": 428.95308395389776
+      },
+      {
+        "frame": 149,
+        "laplacian_variance": 369.96515891542026
+      },
+      {
+        "frame": 150,
+        "laplacian_variance": 386.9224475117078
+      },
+      {
+        "frame": 151,
+        "laplacian_variance": 384.4140384346132
+      },
+      {
+        "frame": 152,
+        "laplacian_variance": 427.26549842648996
+      },
+      {
+        "frame": 153,
+        "laplacian_variance": 388.87316130742965
+      },
+      {
+        "frame": 154,
+        "laplacian_variance": 374.7622732113426
+      },
+      {
+        "frame": 155,
+        "laplacian_variance": 367.1649368867899
+      },
+      {
+        "frame": 156,
+        "laplacian_variance": 401.04754637609193
+      },
+      {
+        "frame": 157,
+        "laplacian_variance": 356.24671198996816
+      },
+      {
+        "frame": 158,
+        "laplacian_variance": 360.7142723169132
+      },
+      {
+        "frame": 159,
+        "laplacian_variance": 338.8921951303621
+      },
+      {
+        "frame": 160,
+        "laplacian_variance": 381.6685309001664
+      },
+      {
+        "frame": 161,
+        "laplacian_variance": 327.9960753577244
+      },
+      {
+        "frame": 162,
+        "laplacian_variance": 341.790756400985
+      },
+      {
+        "frame": 163,
+        "laplacian_variance": 336.253464373438
+      },
+      {
+        "frame": 164,
+        "laplacian_variance": 380.33637216183314
+      },
+      {
+        "frame": 165,
+        "laplacian_variance": 340.23533227983404
+      },
+      {
+        "frame": 166,
+        "laplacian_variance": 353.6781047108428
+      },
+      {
+        "frame": 167,
+        "laplacian_variance": 352.10380507299374
+      },
+      {
+        "frame": 168,
+        "laplacian_variance": 385.8719471716466
+      },
+      {
+        "frame": 169,
+        "laplacian_variance": 334.9056739801496
+      },
+      {
+        "frame": 170,
+        "laplacian_variance": 353.01381684749754
+      },
+      {
+        "frame": 171,
+        "laplacian_variance": 334.2790566814235
+      },
+      {
+        "frame": 172,
+        "laplacian_variance": 378.1602583701298
+      },
+      {
+        "frame": 173,
+        "laplacian_variance": 328.1351524834251
+      },
+      {
+        "frame": 174,
+        "laplacian_variance": 339.2670397159563
+      },
+      {
+        "frame": 175,
+        "laplacian_variance": 337.47637961215037
+      },
+      {
+        "frame": 176,
+        "laplacian_variance": 370.809060060856
+      },
+      {
+        "frame": 177,
+        "laplacian_variance": 338.81032778701837
+      },
+      {
+        "frame": 178,
+        "laplacian_variance": 341.8973423394225
+      },
+      {
+        "frame": 179,
+        "laplacian_variance": 353.5371901868918
+      },
+      {
         "frame": 180,
         "laplacian_variance": 380.5716132542066
+      },
+      {
+        "frame": 181,
+        "laplacian_variance": 337.83157599495473
+      },
+      {
+        "frame": 182,
+        "laplacian_variance": 358.9328427224616
+      },
+      {
+        "frame": 183,
+        "laplacian_variance": 339.54883532099325
+      },
+      {
+        "frame": 184,
+        "laplacian_variance": 397.2959783211736
+      },
+      {
+        "frame": 185,
+        "laplacian_variance": 341.7637867176859
+      },
+      {
+        "frame": 186,
+        "laplacian_variance": 358.3824151395619
+      },
+      {
+        "frame": 187,
+        "laplacian_variance": 356.30472643507846
+      },
+      {
+        "frame": 188,
+        "laplacian_variance": 403.35204931402603
+      },
+      {
+        "frame": 189,
+        "laplacian_variance": 363.947513062093
+      },
+      {
+        "frame": 190,
+        "laplacian_variance": 360.5252810743275
+      },
+      {
+        "frame": 191,
+        "laplacian_variance": 365.552915135732
+      },
+      {
+        "frame": 192,
+        "laplacian_variance": 402.925344013494
+      },
+      {
+        "frame": 193,
+        "laplacian_variance": 348.36587663859495
+      },
+      {
+        "frame": 194,
+        "laplacian_variance": 368.24824049034055
+      },
+      {
+        "frame": 195,
+        "laplacian_variance": 347.8389557276128
+      },
+      {
+        "frame": 196,
+        "laplacian_variance": 402.9379634405285
+      },
+      {
+        "frame": 197,
+        "laplacian_variance": 347.03196680527407
+      },
+      {
+        "frame": 198,
+        "laplacian_variance": 368.63250247743207
+      },
+      {
+        "frame": 199,
+        "laplacian_variance": 361.8874906218599
+      },
+      {
+        "frame": 200,
+        "laplacian_variance": 415.9871098928866
+      },
+      {
+        "frame": 201,
+        "laplacian_variance": 378.7503065154112
+      },
+      {
+        "frame": 202,
+        "laplacian_variance": 375.9482633559332
+      },
+      {
+        "frame": 203,
+        "laplacian_variance": 376.09157141525424
+      },
+      {
+        "frame": 204,
+        "laplacian_variance": 414.97248541850905
+      },
+      {
+        "frame": 205,
+        "laplacian_variance": 361.6298109237766
+      },
+      {
+        "frame": 206,
+        "laplacian_variance": 380.85175386250285
+      },
+      {
+        "frame": 207,
+        "laplacian_variance": 360.52858900871814
+      },
+      {
+        "frame": 208,
+        "laplacian_variance": 416.2587441131214
+      },
+      {
+        "frame": 209,
+        "laplacian_variance": 351.1576531132062
+      },
+      {
+        "frame": 210,
+        "laplacian_variance": 365.7717614322786
+      },
+      {
+        "frame": 211,
+        "laplacian_variance": 360.76609037640605
+      },
+      {
+        "frame": 212,
+        "laplacian_variance": 407.4116269217597
+      },
+      {
+        "frame": 213,
+        "laplacian_variance": 371.52405177553214
+      },
+      {
+        "frame": 214,
+        "laplacian_variance": 355.37087233280647
+      },
+      {
+        "frame": 215,
+        "laplacian_variance": 354.10598310786804
+      },
+      {
+        "frame": 216,
+        "laplacian_variance": 398.64563827565865
+      },
+      {
+        "frame": 217,
+        "laplacian_variance": 358.966611209909
+      },
+      {
+        "frame": 218,
+        "laplacian_variance": 342.29297601068276
+      },
+      {
+        "frame": 219,
+        "laplacian_variance": 325.9327604484336
+      },
+      {
+        "frame": 220,
+        "laplacian_variance": 376.50339313520317
+      },
+      {
+        "frame": 221,
+        "laplacian_variance": 311.5530352257192
+      },
+      {
+        "frame": 222,
+        "laplacian_variance": 329.7096100020895
+      },
+      {
+        "frame": 223,
+        "laplacian_variance": 326.6872802537917
+      },
+      {
+        "frame": 224,
+        "laplacian_variance": 376.2880944822007
+      },
+      {
+        "frame": 225,
+        "laplacian_variance": 340.9110777995745
+      },
+      {
+        "frame": 226,
+        "laplacian_variance": 328.01341678504537
+      },
+      {
+        "frame": 227,
+        "laplacian_variance": 329.3763791164009
+      },
+      {
+        "frame": 228,
+        "laplacian_variance": 363.293888438585
+      },
+      {
+        "frame": 229,
+        "laplacian_variance": 310.5731796897764
+      },
+      {
+        "frame": 230,
+        "laplacian_variance": 330.0116404054635
+      },
+      {
+        "frame": 231,
+        "laplacian_variance": 311.11373140577535
+      },
+      {
+        "frame": 232,
+        "laplacian_variance": 364.1453100557749
+      },
+      {
+        "frame": 233,
+        "laplacian_variance": 307.96006724458005
+      },
+      {
+        "frame": 234,
+        "laplacian_variance": 326.2108030480643
+      },
+      {
+        "frame": 235,
+        "laplacian_variance": 311.15395119307664
+      },
+      {
+        "frame": 236,
+        "laplacian_variance": 363.9972876420613
+      },
+      {
+        "frame": 237,
+        "laplacian_variance": 325.8424726740923
+      },
+      {
+        "frame": 238,
+        "laplacian_variance": 324.2477025869101
+      },
+      {
+        "frame": 239,
+        "laplacian_variance": 327.14121995276463
       },
       {
         "frame": 240,
         "laplacian_variance": 360.50957984732247
       },
       {
+        "frame": 241,
+        "laplacian_variance": 312.6817705484975
+      },
+      {
+        "frame": 242,
+        "laplacian_variance": 340.5911987262008
+      },
+      {
+        "frame": 243,
+        "laplacian_variance": 318.837475511208
+      },
+      {
+        "frame": 244,
+        "laplacian_variance": 372.15261175340896
+      },
+      {
+        "frame": 245,
+        "laplacian_variance": 314.91813826560974
+      },
+      {
+        "frame": 246,
+        "laplacian_variance": 334.13416796881285
+      },
+      {
+        "frame": 247,
+        "laplacian_variance": 329.1328819414348
+      },
+      {
+        "frame": 248,
+        "laplacian_variance": 368.65837300306384
+      },
+      {
+        "frame": 249,
+        "laplacian_variance": 332.9171755915324
+      },
+      {
+        "frame": 250,
+        "laplacian_variance": 407.433789646
+      },
+      {
+        "frame": 251,
+        "laplacian_variance": 333.9958577712072
+      },
+      {
+        "frame": 252,
+        "laplacian_variance": 354.43331847663814
+      },
+      {
+        "frame": 253,
+        "laplacian_variance": 335.64243398654776
+      },
+      {
+        "frame": 254,
+        "laplacian_variance": 373.6769779406281
+      },
+      {
+        "frame": 255,
+        "laplacian_variance": 335.11412611932286
+      },
+      {
+        "frame": 256,
+        "laplacian_variance": 324.457382341637
+      },
+      {
+        "frame": 257,
+        "laplacian_variance": 326.59153813232933
+      },
+      {
+        "frame": 258,
+        "laplacian_variance": 358.3963775415129
+      },
+      {
+        "frame": 259,
+        "laplacian_variance": 301.0507483836005
+      },
+      {
+        "frame": 260,
+        "laplacian_variance": 326.93809112733703
+      },
+      {
+        "frame": 261,
+        "laplacian_variance": 304.52604350722453
+      },
+      {
+        "frame": 262,
+        "laplacian_variance": 355.16090318622406
+      },
+      {
+        "frame": 263,
+        "laplacian_variance": 301.78304088881157
+      },
+      {
+        "frame": 264,
+        "laplacian_variance": 315.20532243936844
+      },
+      {
+        "frame": 265,
+        "laplacian_variance": 308.53005230465595
+      },
+      {
+        "frame": 266,
+        "laplacian_variance": 350.8248327013887
+      },
+      {
+        "frame": 267,
+        "laplacian_variance": 321.3026200972589
+      },
+      {
+        "frame": 268,
+        "laplacian_variance": 312.21513892955977
+      },
+      {
+        "frame": 269,
+        "laplacian_variance": 320.36670898393163
+      },
+      {
+        "frame": 270,
+        "laplacian_variance": 351.44030057321254
+      },
+      {
+        "frame": 271,
+        "laplacian_variance": 301.99871901109714
+      },
+      {
+        "frame": 272,
+        "laplacian_variance": 311.4537750600268
+      },
+      {
+        "frame": 273,
+        "laplacian_variance": 294.90711436391933
+      },
+      {
+        "frame": 274,
+        "laplacian_variance": 342.0213024871838
+      },
+      {
+        "frame": 275,
+        "laplacian_variance": 281.3939833639213
+      },
+      {
+        "frame": 276,
+        "laplacian_variance": 295.80166587467806
+      },
+      {
+        "frame": 277,
+        "laplacian_variance": 287.12362256738135
+      },
+      {
+        "frame": 278,
+        "laplacian_variance": 327.0312392561593
+      },
+      {
+        "frame": 279,
+        "laplacian_variance": 292.9004465168382
+      },
+      {
+        "frame": 280,
+        "laplacian_variance": 282.8312879626231
+      },
+      {
+        "frame": 281,
+        "laplacian_variance": 288.62934581273134
+      },
+      {
+        "frame": 282,
+        "laplacian_variance": 316.29356672550136
+      },
+      {
+        "frame": 283,
+        "laplacian_variance": 278.54720459040254
+      },
+      {
+        "frame": 284,
+        "laplacian_variance": 317.7612553767653
+      },
+      {
+        "frame": 285,
+        "laplacian_variance": 295.6660281305667
+      },
+      {
+        "frame": 286,
+        "laplacian_variance": 346.6393070538172
+      },
+      {
+        "frame": 287,
+        "laplacian_variance": 302.40336513974313
+      },
+      {
+        "frame": 288,
+        "laplacian_variance": 317.6223213630987
+      },
+      {
+        "frame": 289,
+        "laplacian_variance": 311.0700736546222
+      },
+      {
+        "frame": 290,
+        "laplacian_variance": 358.58140113264216
+      },
+      {
+        "frame": 291,
+        "laplacian_variance": 327.5061293706114
+      },
+      {
+        "frame": 292,
+        "laplacian_variance": 315.23395310313566
+      },
+      {
+        "frame": 293,
+        "laplacian_variance": 314.9667480445818
+      },
+      {
+        "frame": 294,
+        "laplacian_variance": 344.9264498617454
+      },
+      {
+        "frame": 295,
+        "laplacian_variance": 294.05901062018296
+      },
+      {
+        "frame": 296,
+        "laplacian_variance": 310.9364517549783
+      },
+      {
+        "frame": 297,
+        "laplacian_variance": 302.0452206476511
+      },
+      {
+        "frame": 298,
+        "laplacian_variance": 344.8089155966852
+      },
+      {
+        "frame": 299,
+        "laplacian_variance": 293.7794969346069
+      },
+      {
         "frame": 300,
         "laplacian_variance": 305.9739679106149
+      },
+      {
+        "frame": 301,
+        "laplacian_variance": 304.16638087228307
+      },
+      {
+        "frame": 302,
+        "laplacian_variance": 348.74312824790115
+      },
+      {
+        "frame": 303,
+        "laplacian_variance": 306.41052492292897
+      },
+      {
+        "frame": 304,
+        "laplacian_variance": 306.76251989248624
+      },
+      {
+        "frame": 305,
+        "laplacian_variance": 308.33652288307735
+      },
+      {
+        "frame": 306,
+        "laplacian_variance": 335.3597005673966
+      },
+      {
+        "frame": 307,
+        "laplacian_variance": 294.4447183136104
+      },
+      {
+        "frame": 308,
+        "laplacian_variance": 297.9434235726949
+      },
+      {
+        "frame": 309,
+        "laplacian_variance": 290.18123234677086
+      },
+      {
+        "frame": 310,
+        "laplacian_variance": 327.6691430355221
+      },
+      {
+        "frame": 311,
+        "laplacian_variance": 278.806128781148
+      },
+      {
+        "frame": 312,
+        "laplacian_variance": 290.4924765827916
+      },
+      {
+        "frame": 313,
+        "laplacian_variance": 278.97233577727707
+      },
+      {
+        "frame": 314,
+        "laplacian_variance": 314.58541871164635
+      },
+      {
+        "frame": 315,
+        "laplacian_variance": 285.94499555744954
+      },
+      {
+        "frame": 316,
+        "laplacian_variance": 281.2027815609342
+      },
+      {
+        "frame": 317,
+        "laplacian_variance": 280.48284075657244
+      },
+      {
+        "frame": 318,
+        "laplacian_variance": 298.11655528783615
+      },
+      {
+        "frame": 319,
+        "laplacian_variance": 254.96415295801125
+      },
+      {
+        "frame": 320,
+        "laplacian_variance": 269.53483580149145
+      },
+      {
+        "frame": 321,
+        "laplacian_variance": 254.73033524469045
+      },
+      {
+        "frame": 322,
+        "laplacian_variance": 294.80398831470507
+      },
+      {
+        "frame": 323,
+        "laplacian_variance": 265.97783916981393
+      },
+      {
+        "frame": 324,
+        "laplacian_variance": 272.87668855129283
+      },
+      {
+        "frame": 325,
+        "laplacian_variance": 256.58248570667195
+      },
+      {
+        "frame": 326,
+        "laplacian_variance": 293.09175453445135
+      },
+      {
+        "frame": 327,
+        "laplacian_variance": 272.050879155964
+      },
+      {
+        "frame": 328,
+        "laplacian_variance": 261.7033404342249
+      },
+      {
+        "frame": 329,
+        "laplacian_variance": 254.28465009967073
+      },
+      {
+        "frame": 330,
+        "laplacian_variance": 284.7706735829052
+      },
+      {
+        "frame": 331,
+        "laplacian_variance": 270.95664725589484
+      },
+      {
+        "frame": 332,
+        "laplacian_variance": 676.178448448475
+      },
+      {
+        "frame": 333,
+        "laplacian_variance": 643.6422139968878
+      },
+      {
+        "frame": 334,
+        "laplacian_variance": 735.6033175421051
+      },
+      {
+        "frame": 335,
+        "laplacian_variance": 715.7446149831586
+      },
+      {
+        "frame": 336,
+        "laplacian_variance": 670.0390992761319
+      },
+      {
+        "frame": 337,
+        "laplacian_variance": 631.3298381744958
+      },
+      {
+        "frame": 338,
+        "laplacian_variance": 683.0016416294707
+      },
+      {
+        "frame": 339,
+        "laplacian_variance": 830.128302510092
+      },
+      {
+        "frame": 340,
+        "laplacian_variance": 707.3941858425553
+      },
+      {
+        "frame": 341,
+        "laplacian_variance": 593.5991821510252
+      },
+      {
+        "frame": 342,
+        "laplacian_variance": 512.2027267184408
+      },
+      {
+        "frame": 343,
+        "laplacian_variance": 420.3850085882493
+      },
+      {
+        "frame": 344,
+        "laplacian_variance": 326.3684336346442
+      },
+      {
+        "frame": 345,
+        "laplacian_variance": 361.117909455005
+      },
+      {
+        "frame": 346,
+        "laplacian_variance": 328.48169826610115
+      },
+      {
+        "frame": 347,
+        "laplacian_variance": 382.62529116889374
+      },
+      {
+        "frame": 348,
+        "laplacian_variance": 333.4706842286001
+      },
+      {
+        "frame": 349,
+        "laplacian_variance": 214.66907806500194
+      },
+      {
+        "frame": 350,
+        "laplacian_variance": 159.17610909541446
+      },
+      {
+        "frame": 351,
+        "laplacian_variance": 164.5918437989377
+      },
+      {
+        "frame": 352,
+        "laplacian_variance": 167.22486098441811
+      },
+      {
+        "frame": 353,
+        "laplacian_variance": 164.37329527673333
+      },
+      {
+        "frame": 354,
+        "laplacian_variance": 124.59116976845861
+      },
+      {
+        "frame": 355,
+        "laplacian_variance": 121.02148165631995
+      },
+      {
+        "frame": 356,
+        "laplacian_variance": 142.43930799759818
+      },
+      {
+        "frame": 357,
+        "laplacian_variance": 190.29547841787155
+      },
+      {
+        "frame": 358,
+        "laplacian_variance": 220.5741509626746
+      },
+      {
+        "frame": 359,
+        "laplacian_variance": 110.39027672474573
       },
       {
         "frame": 360,
         "laplacian_variance": 109.28180796993368
       },
       {
+        "frame": 361,
+        "laplacian_variance": 106.04518694754542
+      },
+      {
+        "frame": 362,
+        "laplacian_variance": 107.73283890880542
+      },
+      {
+        "frame": 363,
+        "laplacian_variance": 112.3761957898552
+      },
+      {
+        "frame": 364,
+        "laplacian_variance": 113.72466149038556
+      },
+      {
+        "frame": 365,
+        "laplacian_variance": 108.26028129085613
+      },
+      {
+        "frame": 366,
+        "laplacian_variance": 110.4453438586659
+      },
+      {
+        "frame": 367,
+        "laplacian_variance": 116.17882997519337
+      },
+      {
+        "frame": 368,
+        "laplacian_variance": 113.08619276358012
+      },
+      {
+        "frame": 369,
+        "laplacian_variance": 109.19937522847054
+      },
+      {
+        "frame": 370,
+        "laplacian_variance": 107.52755683852519
+      },
+      {
+        "frame": 371,
+        "laplacian_variance": 108.12316454794934
+      },
+      {
+        "frame": 372,
+        "laplacian_variance": 112.52345995935842
+      },
+      {
+        "frame": 373,
+        "laplacian_variance": 116.61821922713915
+      },
+      {
+        "frame": 374,
+        "laplacian_variance": 120.66937508245206
+      },
+      {
+        "frame": 375,
+        "laplacian_variance": 148.78491542663102
+      },
+      {
+        "frame": 376,
+        "laplacian_variance": 226.48921926290856
+      },
+      {
+        "frame": 377,
+        "laplacian_variance": 164.54002070143804
+      },
+      {
+        "frame": 378,
+        "laplacian_variance": 126.662631177628
+      },
+      {
+        "frame": 379,
+        "laplacian_variance": 116.5922007077707
+      },
+      {
+        "frame": 380,
+        "laplacian_variance": 114.86201093261947
+      },
+      {
+        "frame": 381,
+        "laplacian_variance": 115.22213047471207
+      },
+      {
+        "frame": 382,
+        "laplacian_variance": 106.75529369194186
+      },
+      {
+        "frame": 383,
+        "laplacian_variance": 94.73933751990353
+      },
+      {
+        "frame": 384,
+        "laplacian_variance": 82.5922002941255
+      },
+      {
+        "frame": 385,
+        "laplacian_variance": 73.57946810498545
+      },
+      {
+        "frame": 386,
+        "laplacian_variance": 71.09375708963847
+      },
+      {
+        "frame": 387,
+        "laplacian_variance": 70.57105104643334
+      },
+      {
+        "frame": 388,
+        "laplacian_variance": 74.26949221994957
+      },
+      {
+        "frame": 389,
+        "laplacian_variance": 114.03870743505922
+      },
+      {
+        "frame": 390,
+        "laplacian_variance": 140.64774241739667
+      },
+      {
+        "frame": 391,
+        "laplacian_variance": 189.26870513417367
+      },
+      {
+        "frame": 392,
+        "laplacian_variance": 60.898773917617895
+      },
+      {
+        "frame": 393,
+        "laplacian_variance": 62.16904108547088
+      },
+      {
+        "frame": 394,
+        "laplacian_variance": 159.65658137492008
+      },
+      {
+        "frame": 395,
+        "laplacian_variance": 1159.2136139107358
+      },
+      {
+        "frame": 396,
+        "laplacian_variance": 586.881116174058
+      },
+      {
+        "frame": 397,
+        "laplacian_variance": 544.7611576612625
+      },
+      {
+        "frame": 398,
+        "laplacian_variance": 981.5947152399601
+      },
+      {
+        "frame": 399,
+        "laplacian_variance": 1087.0885989297594
+      },
+      {
+        "frame": 400,
+        "laplacian_variance": 1276.705043172668
+      },
+      {
+        "frame": 401,
+        "laplacian_variance": 1372.6474171388452
+      },
+      {
+        "frame": 402,
+        "laplacian_variance": 1755.0500002376343
+      },
+      {
+        "frame": 403,
+        "laplacian_variance": 1462.1367406244187
+      },
+      {
+        "frame": 404,
+        "laplacian_variance": 1583.7149680054022
+      },
+      {
+        "frame": 405,
+        "laplacian_variance": 1763.6164374128903
+      },
+      {
+        "frame": 406,
+        "laplacian_variance": 2045.9343039988437
+      },
+      {
+        "frame": 407,
+        "laplacian_variance": 1886.4977746655543
+      },
+      {
+        "frame": 408,
+        "laplacian_variance": 1931.6471395722251
+      },
+      {
+        "frame": 409,
+        "laplacian_variance": 1930.9777920974625
+      },
+      {
+        "frame": 410,
+        "laplacian_variance": 2432.4967166440974
+      },
+      {
+        "frame": 411,
+        "laplacian_variance": 2308.7171606450447
+      },
+      {
+        "frame": 412,
+        "laplacian_variance": 2634.2965270529185
+      },
+      {
+        "frame": 413,
+        "laplacian_variance": 2415.8398807855224
+      },
+      {
+        "frame": 414,
+        "laplacian_variance": 2483.1691855041763
+      },
+      {
+        "frame": 415,
+        "laplacian_variance": 2579.1418689276857
+      },
+      {
+        "frame": 416,
+        "laplacian_variance": 2860.3356334714244
+      },
+      {
+        "frame": 417,
+        "laplacian_variance": 2552.3214516838275
+      },
+      {
+        "frame": 418,
+        "laplacian_variance": 2556.8998694080333
+      },
+      {
+        "frame": 419,
+        "laplacian_variance": 2330.150006626971
+      },
+      {
         "frame": 420,
         "laplacian_variance": 3422.9342969669065
       },
       {
+        "frame": 421,
+        "laplacian_variance": 4088.4835789662375
+      },
+      {
+        "frame": 422,
+        "laplacian_variance": 3577.2168632327425
+      },
+      {
+        "frame": 423,
+        "laplacian_variance": 2646.667185359531
+      },
+      {
+        "frame": 424,
+        "laplacian_variance": 2682.466602404289
+      },
+      {
+        "frame": 425,
+        "laplacian_variance": 2377.7466849636394
+      },
+      {
+        "frame": 426,
+        "laplacian_variance": 2367.215310377859
+      },
+      {
+        "frame": 427,
+        "laplacian_variance": 2247.8994023045525
+      },
+      {
+        "frame": 428,
+        "laplacian_variance": 2287.8059025781668
+      },
+      {
+        "frame": 429,
+        "laplacian_variance": 1942.5070392075254
+      },
+      {
+        "frame": 430,
+        "laplacian_variance": 2199.477089212376
+      },
+      {
+        "frame": 431,
+        "laplacian_variance": 2073.2400158596092
+      },
+      {
+        "frame": 432,
+        "laplacian_variance": 3307.121097855534
+      },
+      {
+        "frame": 433,
+        "laplacian_variance": 3168.3661153258436
+      },
+      {
+        "frame": 434,
+        "laplacian_variance": 3451.0167143543094
+      },
+      {
+        "frame": 435,
+        "laplacian_variance": 3186.9417287839065
+      },
+      {
+        "frame": 436,
+        "laplacian_variance": 3133.849914177007
+      },
+      {
+        "frame": 437,
+        "laplacian_variance": 2751.1933774367594
+      },
+      {
+        "frame": 438,
+        "laplacian_variance": 2862.9764763363096
+      },
+      {
+        "frame": 439,
+        "laplacian_variance": 2604.857590570629
+      },
+      {
+        "frame": 440,
+        "laplacian_variance": 2541.9286430012176
+      },
+      {
+        "frame": 441,
+        "laplacian_variance": 2574.1390764460075
+      },
+      {
+        "frame": 442,
+        "laplacian_variance": 274.95642937471183
+      },
+      {
+        "frame": 443,
+        "laplacian_variance": 233.62804336210905
+      },
+      {
+        "frame": 444,
+        "laplacian_variance": 242.754262102558
+      },
+      {
+        "frame": 445,
+        "laplacian_variance": 232.74841706030486
+      },
+      {
+        "frame": 446,
+        "laplacian_variance": 259.20681588460957
+      },
+      {
+        "frame": 447,
+        "laplacian_variance": 232.62908999051575
+      },
+      {
+        "frame": 448,
+        "laplacian_variance": 231.1407906147709
+      },
+      {
+        "frame": 449,
+        "laplacian_variance": 220.02325049777411
+      },
+      {
+        "frame": 450,
+        "laplacian_variance": 242.35207288502716
+      },
+      {
+        "frame": 451,
+        "laplacian_variance": 215.3741668390892
+      },
+      {
+        "frame": 452,
+        "laplacian_variance": 211.4323065755429
+      },
+      {
+        "frame": 453,
+        "laplacian_variance": 207.752849197636
+      },
+      {
+        "frame": 454,
+        "laplacian_variance": 236.90794232965987
+      },
+      {
+        "frame": 455,
+        "laplacian_variance": 209.4234997293435
+      },
+      {
+        "frame": 456,
+        "laplacian_variance": 218.33931254014877
+      },
+      {
+        "frame": 457,
+        "laplacian_variance": 217.39464826674924
+      },
+      {
+        "frame": 458,
+        "laplacian_variance": 242.89331457425584
+      },
+      {
+        "frame": 459,
+        "laplacian_variance": 223.62691490544168
+      },
+      {
+        "frame": 460,
+        "laplacian_variance": 228.6044438897063
+      },
+      {
+        "frame": 461,
+        "laplacian_variance": 221.0148559903904
+      },
+      {
+        "frame": 462,
+        "laplacian_variance": 235.63772671158935
+      },
+      {
+        "frame": 463,
+        "laplacian_variance": 212.4098176077629
+      },
+      {
+        "frame": 464,
+        "laplacian_variance": 216.24811871753386
+      },
+      {
+        "frame": 465,
+        "laplacian_variance": 207.542912839084
+      },
+      {
+        "frame": 466,
+        "laplacian_variance": 227.80111471887528
+      },
+      {
+        "frame": 467,
+        "laplacian_variance": 202.22196333565645
+      },
+      {
+        "frame": 468,
+        "laplacian_variance": 208.55078345688673
+      },
+      {
+        "frame": 469,
+        "laplacian_variance": 190.55326148322322
+      },
+      {
+        "frame": 470,
+        "laplacian_variance": 196.0477500000371
+      },
+      {
+        "frame": 471,
+        "laplacian_variance": 174.13175342638723
+      },
+      {
+        "frame": 472,
+        "laplacian_variance": 157.82751844970534
+      },
+      {
+        "frame": 473,
+        "laplacian_variance": 149.3487215687716
+      },
+      {
+        "frame": 474,
+        "laplacian_variance": 163.78487743795736
+      },
+      {
+        "frame": 475,
+        "laplacian_variance": 147.2163876581615
+      },
+      {
+        "frame": 476,
+        "laplacian_variance": 148.7731535591898
+      },
+      {
+        "frame": 477,
+        "laplacian_variance": 155.97061038175656
+      },
+      {
+        "frame": 478,
+        "laplacian_variance": 140.5618683389233
+      },
+      {
+        "frame": 479,
+        "laplacian_variance": 138.68724101241162
+      },
+      {
         "frame": 480,
         "laplacian_variance": 146.51361975596967
+      },
+      {
+        "frame": 481,
+        "laplacian_variance": 138.0481996641
+      },
+      {
+        "frame": 482,
+        "laplacian_variance": 134.01903708009797
+      },
+      {
+        "frame": 483,
+        "laplacian_variance": 139.55810844477116
       }
     ],
     "motion_mean": 8.093115024465732,
     "motion_p95": 19.668456692165798
   },
-  "sampled_frame_count": 9
+  "sampled_frame_count": 484
 }

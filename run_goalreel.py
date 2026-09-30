@@ -156,10 +156,28 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
         **novel_view_status,
     })
 
+    # 5c) Reframe 9:16 piloté par la PREUVE de suivi -----------------------
+    # Si de vraies trajectoires existent, la caméra 9:16 SUIT réellement le
+    # sujet suivi (pan horizontal). Sinon => fallback statique (jamais un faux
+    # suivi). On ne réinvente rien : coordonnées issues du suivi ByteTrack.
+    from goalreel.cinematic.reframe import build_reframe_targets
+    reframe_targets, reframe_meta = build_reframe_targets(tracks)
+    write_json(out / "camera_reframe.json", {
+        "schema": "goalreel.camera_reframe.v1",
+        **reframe_meta,
+        "targets_count": len(reframe_targets),
+    })
+
     # 6) Rendu vertical final ----------------------------------------------
     final_path = out / "final_reel.mp4"
-    render_vertical(video, str(final_path))
+    render_vertical(video, str(final_path),
+                    reframe={"targets": reframe_targets, **reframe_meta})
     qc = final_qc(str(final_path))
+    write_json(out / "final_qc.json", {
+        "schema": "goalreel.final_qc.v1",
+        **qc,
+        "reframe": {**reframe_meta, "targets_count": len(reframe_targets)},
+    })
 
     outputs = {
         "source_manifest": str(out / "source_manifest.json"),
@@ -167,6 +185,8 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
         "event_timeline": str(out / "event_timeline.json"),
         "hero_moment": str(out / "hero_moment.json"),
         "novel_view_status": str(out / "novel_view_status.json"),
+        "camera_reframe": str(out / "camera_reframe.json"),
+        "final_qc": str(out / "final_qc.json"),
         "final_reel": str(final_path),
     }
     if analysis_report is not None:
