@@ -69,6 +69,7 @@ from .edit_plan import (
     CLIMAX,
     CLIMAX_HALF,
     CROP_FRACTION,
+    CUTAWAY,
     CROP_FRACTION_MAX,
     CROP_FRACTION_MIN,
     EditPlan,
@@ -90,6 +91,7 @@ from .edit_plan import (
     REL_UNKNOWN,
     SECONDARY,
     SHOT_CELEBRATION,
+    SHOT_CUTAWAY,
     SHOT_FINAL_HERO,
     SHOT_HERO_MEDIUM,
     SHOT_HOOK,
@@ -119,6 +121,8 @@ from .shot_context import (
     identity_by_track,
     moving_range,
     post_cut_candidate,
+    post_cut_phase_gate,
+    post_cut_segments,
     shot_contexts,
     split_segments_at_cuts,
 )
@@ -152,6 +156,9 @@ PHASE_PRIORITY: dict[str, int] = {
     ANTICIPATION: 55,
     CELEBRATION: 50,
     SECONDARY: 40,
+    # CUTAWAY : remplissage honnête du temps post-coupe (priorité basse : ne
+    # supplante jamais une phase réellement soutenue par la preuve).
+    CUTAWAY: 35,
     BUILD_UP: 30,
     HOOK: 20,
 }
@@ -166,6 +173,7 @@ PHASE_FRAMING: dict[str, dict[str, str]] = {
     REACTION: {"shot": SHOT_REACTION, "camera": CAM_REACTION_FRAMING},
     CELEBRATION: {"shot": SHOT_CELEBRATION, "camera": CAM_CELEBRATION_FRAMING},
     SECONDARY: {"shot": SHOT_WIDE, "camera": CAM_STABLE_FOLLOW},
+    CUTAWAY: {"shot": SHOT_CUTAWAY, "camera": CAM_STABLE_FOLLOW},
     CLIMAX: {"shot": SHOT_LOW_FEELING, "camera": CAM_CELEBRATION_FRAMING},
     FINAL_HERO: {"shot": SHOT_FINAL_HERO, "camera": CAM_FINAL_HERO_FRAMING},
     OUTRO: {"shot": SHOT_OUTRO, "camera": CAM_PULL_BACK},
@@ -184,7 +192,7 @@ _FALLBACK_PHASE: dict[str, str | None] = {
     "hero_beat": HERO, "final_hero": FINAL_HERO, "opening": HOOK,
     "build_up": BUILD_UP, "anticipation": ANTICIPATION, "action": ACTION,
     "climax": CLIMAX, "tail": CELEBRATION, "secondary": SECONDARY,
-    "reaction": REACTION,
+    "reaction": REACTION, "post_cut": None,
 }
 
 
@@ -396,7 +404,8 @@ def _phase_shot(phase: str, start: int, end: int, tracks: dict[Any, list],
                 hero_lineage_identity: dict[str, Any] | None = None,
                 canonical_id: int | None = None,
                 cut_info: dict[str, Any] | None = None,
-                hero_moving_range: tuple[int, int] | None = None) -> Shot | None:
+                hero_moving_range: tuple[int, int] | None = None,
+                phase_gate: dict[str, Any] | None = None) -> Shot | None:
     """Construit un :class:`Shot` pour une phase sur ``[start, end]``.
 
     CUT-AWARE V2.3 : ``cut_info`` porte la frontière de plan (``shot_context_id``,
@@ -405,6 +414,9 @@ def _phase_shot(phase: str, start: int, end: int, tracks: dict[Any, list],
     réel** du héros : un plan n'est centré sur le héros que si sa preuve de
     suivi (non gelée) recouvre réellement le plan. Un plan post-coupe n'hérite
     donc jamais du cadrage du sujet d'avant-coupe.
+
+    ``phase_gate`` (V2.3) : termes mesurés de la porte de crédibilité post-coupe
+    ayant conduit à la phase retenue (ou à son omission). Consigné tel quel.
     """
     n = end - start + 1
     if n < MIN_SHOT_FRAMES:
@@ -435,6 +447,10 @@ def _phase_shot(phase: str, start: int, end: int, tracks: dict[Any, list],
         selected: int | None = int(hero_track)
     else:
         selected = dominant_track_at(tracks, start)
+    # CUTAWAY : cadrage large honnête — la caméra ne suit PAS le plus grand blob
+    # (une silhouette dominante de premier plan n'est pas un sujet à suivre).
+    if phase == CUTAWAY:
+        selected = None
     targets = track_targets(tracks, selected, start, end,
                             identity=(hero_lineage_identity
                                       if (hero_centric and hero_covers) else None),
@@ -487,6 +503,12 @@ def _phase_shot(phase: str, start: int, end: int, tracks: dict[Any, list],
         evidence.append("camera_reset:true")
     if cut_info.get("identity_relation") not in (None, REL_UNKNOWN):
         evidence.append(f"identity_relation:{cut_info['identity_relation']}")
+    if phase_gate:
+        evidence.append(f"phase_gate:{phase_gate.get('reason')}")
+        terms = phase_gate.get("terms", {}) or {}
+        evidence.append(f"gate_moving_frames:{terms.get('moving_frames')}")
+        if terms.get("ball_evidence_available"):
+            evidence.append(f"gate_ball_dist:{terms.get('ball_min_distance_px')}")
     evidence.append(f"speed:{curve.behavior}")
 
     reason = f"{phase} on tracked evidence; transition={t_reason}"
@@ -502,6 +524,8 @@ def _phase_shot(phase: str, start: int, end: int, tracks: dict[Any, list],
         reason += "; no tracked subject at shot start (wide-safe framing)"
     if cut_info.get("boundary_type") == BOUNDARY_REAL_CUT:
         reason += f"; real source cut boundary at {start} (camera reset)"
+    if phase_gate and phase_gate.get("reason"):
+        reason += f"; post-cut phase gate: {phase_gate.get('reason')}"
 
     return Shot(
         shot_id=f"SHOT_{index + 1:03d}",
@@ -542,6 +566,7 @@ def _phase_shot(phase: str, start: int, end: int, tracks: dict[Any, list],
         identity_relation=cut_info.get("identity_relation", REL_UNKNOWN),
         camera_reset=bool(cut_info.get("camera_reset", False)),
         internal_cut_frames=list(cut_info.get("internal_cut_frames", []) or []),
+        phase_gate=dict(phase_gate or {}),
     )
 
 
@@ -554,7 +579,8 @@ def _segments_to_shots(segments: list[tuple[int, int, str]],
                        canonical_id: int | None = None,
                        shot_context_map: list[dict[str, Any]] | None = None,
                        identity_relations: dict[int, str] | None = None,
-                       hero_moving_range: tuple[int, int] | None = None
+                       hero_moving_range: tuple[int, int] | None = None,
+                       post_cut_gates: list[dict[str, Any]] | None = None
                        ) -> list[Shot]:
     """Transforme des segments ``(start, end, phase)`` en :class:`Shot` ordonnés.
 
@@ -567,6 +593,7 @@ def _segments_to_shots(segments: list[tuple[int, int, str]],
     shots: list[Shot] = []
     prev_phase: str | None = None
     relations = identity_relations or {}
+    gates = post_cut_gates or []
     for i, (s, e, ph) in enumerate(segments):
         # Une coupe RÉELLE de la source tombant dans le plan est enregistrée :
         # c'est une frontière de plan mesurée, jamais supposée.
@@ -591,6 +618,13 @@ def _segments_to_shots(segments: list[tuple[int, int, str]],
             "internal_cut_frames": ([c for c in inner_cuts] if cut_before is None
                                     else [c for c in inner_cuts if c != cut_before]),
         }
+        # Porte de crédibilité post-coupe : on rattache la preuve mesurée à la
+        # phase retenue pour ce segment (jamais une sémantique inventée).
+        gate = None
+        for g in gates:
+            if int(g.get("start_frame", -1)) == int(s) and int(g.get("end_frame", -1)) == int(e):
+                gate = g
+                break
         shot = _phase_shot(ph, s, e, tracks, hero_track, hero_event, fps,
                            rife_available, motion_interp, real_cuts, len(shots),
                            prev_phase, is_last_phase=(i == len(segments) - 1),
@@ -598,7 +632,8 @@ def _segments_to_shots(segments: list[tuple[int, int, str]],
                            hero_lineage_identity=hero_lineage_identity,
                            canonical_id=canonical_id,
                            cut_info=cut_info,
-                           hero_moving_range=hero_moving_range)
+                           hero_moving_range=hero_moving_range,
+                           phase_gate=gate)
         if shot is None:
             continue
         shots.append(shot)
@@ -1070,6 +1105,18 @@ def build_edit_plan(video: str, tracks: dict[Any, list] | None = None,
                           for c in contexts if c.get("cut_before") is not None}
     measured_cuts = sorted({int(c) for c in real_cuts})
     cut_journal: list[dict[str, Any]] = []
+    # --- CUT-AWARE V2.3 : contexte post-coupe + porte de crédibilité ---------
+    # Les frames postérieures à la DERNIÈRE coupe réelle forment un contexte
+    # cinématique distinct : la dominance visuelle d'un sujet (ex. un blob large
+    # au premier plan) n'y est PAS une preuve de phase. La porte déterministe
+    # décide de la phase soutenue (ou de son omission -> CUTAWAY).
+    # Frontière post-coupe = dernière coupe RÉELLE mesurée (jamais une coupe
+    # douce) : seule une vraie coupe sépare des contextes cinématiques.
+    _real_cut_frames = sorted(int(b["cut_frame"]) for b in boundaries
+                              if b.get("type") == REAL_CUT)
+    post_cut_start = (_real_cut_frames[-1] if _real_cut_frames else None)
+    post_cut_gates: list[dict[str, Any]] = []
+    post_cut_segs: list[tuple[int, int, str]] = []
     cut_model = {
         "schema": SHOT_CONTEXT_SCHEMA,
         "boundaries": boundaries,
@@ -1195,6 +1242,54 @@ def build_edit_plan(video: str, tracks: dict[Any, list] | None = None,
     # frontières internes (le renderer interdit alors tout blend à travers).
     segments, cut_journal = split_segments_at_cuts(segments, measured_cuts)
 
+    # --- CUT-AWARE V2.3 : segments post-coupe dérivés de la PORTE ------------
+    # Aucun segment post-coupe n'est hérité du raisonnement d'avant-coupe : sa
+    # phase provient de la porte de crédibilité (preuve mesurée) ou est omise.
+    if post_cut_start is not None and post_cut_start < total_frames:
+        post_cut_segs, post_cut_gates = post_cut_segments(
+            plan_tracks, contexts, ball_detections=ball_detections, motion=motion,
+            fps=fps)
+        # On retire les segments du director qui démarrent dans la zone
+        # post-coupe (frontière physique) et on les remplace par les segments
+        # issus de la porte : la partition reste exacte et la phase est prouvée.
+        kept: list[tuple[int, int, str]] = []
+        for (s, e, ph) in segments:
+            if int(s) >= int(post_cut_start):
+                continue
+            if int(e) >= int(post_cut_start):
+                kept.append((int(s), int(post_cut_start) - 1, ph))
+            else:
+                kept.append((int(s), int(e), ph))
+        candidate_segments = [(s, e, ph) for (s, e, ph) in (kept + post_cut_segs) if e >= s]
+        # Garde de partition : la substitution n'est acceptée que si elle
+        # recompose EXACTEMENT [0, total_frames-1] (aucune frame perdue, aucun
+        # recouvrement). Sinon on conserve les segments d'origine (V2.2 intact).
+        def _is_partition(segs: list[tuple[int, int, str]]) -> bool:
+            exp = 0
+            for (s, e, _) in sorted(segs, key=lambda x: x[0]):
+                if int(s) != exp:
+                    return False
+                exp = int(e) + 1
+            return exp == int(total_frames)
+        if _is_partition(candidate_segments):
+            segments = candidate_segments
+        else:
+            fallbacks.append({
+                "stage": "post_cut", "reason": "POST_CUT_PARTITION_UNSAFE",
+                "detail": "substitution post-coupe rejetée (partition non exacte)",
+            })
+            post_cut_gates = []
+        # Journal cut-aware (audit) : frontière + contexte + phase retenue.
+        for g in post_cut_gates:
+            if g.get("omitted"):
+                fallbacks.append({
+                    "stage": "post_cut",
+                    "reason": f"POST_CUT_PHASE_OMITTED:{g.get('reason')}",
+                    "detail": (f"contexte {g.get('shot_context_id')} "
+                               f"[{g.get('start_frame')}-{g.get('end_frame')}] : "
+                               f"preuve insuffisante -> CUTAWAY (jamais HERO forcé)"),
+                })
+
     shots = _segments_to_shots(segments, tracks=plan_tracks, hero_track=hero_track,
                               hero_event=hero_event, fps=fps,
                               rife_available=rife_available,
@@ -1205,7 +1300,8 @@ def build_edit_plan(video: str, tracks: dict[Any, list] | None = None,
                               canonical_id=hero_track,
                               shot_context_map=contexts,
                               identity_relations=identity_relations,
-                              hero_moving_range=hero_moving)
+                              hero_moving_range=hero_moving,
+                              post_cut_gates=post_cut_gates)
 
     phases_present = sorted({s.phase for s in shots},
                             key=lambda p: PHASE_ORDER.index(p) if p in PHASE_ORDER else 99)

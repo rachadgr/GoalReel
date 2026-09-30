@@ -55,11 +55,14 @@ SECONDARY = "SECONDARY"
 CLIMAX = "CLIMAX"
 FINAL_HERO = "FINAL_HERO"
 OUTRO = "OUTRO"
+# CUT-AWARE V2.3 : plan de coupe honnête après une coupe réelle, lorsqu'aucune
+# preuve ne soutient une phase héros/réaction/célébration. Jamais forcé en HERO.
+CUTAWAY = "CUTAWAY"
 
 # Ordre canonique de la structure cible (documentation / tests / audit).
 PHASE_ORDER: tuple[str, ...] = (
     HOOK, BUILD_UP, ANTICIPATION, ACTION, HERO, REACTION, CELEBRATION,
-    SECONDARY, CLIMAX, FINAL_HERO, OUTRO,
+    SECONDARY, CUTAWAY, CLIMAX, FINAL_HERO, OUTRO,
 )
 
 # ---------------------------------------------------------------------------
@@ -93,6 +96,7 @@ SHOT_CELEBRATION = "CELEBRATION"
 SHOT_FINAL_HERO = "FINAL_HERO"
 SHOT_OUTRO = "OUTRO"
 SHOT_HOOK = "HOOK"
+SHOT_CUTAWAY = "CUTAWAY"
 
 # ---------------------------------------------------------------------------
 # Transitions (restreintes, motivées par les frontières événementielles).
@@ -147,6 +151,7 @@ CROP_FRACTION: dict[str, float] = {
     SHOT_CELEBRATION: 0.80,
     SHOT_FINAL_HERO: 0.86,
     SHOT_OUTRO: 0.95,
+    SHOT_CUTAWAY: 1.0,
 }
 CROP_FRACTION_MIN = 0.72
 CROP_FRACTION_MAX = 1.0
@@ -164,6 +169,7 @@ SUBJECT_Y_BIAS: dict[str, float] = {
     SHOT_CELEBRATION: 0.50,
     SHOT_FINAL_HERO: 0.50,
     SHOT_OUTRO: 0.52,
+    SHOT_CUTAWAY: 0.55,
 }
 
 # Delta de crop (signé) appliqué de ``crop_start`` vers ``crop_end`` selon le
@@ -334,6 +340,10 @@ class Shot:
     # Sous-ensemble des coupes réelles INTERNES au plan (coupe trop proche d'un
     # bord pour scinder ; le renderer interdit tout blend à travers elles).
     internal_cut_frames: list[int] = field(default_factory=list)
+    # Porte de crédibilité post-coupe (V2.3) : termes de preuve mesurés ayant
+    # conduit à la phase retenue (ou à son omission). Vide pour un plan non
+    # post-coupe. Jamais une valeur inventée — uniquement des mesures réelles.
+    phase_gate: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         d = asdict(self)

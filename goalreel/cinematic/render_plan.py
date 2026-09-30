@@ -42,6 +42,7 @@ from typing import Any
 import numpy as np
 
 from .edit_plan import (
+    BOUNDARY_REAL_CUT,
     CUT_DISSOLVE,
     CUT_FADE_FROM_BLACK,
     CUT_FADE_TO_BLACK,
@@ -212,6 +213,44 @@ def build_frame_map(plan: EditPlan) -> list[dict[str, Any]]:
     return frame_map
 
 
+# ---------------------------------------------------------------------------
+# CUT-AWARE V2.3 — sûreté de rendu aux frontières de plan RÉELLES
+# ---------------------------------------------------------------------------
+def shot_cut_frames(shot: Shot) -> set[int]:
+    """Ensemble des frames de coupe RÉELLE bornant/interne à un plan.
+
+    Une coupe AVANT le plan (``cut_before``) et les coupes INTERNES
+    (``internal_cut_frames``) sont des frontières physiques : le renderer ne
+    doit jamais mélanger (blend) deux frames de part et d'autre.
+    """
+    out: set[int] = set()
+    if shot.cut_before is not None:
+        out.add(int(shot.cut_before))
+    for c in (shot.internal_cut_frames or []):
+        out.add(int(c))
+    if shot.cut_after is not None:
+        out.add(int(shot.cut_after))
+    return out
+
+
+def blend_forbidden(shot: Shot, src_frame: int, src_next: int) -> bool:
+    """Vrai si un blend entre ``src_frame`` et ``src_next`` franchirait une coupe.
+
+    Règle : REAL CUT = frontière cinématique DURE. Aucun mélange temporel (blend
+    linéaire documenté, ou toute interpolation) ne peut traverser une coupe réelle
+    — ni interne au plan, ni à l'entrée/sortie du plan. Préserve les bornes de
+    frames exactes et interdit tout ghosting/crossfade non demandé.
+    """
+    if int(src_next) == int(src_frame):
+        return False
+    lo, hi = (int(src_frame), int(src_next)) if src_frame < src_next else (int(src_next), int(src_frame))
+    for c in shot_cut_frames(shot):
+        # une coupe dans (lo, hi] est traversée par l'intervalle [lo, hi]
+        if lo < c <= hi:
+            return True
+    return False
+
+
 def plan_validation(plan: EditPlan, shot_effective: dict[str, Any] | None = None
                     ) -> dict[str, Any]:
     """Contrôles statiques du plan avant/après rendu (documentés, testables).
@@ -333,6 +372,7 @@ def render_plan(source: str, out: str, plan: EditPlan, width: int = 1080,
     written = 0
     blended_frames = 0
     dissolves_rendered = 0
+    cut_blocked_blends = 0
 
     try:
         for fm in frame_map:
@@ -347,7 +387,13 @@ def render_plan(source: str, out: str, plan: EditPlan, width: int = 1080,
                 frame = cv2.resize(frame, (W, H), interpolation=cv2.INTER_LINEAR)
 
             # --- 1) Blend documenté (fallback d'interpolation, jamais RIFE) ---
+            # CUT-AWARE V2.3 : aucun blend ne franchit une coupe RÉELLE (interne
+            # au plan, à son entrée ou à sa sortie). Une coupe réelle est une
+            # frontière cinématique DURE : pas d'interpolation/ghosting à travers.
             blend = float(fm.get("blend") or 0.0)
+            if blend_forbidden(shot, int(fm["src_frame"]), int(fm.get("src_next", fm["src_frame"]))):
+                blend = 0.0
+                cut_blocked_blends += 1
             if blend > 1e-6 and fm.get("src_next", fm["src_frame"]) != fm["src_frame"]:
                 nxt = get_frame(int(fm["src_next"]))
                 if nxt is not None:
@@ -449,6 +495,8 @@ def render_plan(source: str, out: str, plan: EditPlan, width: int = 1080,
         "interpolated_frames": blended_frames,
         "interpolation_fallback": ("LINEAR_BLEND_NO_RIFE" if blended_frames else None),
         "dissolve_frames_rendered": dissolves_rendered,
+        "cut_blocked_blends": int(cut_blocked_blends),
+        "cut_safe_renderer": True,
         "duration_preserved": bool(plan.duration_preserved),
     }
 
