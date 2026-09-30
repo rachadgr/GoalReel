@@ -394,6 +394,10 @@ def score_hero(events, track_stats=None, tracks=None, ball_detections=None,
         "event": best_event,
         "score": round(float(best["score"]), 6),
         "track_id": hero_track,
+        # Alias explicite du contrat : ``hero_moment.hero_track`` DOIT égaler
+        # ``camera_reframe.followed_track``. ``track_id`` est conservé pour la
+        # compatibilité ascendante (même valeur).
+        "hero_track": hero_track,
         "method": "multi_evidence_v2",
         "ranked_by": ["score", "persistence", "amplitude", "event_id"],
         "candidates": len(events),

@@ -54,10 +54,13 @@
     },
     {
       "name": "segmentation",
-      "status": "UNKNOWN",
-      "message": "No person to segment in samples",
-      "evidence": "UNKNOWN",
-      "metrics": {},
+      "status": "OK",
+      "message": "SAM2 masks computed",
+      "evidence": "VISIBLE_FROM_SOURCE",
+      "metrics": {
+        "masks": 2,
+        "first_score": 0.8853868246078491
+      },
       "artifacts": []
     },
     {
@@ -81,9 +84,9 @@
       "device": "cpu",
       "loaded": true,
       "message": "YOLO loaded (80 classes, COCO/generic)",
-      "load_time_s": 0.2593,
+      "load_time_s": 0.2012,
       "infer_count": 484,
-      "avg_infer_ms": 92.516,
+      "avg_infer_ms": 82.625,
       "last_error": null,
       "meta": {
         "checkpoint": "/home/user/GoalReel/models/detection/yolov8s.pt",
@@ -109,16 +112,21 @@
       "name": "segmenter",
       "stage": "segmentation",
       "path": "/home/user/GoalReel/models/segmentation/sam2.1_hiera_tiny.pt",
-      "status": "MODEL_UNAVAILABLE",
-      "truth": "DEPENDENCY_MISSING",
+      "status": "OK",
+      "truth": "READY",
       "device": "cpu",
-      "loaded": false,
-      "message": "sam2 runtime unavailable: No module named 'sam2'",
-      "load_time_s": 0.0,
-      "infer_count": 0,
-      "avg_infer_ms": 0.0,
+      "loaded": true,
+      "message": "SAM2 predictor loaded (cfg=configs/sam2.1/sam2.1_hiera_t.yaml)",
+      "load_time_s": 2.332,
+      "infer_count": 3,
+      "avg_infer_ms": 1609.266,
       "last_error": null,
-      "meta": {}
+      "meta": {
+        "checkpoint": "/home/user/GoalReel/models/segmentation/sam2.1_hiera_tiny.pt",
+        "config": "configs/sam2.1/sam2.1_hiera_t.yaml",
+        "runtime": "sam2",
+        "device": "cpu"
+      }
     },
     "depth": {
       "name": "depth",
@@ -129,9 +137,9 @@
       "device": "cpu",
       "loaded": true,
       "message": "Depth Anything V2 loaded (vendored); missing=0 unexpected=0",
-      "load_time_s": 1.7669,
+      "load_time_s": 0.456,
       "infer_count": 2,
-      "avg_infer_ms": 2560.164,
+      "avg_infer_ms": 2159.368,
       "last_error": null,
       "meta": {
         "checkpoint": "/home/user/GoalReel/models/depth/depth_anything_v2_vits.pth",
@@ -151,9 +159,9 @@
       "device": "cpu",
       "loaded": true,
       "message": "OSNet x1.0 loaded; missing=0 unexpected=0",
-      "load_time_s": 0.1004,
+      "load_time_s": 0.1085,
       "infer_count": 28,
-      "avg_infer_ms": 52.604,
+      "avg_infer_ms": 49.684,
       "last_error": null,
       "meta": {
         "checkpoint": "/home/user/GoalReel/models/reid/osnet_x1_0_imagenet.pth",

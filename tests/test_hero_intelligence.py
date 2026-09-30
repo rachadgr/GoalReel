@@ -208,6 +208,10 @@ def test_hero_track_equals_followed_track():
         tracks, preferred_track=hero["track_id"], hero_event=hero["event"],
         width=1024)
     assert hero["track_id"] == meta["followed_track"]
+    # Contrat explicite par nom de champ (verifiable littéralement) :
+    # hero_moment.hero_track == camera_reframe.followed_track
+    assert hero["hero_track"] == meta["followed_track"]
+    assert hero["hero_track"] == hero["track_id"]
     assert meta["selection"] == "HERO_TRACK"
     assert meta["reason"] == "HERO_TRACK_AVAILABLE"
     assert meta["target_frames"] == len(targets) > 0

@@ -1,0 +1,123 @@
+{
+  "schema": "goalreel.model_truth.v1",
+  "video": {
+    "width": 1024,
+    "height": 576,
+    "fps": 30.0,
+    "frames": 484
+  },
+  "device": "cpu",
+  "cuda": {
+    "available": false,
+    "count": 0
+  },
+  "torch": "2.14.0+cpu",
+  "gpu_validated": false,
+  "summary": {
+    "detector": "VERIFIED",
+    "reid": "VERIFIED",
+    "depth": "VERIFIED",
+    "segmenter": "VERIFIED",
+    "interpolation": "CHECKPOINT_MISSING"
+  },
+  "models": {
+    "detector": {
+      "name": "detector",
+      "stage": "detection",
+      "labels": [
+        "CODE_INTEGRATED",
+        "CHECKPOINT_PRESENT",
+        "MODEL_LOADS",
+        "INFERENCE_WORKS",
+        "END_TO_END_VALIDATED"
+      ],
+      "verified": true,
+      "evidence": {
+        "objects": 28,
+        "persons": 28,
+        "balls": 0,
+        "class_report": {
+          "num_classes": 80,
+          "has_person": true,
+          "has_sports_ball": true,
+          "has_referee": false,
+          "football_trained": false,
+          "missing_football_classes": [
+            "player",
+            "referee",
+            "goal",
+            "goalkeeper"
+          ]
+        }
+      }
+    },
+    "reid": {
+      "name": "reid",
+      "stage": "reid",
+      "labels": [
+        "CODE_INTEGRATED",
+        "CHECKPOINT_PRESENT",
+        "MODEL_LOADS",
+        "INFERENCE_WORKS",
+        "END_TO_END_VALIDATED"
+      ],
+      "verified": true,
+      "evidence": {
+        "embedding_dim": 512,
+        "l2_norm": 1.0,
+        "l2_normalized": true
+      }
+    },
+    "depth": {
+      "name": "depth",
+      "stage": "depth",
+      "labels": [
+        "CODE_INTEGRATED",
+        "CHECKPOINT_PRESENT",
+        "MODEL_LOADS",
+        "INFERENCE_WORKS",
+        "END_TO_END_VALIDATED"
+      ],
+      "verified": true,
+      "evidence": {
+        "shape": [
+          576,
+          1024
+        ],
+        "min": 0.36994612216949463,
+        "max": 7.2933125495910645,
+        "mean": 3.1161601543426514
+      }
+    },
+    "segmenter": {
+      "name": "segmenter",
+      "stage": "segmentation",
+      "labels": [
+        "CODE_INTEGRATED",
+        "CHECKPOINT_PRESENT",
+        "MODEL_LOADS",
+        "INFERENCE_WORKS"
+      ],
+      "verified": true,
+      "evidence": {
+        "score": 0.8853868246078491,
+        "mask_pixels": 589824,
+        "mask_nonzero": 732
+      }
+    },
+    "interpolation": {
+      "name": "interpolation",
+      "stage": "interpolation",
+      "labels": [
+        "CODE_INTEGRATED",
+        "CHECKPOINT_MISSING"
+      ],
+      "verified": false,
+      "evidence": {
+        "truth": "CHECKPOINT_MISSING",
+        "message": "Checkpoint missing",
+        "fallback": "linear blend (never presented as RIFE)"
+      }
+    }
+  }
+}

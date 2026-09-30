@@ -16,6 +16,7 @@
   },
   "score": 0.710808,
   "track_id": 9,
+  "hero_track": 9,
   "method": "multi_evidence_v2",
   "ranked_by": [
     "score",

@@ -54,15 +54,22 @@ fi
 # Chemin EXACT du registre (models/reid/osnet_x1_0_imagenet.pth) : il s'agit des
 # poids ImageNet fournis par l'auteur de torchreid (torchreid.models.osnet).
 #   doc : https://kaiyangzhou.github.io/deep-person-reid/
+# Téléchargement automatique via gdown (ID Google Drive public documenté). Si
+# gdown est absent, on l'installe ; en dernier recours, dépôt manuel possible.
 if want reid; then
   if [[ -f "$MODELS/reid/osnet_x1_0_imagenet.pth" ]]; then
     echo "[skip] $MODELS/reid/osnet_x1_0_imagenet.pth déjà présent"
   else
-    echo "[warn] osnet_x1_0_imagenet.pth non téléchargeable automatiquement ici"
-    echo "       (poids torchreid ImageNet ; l'URL historique est un lien Google Drive)."
-    echo "       Déposez le fichier dans models/reid/ ou utilisez gdown avec l'ID 1LaG1EJpHrxdAxKnSCJ_i0u-nbxSAeiFY."
-    echo "       Variante publique équivalente : osnet_x1_0 Market-1501 (mêmes backbones, "
-    echo "       tête 751 classes) — le checkpoint ImageNet 1000 classes est celui documenté."
+    echo "[get ] osnet_x1_0_imagenet.pth (torchreid ImageNet, via gdown)"
+    python -m pip install --quiet gdown 2>/dev/null || true
+    if python -c "import gdown" 2>/dev/null; then
+      python -m gdown -O "$MODELS/reid/osnet_x1_0_imagenet.pth" \
+        "https://drive.google.com/uc?id=1LaG1EJpHrxdAxKnSCJ_i0u-nbxSAeiFY" \
+        || echo "[warn] gdown a échoué — déposez le fichier manuellement dans models/reid/"
+    else
+      echo "[warn] gdown indisponible. Déposez osnet_x1_0_imagenet.pth dans models/reid/."
+      echo "       (poids torchreid ImageNet ; ID Google Drive 1LaG1EJpHrxdAxKnSCJ_i0u-nbxSAeiFY)"
+    fi
   fi
 fi
 

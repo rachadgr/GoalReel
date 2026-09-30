@@ -106,6 +106,18 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
     backend_status = build_backend_status(models, checkpoints, manager)
     write_json(out / "backend_status.json", backend_status)
 
+    # 2a) Vérité du runtime RÉEL des modèles (Phase 10) --------------------
+    # Chargement authentique + inférence réelle, classés honnêtement
+    # (CODE_INTEGRATED / CHECKPOINT_PRESENT / MODEL_LOADS / INFERENCE_WORKS /
+    #  GPU_VALIDATED / END_TO_END_VALIDATED). Aucune fausse revendication.
+    from goalreel.models.verify import verify_all
+    try:
+        model_truth = verify_all(video, manager=manager,
+                                 every=max(1, min(every, 30)))
+    except Exception as exc:  # la vérification ne doit jamais casser le pipeline
+        model_truth = {"schema": "goalreel.model_truth.v1", "error": str(exc)}
+    write_json(out / "model_truth.json", model_truth)
+
     # 2b) Analyse réelle par modèles (détection, suivi, reid, depth, ...) ---
     analysis_report = None
     if analyze:
@@ -228,6 +240,7 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
     outputs = {
         "source_manifest": str(out / "source_manifest.json"),
         "backend_status": str(out / "backend_status.json"),
+        "model_truth": str(out / "model_truth.json"),
         "event_timeline": str(out / "event_timeline.json"),
         "hero_moment": str(out / "hero_moment.json"),
         "novel_view_status": str(out / "novel_view_status.json"),
@@ -240,6 +253,7 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
     return {
         "outputs": outputs,
         "backend_summary": backend_status["summary"],
+        "model_truth_summary": model_truth.get("summary"),
         "final_qc": qc,
     }
 
