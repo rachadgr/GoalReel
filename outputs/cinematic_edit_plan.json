@@ -1,0 +1,3453 @@
+{
+  "schema": "goalreel.cinematic_edit_plan.v1",
+  "source_video": "assets/SOURCE_MASTER_1000006866.mp4",
+  "source_width": 1024,
+  "source_height": 576,
+  "fps": 30.0,
+  "total_frames": 484,
+  "total_duration_s": 16.1333,
+  "hero_track": 9,
+  "hero_event_id": "MOTION_9",
+  "hero_method": "multi_evidence_v2",
+  "followed_track": 9,
+  "policy": "NO_EVENT_WITHOUT_EVIDENCE",
+  "hero_camera_contract": true,
+  "duration_preserved": true,
+  "claims": {
+    "model_truth_unchanged": true,
+    "rife_used": false,
+    "interpolation_mode": "TEMPORAL_RESAMPLE_NO_RIFE",
+    "novel_view": "NOT_USED",
+    "generated_pixels": false,
+    "real_source_only": true
+  },
+  "fallbacks": [
+    {
+      "stage": "final_hero",
+      "reason": "HERO_NOT_TRACKED_IN_FINAL_WINDOW",
+      "detail": "trajectoire héros terminée à la frame 361"
+    },
+    {
+      "stage": "reaction",
+      "reason": "NO_POST_HERO_FRAMES",
+      "detail": "trajectoire héros terminée à la frame 361"
+    },
+    {
+      "stage": "final_hero",
+      "reason": "NO_SECOND_HERO_BEAT",
+      "detail": "aucun second pic réel de vitesse du héros"
+    },
+    {
+      "stage": "secondary",
+      "reason": "SECONDARY_WINDOW_TOO_SHORT",
+      "detail": "fenêtre 461-465"
+    }
+  ],
+  "evidence_used": {
+    "tracks_total": 82,
+    "person_sized_tracks": 56,
+    "ball_evidence_available": true,
+    "ball_detections": 47,
+    "real_cut_frames": [
+      332
+    ],
+    "motion_mean": 8.0287,
+    "motion_peak_frame": 442,
+    "camera_optical_flow": {
+      "available": true,
+      "samples": 50,
+      "mean_dx": -1.2206,
+      "min_dx": -3.2528,
+      "max_dx": -0.5484,
+      "evidence": "VISIBLE_FROM_SOURCE"
+    },
+    "hero_beats": {
+      "primary": 318,
+      "secondary": null,
+      "peak_speed": 7.5953,
+      "insufficient_evidence": false
+    },
+    "hero_presence": {
+      "present": true,
+      "track_id": 9,
+      "frames": 340,
+      "first_frame": 22,
+      "last_frame": 361,
+      "continuity": 1.0
+    },
+    "motion_profile_frames": 484
+  },
+  "time_map": {
+    "total_out_frames": 484,
+    "shots": {
+      "SHOT_001": {
+        "src_frames": 22,
+        "out_frames": 20,
+        "effective_factor": 1.1,
+        "in_bounds": true
+      },
+      "SHOT_002": {
+        "src_frames": 213,
+        "out_frames": 186,
+        "effective_factor": 1.145161,
+        "in_bounds": true
+      },
+      "SHOT_003": {
+        "src_frames": 36,
+        "out_frames": 38,
+        "effective_factor": 0.947368,
+        "in_bounds": true
+      },
+      "SHOT_004": {
+        "src_frames": 30,
+        "out_frames": 31,
+        "effective_factor": 0.967742,
+        "in_bounds": true
+      },
+      "SHOT_005": {
+        "src_frames": 61,
+        "out_frames": 78,
+        "effective_factor": 0.782051,
+        "in_bounds": true
+      },
+      "SHOT_006": {
+        "src_frames": 62,
+        "out_frames": 60,
+        "effective_factor": 1.033333,
+        "in_bounds": true
+      },
+      "SHOT_007": {
+        "src_frames": 42,
+        "out_frames": 55,
+        "effective_factor": 0.763636,
+        "in_bounds": true
+      },
+      "SHOT_008": {
+        "src_frames": 18,
+        "out_frames": 16,
+        "effective_factor": 1.125,
+        "in_bounds": true
+      }
+    },
+    "src_total_frames": 484,
+    "duration_preserved": true
+  },
+  "phases_present": [
+    "HOOK",
+    "BUILD_UP",
+    "ANTICIPATION",
+    "ACTION",
+    "HERO",
+    "CELEBRATION",
+    "CLIMAX",
+    "OUTRO"
+  ],
+  "phases_absent": [
+    {
+      "phase": "REACTION",
+      "reason": "NO_POST_HERO_FRAMES",
+      "detail": "trajectoire héros terminée à la frame 361"
+    },
+    {
+      "phase": "SECONDARY",
+      "reason": "SECONDARY_WINDOW_TOO_SHORT",
+      "detail": "fenêtre 461-465"
+    },
+    {
+      "phase": "FINAL_HERO",
+      "reason": "HERO_NOT_TRACKED_IN_FINAL_WINDOW",
+      "detail": "trajectoire héros terminée à la frame 361"
+    },
+    {
+      "phase": "FINAL_HERO",
+      "reason": "NO_SECOND_HERO_BEAT",
+      "detail": "aucun second pic réel de vitesse du héros"
+    }
+  ],
+  "shots": [
+    {
+      "shot_id": "SHOT_001",
+      "phase": "HOOK",
+      "shot_type": "HOOK",
+      "start_frame": 0,
+      "end_frame": 21,
+      "start_time_s": 0.0,
+      "end_time_s": 0.7333,
+      "duration_s": 0.7333,
+      "duration_frames": 22,
+      "selected_track": 1,
+      "camera_behavior": "PULL_BACK",
+      "transition_in": "FADE_FROM_BLACK",
+      "transition_out": "HARD_CUT",
+      "crop_start": 0.9,
+      "crop_end": 0.98,
+      "crop_easing": "ease_in_out",
+      "subject_y_bias": 0.55,
+      "speed_curve": {
+        "behavior": "NORMAL",
+        "start_factor": 1.0,
+        "end_factor": 1.0,
+        "easing": "linear",
+        "reason": "NO_SPEED_EVIDENCE",
+        "fallback": null
+      },
+      "priority": 20,
+      "evidence": [
+        "frames:0-21",
+        "source_frames:22",
+        "hero_event:MOTION_9",
+        "track:1",
+        "speed:NORMAL"
+      ],
+      "confidence": 0.0,
+      "reason": "HOOK on tracked evidence; transition=OPENING_FADE_FROM_BLACK",
+      "fallback": null,
+      "boundary": "CONTINUOUS",
+      "targets": [
+        {
+          "frame": 0,
+          "cx": 905.296,
+          "cy": 492.597,
+          "track_id": 1,
+          "held": false
+        },
+        {
+          "frame": 1,
+          "cx": 902.622,
+          "cy": 491.112,
+          "track_id": 1,
+          "held": false
+        },
+        {
+          "frame": 2,
+          "cx": 901.862,
+          "cy": 490.031,
+          "track_id": 1,
+          "held": false
+        },
+        {
+          "frame": 3,
+          "cx": 898.872,
+          "cy": 488.611,
+          "track_id": 1,
+          "held": false
+        },
+        {
+          "frame": 4,
+          "cx": 894.763,
+          "cy": 486.574,
+          "track_id": 1,
+          "held": false
+        },
+        {
+          "frame": 5,
+          "cx": 890.149,
+          "cy": 485.693,
+          "track_id": 1,
+          "held": false
+        },
+        {
+          "frame": 6,
+          "cx": 888.581,
+          "cy": 485.153,
+          "track_id": 1,
+          "held": false
+        },
+        {
+          "frame": 7,
+          "cx": 881.91,
+          "cy": 483.306,
+          "track_id": 1,
+          "held": false
+        },
+        {
+          "frame": 8,
+          "cx": 875.415,
+          "cy": 482.365,
+          "track_id": 1,
+          "held": false
+        },
+        {
+          "frame": 9,
+          "cx": 871.904,
+          "cy": 478.99,
+          "track_id": 1,
+          "held": false
+        },
+        {
+          "frame": 10,
+          "cx": 863.685,
+          "cy": 476.556,
+          "track_id": 1,
+          "held": false
+        },
+        {
+          "frame": 11,
+          "cx": 858.332,
+          "cy": 474.439,
+          "track_id": 1,
+          "held": false
+        },
+        {
+          "frame": 12,
+          "cx": 855.917,
+          "cy": 473.25,
+          "track_id": 1,
+          "held": false
+        },
+        {
+          "frame": 13,
+          "cx": 850.792,
+          "cy": 471.256,
+          "track_id": 1,
+          "held": false
+        },
+        {
+          "frame": 14,
+          "cx": 848.308,
+          "cy": 471.183,
+          "track_id": 1,
+          "held": false
+        },
+        {
+          "frame": 15,
+          "cx": 846.554,
+          "cy": 470.195,
+          "track_id": 1,
+          "held": false
+        },
+        {
+          "frame": 16,
+          "cx": 845.988,
+          "cy": 470.037,
+          "track_id": 1,
+          "held": false
+        },
+        {
+          "frame": 17,
+          "cx": 844.474,
+          "cy": 465.691,
+          "track_id": 1,
+          "held": false
+        },
+        {
+          "frame": 18,
+          "cx": 841.709,
+          "cy": 465.119,
+          "track_id": 1,
+          "held": false
+        },
+        {
+          "frame": 19,
+          "cx": 833.611,
+          "cy": 462.0,
+          "track_id": 1,
+          "held": false
+        },
+        {
+          "frame": 20,
+          "cx": 830.081,
+          "cy": 459.701,
+          "track_id": 1,
+          "held": false
+        },
+        {
+          "frame": 21,
+          "cx": 828.908,
+          "cy": 459.857,
+          "track_id": 1,
+          "held": false
+        }
+      ]
+    },
+    {
+      "shot_id": "SHOT_002",
+      "phase": "BUILD_UP",
+      "shot_type": "WIDE",
+      "start_frame": 22,
+      "end_frame": 234,
+      "start_time_s": 0.7333,
+      "end_time_s": 7.8333,
+      "duration_s": 7.1,
+      "duration_frames": 213,
+      "selected_track": 7,
+      "camera_behavior": "STABLE_FOLLOW",
+      "transition_in": "HARD_CUT",
+      "transition_out": "HARD_CUT",
+      "crop_start": 1.0,
+      "crop_end": 1.0,
+      "crop_easing": "linear",
+      "subject_y_bias": 0.55,
+      "speed_curve": {
+        "behavior": "SLIGHT_FAST",
+        "start_factor": 1.04,
+        "end_factor": 1.12,
+        "easing": "ease_in_out",
+        "reason": "RHYTHM_BUILD_UP",
+        "fallback": "TEMPORAL_RESAMPLE_NO_RIFE"
+      },
+      "priority": 30,
+      "evidence": [
+        "frames:22-234",
+        "source_frames:213",
+        "hero_event:MOTION_9",
+        "track:7",
+        "speed:SLIGHT_FAST"
+      ],
+      "confidence": 0.0,
+      "reason": "BUILD_UP on tracked evidence; transition=DEFAULT_HARD_CUT",
+      "fallback": "TEMPORAL_RESAMPLE_NO_RIFE",
+      "boundary": "CONTINUOUS",
+      "targets": [
+        {
+          "frame": 22,
+          "cx": 350.952,
+          "cy": 440.689,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 23,
+          "cx": 351.027,
+          "cy": 440.676,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 24,
+          "cx": 350.339,
+          "cy": 440.342,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 25,
+          "cx": 345.999,
+          "cy": 440.813,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 26,
+          "cx": 344.096,
+          "cy": 440.271,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 27,
+          "cx": 346.374,
+          "cy": 440.059,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 28,
+          "cx": 349.865,
+          "cy": 440.769,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 29,
+          "cx": 349.865,
+          "cy": 440.769,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 30,
+          "cx": 349.865,
+          "cy": 440.769,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 31,
+          "cx": 342.986,
+          "cy": 441.393,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 32,
+          "cx": 342.3,
+          "cy": 440.715,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 33,
+          "cx": 341.406,
+          "cy": 440.58,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 34,
+          "cx": 339.37,
+          "cy": 439.47,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 35,
+          "cx": 337.502,
+          "cy": 439.319,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 36,
+          "cx": 334.963,
+          "cy": 439.837,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 37,
+          "cx": 334.54,
+          "cy": 439.924,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 38,
+          "cx": 334.54,
+          "cy": 439.924,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 39,
+          "cx": 334.54,
+          "cy": 439.924,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 40,
+          "cx": 334.54,
+          "cy": 439.924,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 41,
+          "cx": 334.54,
+          "cy": 439.924,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 42,
+          "cx": 332.108,
+          "cy": 439.901,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 43,
+          "cx": 332.108,
+          "cy": 439.901,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 44,
+          "cx": 328.38,
+          "cy": 439.034,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 45,
+          "cx": 329.911,
+          "cy": 438.61,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 46,
+          "cx": 335.666,
+          "cy": 436.095,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 47,
+          "cx": 334.981,
+          "cy": 435.647,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 48,
+          "cx": 335.107,
+          "cy": 437.732,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 49,
+          "cx": 334.471,
+          "cy": 439.714,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 50,
+          "cx": 329.499,
+          "cy": 437.475,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 51,
+          "cx": 331.07,
+          "cy": 437.146,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 52,
+          "cx": 331.204,
+          "cy": 439.41,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 53,
+          "cx": 332.89,
+          "cy": 436.931,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 54,
+          "cx": 330.706,
+          "cy": 437.134,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 55,
+          "cx": 331.538,
+          "cy": 436.725,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 56,
+          "cx": 339.318,
+          "cy": 436.79,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 57,
+          "cx": 339.2,
+          "cy": 435.8,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 58,
+          "cx": 333.22,
+          "cy": 436.551,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 59,
+          "cx": 333.22,
+          "cy": 436.551,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 60,
+          "cx": 334.147,
+          "cy": 436.75,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 61,
+          "cx": 334.02,
+          "cy": 435.241,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 62,
+          "cx": 334.139,
+          "cy": 434.482,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 63,
+          "cx": 332.313,
+          "cy": 435.429,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 64,
+          "cx": 333.481,
+          "cy": 434.98,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 65,
+          "cx": 334.199,
+          "cy": 433.723,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 66,
+          "cx": 332.356,
+          "cy": 433.726,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 67,
+          "cx": 331.98,
+          "cy": 433.187,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 68,
+          "cx": 330.889,
+          "cy": 435.588,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 69,
+          "cx": 330.722,
+          "cy": 435.563,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 70,
+          "cx": 330.122,
+          "cy": 436.88,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 71,
+          "cx": 333.689,
+          "cy": 433.388,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 72,
+          "cx": 334.206,
+          "cy": 435.154,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 73,
+          "cx": 339.219,
+          "cy": 434.315,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 74,
+          "cx": 339.784,
+          "cy": 431.048,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 75,
+          "cx": 340.501,
+          "cy": 431.672,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 76,
+          "cx": 343.76,
+          "cy": 438.942,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 77,
+          "cx": 344.933,
+          "cy": 438.994,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 78,
+          "cx": 344.952,
+          "cy": 439.151,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 79,
+          "cx": 348.604,
+          "cy": 440.815,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 80,
+          "cx": 350.767,
+          "cy": 440.772,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 81,
+          "cx": 352.305,
+          "cy": 440.522,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 82,
+          "cx": 358.525,
+          "cy": 438.121,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 83,
+          "cx": 360.521,
+          "cy": 437.616,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 84,
+          "cx": 360.162,
+          "cy": 438.039,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 85,
+          "cx": 361.717,
+          "cy": 435.365,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 86,
+          "cx": 361.925,
+          "cy": 436.819,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 87,
+          "cx": 361.071,
+          "cy": 437.795,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 88,
+          "cx": 362.035,
+          "cy": 437.486,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 89,
+          "cx": 362.001,
+          "cy": 439.175,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 90,
+          "cx": 361.007,
+          "cy": 439.239,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 91,
+          "cx": 360.613,
+          "cy": 439.124,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 92,
+          "cx": 360.139,
+          "cy": 440.085,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 93,
+          "cx": 362.668,
+          "cy": 438.15,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 94,
+          "cx": 362.079,
+          "cy": 437.187,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 95,
+          "cx": 359.63,
+          "cy": 438.829,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 96,
+          "cx": 358.602,
+          "cy": 439.316,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 97,
+          "cx": 358.549,
+          "cy": 438.771,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 98,
+          "cx": 360.066,
+          "cy": 437.984,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 99,
+          "cx": 360.49,
+          "cy": 438.357,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 100,
+          "cx": 361.808,
+          "cy": 439.317,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 101,
+          "cx": 365.278,
+          "cy": 437.891,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 102,
+          "cx": 366.502,
+          "cy": 436.808,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 103,
+          "cx": 369.588,
+          "cy": 436.858,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 104,
+          "cx": 372.256,
+          "cy": 437.236,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 105,
+          "cx": 373.079,
+          "cy": 437.4,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 106,
+          "cx": 374.184,
+          "cy": 437.992,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 107,
+          "cx": 375.04,
+          "cy": 438.622,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 108,
+          "cx": 375.347,
+          "cy": 438.515,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 109,
+          "cx": 376.253,
+          "cy": 438.396,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 110,
+          "cx": 379.334,
+          "cy": 437.877,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 111,
+          "cx": 380.216,
+          "cy": 436.822,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 112,
+          "cx": 382.128,
+          "cy": 435.153,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 113,
+          "cx": 383.0,
+          "cy": 433.901,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 114,
+          "cx": 383.083,
+          "cy": 432.969,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 115,
+          "cx": 383.522,
+          "cy": 432.643,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 116,
+          "cx": 384.174,
+          "cy": 431.77,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 117,
+          "cx": 384.612,
+          "cy": 431.094,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 118,
+          "cx": 384.385,
+          "cy": 430.178,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 119,
+          "cx": 383.84,
+          "cy": 430.669,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 120,
+          "cx": 383.431,
+          "cy": 430.792,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 121,
+          "cx": 383.893,
+          "cy": 430.726,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 122,
+          "cx": 383.129,
+          "cy": 430.34,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 123,
+          "cx": 382.588,
+          "cy": 430.459,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 124,
+          "cx": 382.452,
+          "cy": 431.127,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 125,
+          "cx": 381.222,
+          "cy": 431.445,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 126,
+          "cx": 381.026,
+          "cy": 431.365,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 127,
+          "cx": 381.87,
+          "cy": 432.233,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 128,
+          "cx": 381.617,
+          "cy": 432.699,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 129,
+          "cx": 381.558,
+          "cy": 433.114,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 130,
+          "cx": 381.65,
+          "cy": 432.801,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 131,
+          "cx": 380.776,
+          "cy": 433.208,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 132,
+          "cx": 380.461,
+          "cy": 433.072,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 133,
+          "cx": 379.19,
+          "cy": 433.048,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 134,
+          "cx": 377.794,
+          "cy": 433.833,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 135,
+          "cx": 376.919,
+          "cy": 434.425,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 136,
+          "cx": 375.364,
+          "cy": 435.142,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 137,
+          "cx": 374.293,
+          "cy": 437.08,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 138,
+          "cx": 373.462,
+          "cy": 438.986,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 139,
+          "cx": 371.979,
+          "cy": 440.454,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 140,
+          "cx": 370.324,
+          "cy": 441.556,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 141,
+          "cx": 369.301,
+          "cy": 441.742,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 142,
+          "cx": 367.575,
+          "cy": 443.263,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 143,
+          "cx": 364.851,
+          "cy": 443.387,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 144,
+          "cx": 363.923,
+          "cy": 444.082,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 145,
+          "cx": 362.579,
+          "cy": 445.283,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 146,
+          "cx": 359.82,
+          "cy": 447.972,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 147,
+          "cx": 358.06,
+          "cy": 448.76,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 148,
+          "cx": 356.842,
+          "cy": 449.991,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 149,
+          "cx": 353.965,
+          "cy": 453.235,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 150,
+          "cx": 353.781,
+          "cy": 453.151,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 151,
+          "cx": 353.063,
+          "cy": 454.607,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 152,
+          "cx": 351.534,
+          "cy": 454.334,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 153,
+          "cx": 350.413,
+          "cy": 454.536,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 154,
+          "cx": 348.567,
+          "cy": 453.894,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 155,
+          "cx": 347.092,
+          "cy": 454.37,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 156,
+          "cx": 346.524,
+          "cy": 454.337,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 157,
+          "cx": 344.381,
+          "cy": 455.277,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 158,
+          "cx": 343.327,
+          "cy": 456.177,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 159,
+          "cx": 342.32,
+          "cy": 456.42,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 160,
+          "cx": 340.734,
+          "cy": 457.522,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 161,
+          "cx": 339.421,
+          "cy": 456.841,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 162,
+          "cx": 338.794,
+          "cy": 457.381,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 163,
+          "cx": 337.42,
+          "cy": 458.277,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 164,
+          "cx": 334.508,
+          "cy": 458.462,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 165,
+          "cx": 333.921,
+          "cy": 458.675,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 166,
+          "cx": 333.551,
+          "cy": 457.954,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 167,
+          "cx": 332.212,
+          "cy": 457.479,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 168,
+          "cx": 330.459,
+          "cy": 457.517,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 169,
+          "cx": 328.672,
+          "cy": 458.75,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 170,
+          "cx": 326.281,
+          "cy": 459.689,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 171,
+          "cx": 325.27,
+          "cy": 461.055,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 172,
+          "cx": 325.248,
+          "cy": 461.642,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 173,
+          "cx": 324.483,
+          "cy": 461.217,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 174,
+          "cx": 324.104,
+          "cy": 460.488,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 175,
+          "cx": 322.999,
+          "cy": 460.954,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 176,
+          "cx": 321.755,
+          "cy": 460.708,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 177,
+          "cx": 321.538,
+          "cy": 460.44,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 178,
+          "cx": 320.067,
+          "cy": 461.221,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 179,
+          "cx": 318.806,
+          "cy": 462.496,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 180,
+          "cx": 318.618,
+          "cy": 463.009,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 181,
+          "cx": 317.948,
+          "cy": 464.05,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 182,
+          "cx": 317.239,
+          "cy": 464.692,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 183,
+          "cx": 316.964,
+          "cy": 464.907,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 184,
+          "cx": 317.028,
+          "cy": 466.006,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 185,
+          "cx": 317.053,
+          "cy": 466.062,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 186,
+          "cx": 317.068,
+          "cy": 466.959,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 187,
+          "cx": 316.877,
+          "cy": 468.026,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 188,
+          "cx": 316.913,
+          "cy": 468.666,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 189,
+          "cx": 316.854,
+          "cy": 468.268,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 190,
+          "cx": 316.41,
+          "cy": 469.108,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 191,
+          "cx": 316.771,
+          "cy": 470.694,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 192,
+          "cx": 317.013,
+          "cy": 472.297,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 193,
+          "cx": 317.153,
+          "cy": 473.774,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 194,
+          "cx": 319.019,
+          "cy": 474.013,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 195,
+          "cx": 319.456,
+          "cy": 474.89,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 196,
+          "cx": 320.385,
+          "cy": 476.296,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 197,
+          "cx": 320.479,
+          "cy": 476.338,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 198,
+          "cx": 320.81,
+          "cy": 475.586,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 199,
+          "cx": 321.496,
+          "cy": 476.048,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 200,
+          "cx": 322.329,
+          "cy": 476.602,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 201,
+          "cx": 322.48,
+          "cy": 477.862,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 202,
+          "cx": 323.317,
+          "cy": 478.033,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 203,
+          "cx": 323.431,
+          "cy": 478.689,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 204,
+          "cx": 323.559,
+          "cy": 478.726,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 205,
+          "cx": 323.747,
+          "cy": 478.604,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 206,
+          "cx": 324.525,
+          "cy": 479.072,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 207,
+          "cx": 324.735,
+          "cy": 479.367,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 208,
+          "cx": 325.116,
+          "cy": 479.004,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 209,
+          "cx": 325.325,
+          "cy": 478.096,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 210,
+          "cx": 325.023,
+          "cy": 477.485,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 211,
+          "cx": 324.767,
+          "cy": 476.629,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 212,
+          "cx": 325.04,
+          "cy": 478.105,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 213,
+          "cx": 325.56,
+          "cy": 478.525,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 214,
+          "cx": 326.061,
+          "cy": 479.667,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 215,
+          "cx": 327.035,
+          "cy": 480.575,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 216,
+          "cx": 327.531,
+          "cy": 480.972,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 217,
+          "cx": 328.391,
+          "cy": 480.62,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 218,
+          "cx": 328.495,
+          "cy": 481.027,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 219,
+          "cx": 328.698,
+          "cy": 481.084,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 220,
+          "cx": 330.274,
+          "cy": 479.843,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 221,
+          "cx": 331.592,
+          "cy": 479.211,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 222,
+          "cx": 332.516,
+          "cy": 478.699,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 223,
+          "cx": 334.073,
+          "cy": 478.775,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 224,
+          "cx": 334.551,
+          "cy": 479.997,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 225,
+          "cx": 335.299,
+          "cy": 479.85,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 226,
+          "cx": 337.666,
+          "cy": 479.203,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 227,
+          "cx": 340.344,
+          "cy": 478.818,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 228,
+          "cx": 340.48,
+          "cy": 479.943,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 229,
+          "cx": 341.583,
+          "cy": 478.623,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 230,
+          "cx": 344.802,
+          "cy": 473.947,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 231,
+          "cx": 345.494,
+          "cy": 473.915,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 232,
+          "cx": 346.526,
+          "cy": 473.655,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 233,
+          "cx": 347.087,
+          "cy": 474.319,
+          "track_id": 7,
+          "held": false
+        },
+        {
+          "frame": 234,
+          "cx": 348.006,
+          "cy": 475.133,
+          "track_id": 7,
+          "held": false
+        }
+      ]
+    },
+    {
+      "shot_id": "SHOT_003",
+      "phase": "ACTION",
+      "shot_type": "MEDIUM",
+      "start_frame": 235,
+      "end_frame": 270,
+      "start_time_s": 7.8333,
+      "end_time_s": 9.0333,
+      "duration_s": 1.2,
+      "duration_frames": 36,
+      "selected_track": 9,
+      "camera_behavior": "STABLE_FOLLOW",
+      "transition_in": "HARD_CUT",
+      "transition_out": "HARD_CUT",
+      "crop_start": 0.9,
+      "crop_end": 0.9,
+      "crop_easing": "linear",
+      "subject_y_bias": 0.55,
+      "speed_curve": {
+        "behavior": "ANTICIPATION_SLOW",
+        "start_factor": 0.9,
+        "end_factor": 0.76,
+        "easing": "ease_in",
+        "reason": "EVENT_ANTICIPATION_LINKED",
+        "fallback": "TEMPORAL_RESAMPLE_NO_RIFE"
+      },
+      "priority": 60,
+      "evidence": [
+        "frames:235-270",
+        "source_frames:36",
+        "hero_event:MOTION_9",
+        "track:9",
+        "hero_centric:true",
+        "speed:ANTICIPATION_SLOW"
+      ],
+      "confidence": 0.710808,
+      "reason": "ACTION on tracked evidence; transition=DEFAULT_HARD_CUT",
+      "fallback": "TEMPORAL_RESAMPLE_NO_RIFE",
+      "boundary": "CONTINUOUS",
+      "targets": [
+        {
+          "frame": 235,
+          "cx": 478.877,
+          "cy": 361.198,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 236,
+          "cx": 479.114,
+          "cy": 359.294,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 237,
+          "cx": 479.059,
+          "cy": 359.507,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 238,
+          "cx": 479.031,
+          "cy": 359.83,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 239,
+          "cx": 479.114,
+          "cy": 359.793,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 240,
+          "cx": 479.135,
+          "cy": 359.762,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 241,
+          "cx": 479.381,
+          "cy": 360.558,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 242,
+          "cx": 479.21,
+          "cy": 362.278,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 243,
+          "cx": 479.523,
+          "cy": 362.74,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 244,
+          "cx": 479.357,
+          "cy": 363.827,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 245,
+          "cx": 478.957,
+          "cy": 363.88,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 246,
+          "cx": 478.659,
+          "cy": 364.213,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 247,
+          "cx": 477.229,
+          "cy": 363.724,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 248,
+          "cx": 475.36,
+          "cy": 364.304,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 249,
+          "cx": 474.739,
+          "cy": 364.753,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 250,
+          "cx": 473.218,
+          "cy": 364.795,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 251,
+          "cx": 472.013,
+          "cy": 365.273,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 252,
+          "cx": 470.346,
+          "cy": 366.374,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 253,
+          "cx": 466.803,
+          "cy": 369.285,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 254,
+          "cx": 463.647,
+          "cy": 370.335,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 255,
+          "cx": 462.415,
+          "cy": 371.848,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 256,
+          "cx": 458.516,
+          "cy": 373.905,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 257,
+          "cx": 455.004,
+          "cy": 375.999,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 258,
+          "cx": 453.089,
+          "cy": 376.714,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 259,
+          "cx": 447.772,
+          "cy": 376.555,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 260,
+          "cx": 443.851,
+          "cy": 377.824,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 261,
+          "cx": 442.166,
+          "cy": 378.43,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 262,
+          "cx": 438.482,
+          "cy": 379.292,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 263,
+          "cx": 434.768,
+          "cy": 381.058,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 264,
+          "cx": 432.453,
+          "cy": 381.944,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 265,
+          "cx": 429.652,
+          "cy": 382.299,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 266,
+          "cx": 425.489,
+          "cy": 384.765,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 267,
+          "cx": 423.408,
+          "cy": 385.576,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 268,
+          "cx": 419.619,
+          "cy": 384.662,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 269,
+          "cx": 414.995,
+          "cy": 385.5,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 270,
+          "cx": 412.708,
+          "cy": 385.905,
+          "track_id": 9,
+          "held": false
+        }
+      ]
+    },
+    {
+      "shot_id": "SHOT_004",
+      "phase": "ANTICIPATION",
+      "shot_type": "MEDIUM",
+      "start_frame": 271,
+      "end_frame": 300,
+      "start_time_s": 9.0333,
+      "end_time_s": 10.0333,
+      "duration_s": 1.0,
+      "duration_frames": 30,
+      "selected_track": 9,
+      "camera_behavior": "ANTICIPATION_FOLLOW",
+      "transition_in": "HARD_CUT",
+      "transition_out": "HARD_CUT",
+      "crop_start": 0.9,
+      "crop_end": 0.92,
+      "crop_easing": "linear",
+      "subject_y_bias": 0.55,
+      "speed_curve": {
+        "behavior": "ANTICIPATION_SLOW",
+        "start_factor": 0.9,
+        "end_factor": 0.76,
+        "easing": "ease_in",
+        "reason": "EVENT_ANTICIPATION_LINKED",
+        "fallback": "TEMPORAL_RESAMPLE_NO_RIFE"
+      },
+      "priority": 55,
+      "evidence": [
+        "frames:271-300",
+        "source_frames:30",
+        "hero_event:MOTION_9",
+        "track:9",
+        "hero_centric:true",
+        "speed:ANTICIPATION_SLOW"
+      ],
+      "confidence": 0.710808,
+      "reason": "ANTICIPATION on tracked evidence; transition=DEFAULT_HARD_CUT",
+      "fallback": "TEMPORAL_RESAMPLE_NO_RIFE",
+      "boundary": "CONTINUOUS",
+      "targets": [
+        {
+          "frame": 271,
+          "cx": 408.392,
+          "cy": 386.423,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 272,
+          "cx": 403.616,
+          "cy": 387.191,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 273,
+          "cx": 401.246,
+          "cy": 388.12,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 274,
+          "cx": 396.415,
+          "cy": 388.453,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 275,
+          "cx": 389.462,
+          "cy": 388.524,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 276,
+          "cx": 386.079,
+          "cy": 389.138,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 277,
+          "cx": 379.29,
+          "cy": 390.152,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 278,
+          "cx": 373.36,
+          "cy": 389.914,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 279,
+          "cx": 370.571,
+          "cy": 391.125,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 280,
+          "cx": 363.778,
+          "cy": 393.112,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 281,
+          "cx": 358.044,
+          "cy": 393.503,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 282,
+          "cx": 354.18,
+          "cy": 393.583,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 283,
+          "cx": 349.538,
+          "cy": 390.078,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 284,
+          "cx": 347.537,
+          "cy": 388.755,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 285,
+          "cx": 345.265,
+          "cy": 389.605,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 286,
+          "cx": 342.676,
+          "cy": 392.285,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 287,
+          "cx": 341.773,
+          "cy": 394.863,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 288,
+          "cx": 341.592,
+          "cy": 394.864,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 289,
+          "cx": 339.871,
+          "cy": 393.226,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 290,
+          "cx": 338.809,
+          "cy": 392.879,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 291,
+          "cx": 338.653,
+          "cy": 392.052,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 292,
+          "cx": 337.096,
+          "cy": 390.7,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 293,
+          "cx": 334.719,
+          "cy": 388.46,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 294,
+          "cx": 333.118,
+          "cy": 388.921,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 295,
+          "cx": 328.196,
+          "cy": 390.686,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 296,
+          "cx": 323.648,
+          "cy": 389.308,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 297,
+          "cx": 321.806,
+          "cy": 388.724,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 298,
+          "cx": 318.376,
+          "cy": 389.105,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 299,
+          "cx": 315.408,
+          "cy": 388.95,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 300,
+          "cx": 313.976,
+          "cy": 388.726,
+          "track_id": 9,
+          "held": false
+        }
+      ]
+    },
+    {
+      "shot_id": "SHOT_005",
+      "phase": "HERO",
+      "shot_type": "HERO_MEDIUM",
+      "start_frame": 301,
+      "end_frame": 361,
+      "start_time_s": 10.0333,
+      "end_time_s": 12.0667,
+      "duration_s": 2.0333,
+      "duration_frames": 61,
+      "selected_track": 9,
+      "camera_behavior": "PUSH_IN",
+      "transition_in": "DISSOLVE",
+      "transition_out": "HARD_CUT",
+      "crop_start": 0.84,
+      "crop_end": 0.92,
+      "crop_easing": "ease_in_out",
+      "subject_y_bias": 0.52,
+      "speed_curve": {
+        "behavior": "HERO_SLOW",
+        "start_factor": 0.76,
+        "end_factor": 0.632055,
+        "easing": "ease_in_out",
+        "reason": "HERO_EVENT_LINKED",
+        "fallback": "TEMPORAL_RESAMPLE_NO_RIFE"
+      },
+      "priority": 100,
+      "evidence": [
+        "frames:301-361",
+        "source_frames:61",
+        "hero_event:MOTION_9",
+        "track:9",
+        "hero_centric:true",
+        "source_cut_boundary",
+        "speed:HERO_SLOW"
+      ],
+      "confidence": 0.710808,
+      "reason": "HERO on tracked evidence; transition=MOTIVATED_SHORT_DISSOLVE",
+      "fallback": "TEMPORAL_RESAMPLE_NO_RIFE",
+      "boundary": "REAL_SOURCE_CUT",
+      "targets": [
+        {
+          "frame": 301,
+          "cx": 310.748,
+          "cy": 388.629,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 302,
+          "cx": 307.554,
+          "cy": 388.496,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 303,
+          "cx": 306.252,
+          "cy": 388.663,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 304,
+          "cx": 301.55,
+          "cy": 387.751,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 305,
+          "cx": 295.89,
+          "cy": 388.379,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 306,
+          "cx": 293.653,
+          "cy": 388.168,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 307,
+          "cx": 288.196,
+          "cy": 388.083,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 308,
+          "cx": 283.712,
+          "cy": 388.066,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 309,
+          "cx": 281.019,
+          "cy": 388.264,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 310,
+          "cx": 274.65,
+          "cy": 385.775,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 311,
+          "cx": 269.501,
+          "cy": 378.584,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 312,
+          "cx": 268.398,
+          "cy": 380.933,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 313,
+          "cx": 263.352,
+          "cy": 380.303,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 314,
+          "cx": 261.645,
+          "cy": 378.187,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 315,
+          "cx": 260.544,
+          "cy": 380.032,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 316,
+          "cx": 249.148,
+          "cy": 383.396,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 317,
+          "cx": 244.664,
+          "cy": 385.229,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 318,
+          "cx": 241.258,
+          "cy": 384.806,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 319,
+          "cx": 232.627,
+          "cy": 383.966,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 320,
+          "cx": 223.485,
+          "cy": 384.229,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 321,
+          "cx": 220.177,
+          "cy": 384.179,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 322,
+          "cx": 215.696,
+          "cy": 385.327,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 323,
+          "cx": 212.212,
+          "cy": 384.513,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 324,
+          "cx": 210.69,
+          "cy": 384.863,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 325,
+          "cx": 205.62,
+          "cy": 383.463,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 326,
+          "cx": 202.436,
+          "cy": 381.4,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 327,
+          "cx": 201.021,
+          "cy": 380.343,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 328,
+          "cx": 194.044,
+          "cy": 377.719,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 329,
+          "cx": 191.748,
+          "cy": 376.031,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 330,
+          "cx": 188.837,
+          "cy": 373.326,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 331,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 332,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 333,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 334,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 335,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 336,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 337,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 338,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 339,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 340,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 341,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 342,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 343,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 344,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 345,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 346,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 347,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 348,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 349,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 350,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 351,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 352,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 353,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 354,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 355,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 356,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 357,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 358,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 359,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 360,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        },
+        {
+          "frame": 361,
+          "cx": 184.456,
+          "cy": 369.715,
+          "track_id": 9,
+          "held": false
+        }
+      ]
+    },
+    {
+      "shot_id": "SHOT_006",
+      "phase": "CELEBRATION",
+      "shot_type": "CELEBRATION",
+      "start_frame": 362,
+      "end_frame": 423,
+      "start_time_s": 12.0667,
+      "end_time_s": 14.1333,
+      "duration_s": 2.0667,
+      "duration_frames": 62,
+      "selected_track": null,
+      "camera_behavior": "CELEBRATION_FRAMING",
+      "transition_in": "HARD_CUT",
+      "transition_out": "HARD_CUT",
+      "crop_start": 0.8,
+      "crop_end": 0.82,
+      "crop_easing": "linear",
+      "subject_y_bias": 0.5,
+      "speed_curve": {
+        "behavior": "RECOVERY",
+        "start_factor": 0.88,
+        "end_factor": 1.0,
+        "easing": "ease_out",
+        "reason": "EVENT_RECOVERY_LINKED",
+        "fallback": "TEMPORAL_RESAMPLE_NO_RIFE"
+      },
+      "priority": 50,
+      "evidence": [
+        "frames:362-423",
+        "source_frames:62",
+        "hero_event:MOTION_9",
+        "speed:RECOVERY"
+      ],
+      "confidence": 0.0,
+      "reason": "CELEBRATION on tracked evidence; transition=DEFAULT_HARD_CUT; no tracked subject at shot start (wide-safe framing)",
+      "fallback": "TEMPORAL_RESAMPLE_NO_RIFE",
+      "boundary": "CONTINUOUS",
+      "targets": []
+    },
+    {
+      "shot_id": "SHOT_007",
+      "phase": "CLIMAX",
+      "shot_type": "LOW_FEELING",
+      "start_frame": 424,
+      "end_frame": 465,
+      "start_time_s": 14.1333,
+      "end_time_s": 15.5333,
+      "duration_s": 1.4,
+      "duration_frames": 42,
+      "selected_track": 69,
+      "camera_behavior": "CELEBRATION_FRAMING",
+      "transition_in": "HARD_CUT",
+      "transition_out": "HARD_CUT",
+      "crop_start": 0.86,
+      "crop_end": 0.88,
+      "crop_easing": "linear",
+      "subject_y_bias": 0.62,
+      "speed_curve": {
+        "behavior": "HERO_SLOW",
+        "start_factor": 0.76,
+        "end_factor": 0.632055,
+        "easing": "ease_in_out",
+        "reason": "HERO_EVENT_LINKED",
+        "fallback": "TEMPORAL_RESAMPLE_NO_RIFE"
+      },
+      "priority": 90,
+      "evidence": [
+        "frames:424-465",
+        "source_frames:42",
+        "hero_event:MOTION_9",
+        "track:69",
+        "speed:HERO_SLOW"
+      ],
+      "confidence": 0.0,
+      "reason": "CLIMAX on tracked evidence; transition=DEFAULT_HARD_CUT",
+      "fallback": "TEMPORAL_RESAMPLE_NO_RIFE",
+      "boundary": "CONTINUOUS",
+      "targets": [
+        {
+          "frame": 424,
+          "cx": 116.387,
+          "cy": 455.981,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 425,
+          "cx": 116.387,
+          "cy": 455.981,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 426,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 427,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 428,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 429,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 430,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 431,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 432,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 433,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 434,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 435,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 436,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 437,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 438,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 439,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 440,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 441,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 442,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 443,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 444,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 445,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 446,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 447,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 448,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 449,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 450,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 451,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 452,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 453,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 454,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 455,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 456,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": false
+        },
+        {
+          "frame": 457,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": true
+        },
+        {
+          "frame": 458,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": true
+        },
+        {
+          "frame": 459,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": true
+        },
+        {
+          "frame": 460,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": true
+        },
+        {
+          "frame": 461,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": true
+        },
+        {
+          "frame": 462,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": true
+        },
+        {
+          "frame": 463,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": true
+        },
+        {
+          "frame": 464,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": true
+        },
+        {
+          "frame": 465,
+          "cx": 89.0,
+          "cy": 458.018,
+          "track_id": 69,
+          "held": true
+        }
+      ]
+    },
+    {
+      "shot_id": "SHOT_008",
+      "phase": "OUTRO",
+      "shot_type": "OUTRO",
+      "start_frame": 466,
+      "end_frame": 483,
+      "start_time_s": 15.5333,
+      "end_time_s": 16.1333,
+      "duration_s": 0.6,
+      "duration_frames": 18,
+      "selected_track": 75,
+      "camera_behavior": "PULL_BACK",
+      "transition_in": "HARD_CUT",
+      "transition_out": "FADE_TO_BLACK",
+      "crop_start": 0.87,
+      "crop_end": 0.95,
+      "crop_easing": "ease_in_out",
+      "subject_y_bias": 0.52,
+      "speed_curve": {
+        "behavior": "NORMAL",
+        "start_factor": 1.0,
+        "end_factor": 1.0,
+        "easing": "linear",
+        "reason": "NO_SPEED_EVIDENCE",
+        "fallback": null
+      },
+      "priority": 95,
+      "evidence": [
+        "frames:466-483",
+        "source_frames:18",
+        "hero_event:MOTION_9",
+        "track:75",
+        "speed:NORMAL"
+      ],
+      "confidence": 0.0,
+      "reason": "OUTRO on tracked evidence; transition=CLOSING_FADE_TO_BLACK",
+      "fallback": null,
+      "boundary": "CONTINUOUS",
+      "targets": [
+        {
+          "frame": 466,
+          "cx": 724.976,
+          "cy": 62.889,
+          "track_id": 75,
+          "held": false
+        },
+        {
+          "frame": 467,
+          "cx": 730.237,
+          "cy": 61.183,
+          "track_id": 75,
+          "held": false
+        },
+        {
+          "frame": 468,
+          "cx": 732.815,
+          "cy": 59.439,
+          "track_id": 75,
+          "held": false
+        },
+        {
+          "frame": 469,
+          "cx": 735.401,
+          "cy": 63.482,
+          "track_id": 75,
+          "held": false
+        },
+        {
+          "frame": 470,
+          "cx": 738.428,
+          "cy": 62.825,
+          "track_id": 75,
+          "held": false
+        },
+        {
+          "frame": 471,
+          "cx": 741.413,
+          "cy": 75.272,
+          "track_id": 75,
+          "held": false
+        },
+        {
+          "frame": 472,
+          "cx": 748.71,
+          "cy": 84.248,
+          "track_id": 75,
+          "held": false
+        },
+        {
+          "frame": 473,
+          "cx": 757.601,
+          "cy": 86.631,
+          "track_id": 75,
+          "held": false
+        },
+        {
+          "frame": 474,
+          "cx": 762.578,
+          "cy": 93.325,
+          "track_id": 75,
+          "held": false
+        },
+        {
+          "frame": 475,
+          "cx": 774.709,
+          "cy": 85.281,
+          "track_id": 75,
+          "held": false
+        },
+        {
+          "frame": 476,
+          "cx": 787.812,
+          "cy": 97.9,
+          "track_id": 75,
+          "held": false
+        },
+        {
+          "frame": 477,
+          "cx": 794.87,
+          "cy": 110.669,
+          "track_id": 75,
+          "held": false
+        },
+        {
+          "frame": 478,
+          "cx": 810.172,
+          "cy": 125.012,
+          "track_id": 75,
+          "held": false
+        },
+        {
+          "frame": 479,
+          "cx": 826.851,
+          "cy": 124.733,
+          "track_id": 75,
+          "held": false
+        },
+        {
+          "frame": 480,
+          "cx": 835.278,
+          "cy": 134.679,
+          "track_id": 75,
+          "held": false
+        },
+        {
+          "frame": 481,
+          "cx": 850.393,
+          "cy": 138.883,
+          "track_id": 75,
+          "held": false
+        },
+        {
+          "frame": 482,
+          "cx": 854.838,
+          "cy": 112.126,
+          "track_id": 75,
+          "held": false
+        },
+        {
+          "frame": 483,
+          "cx": 854.838,
+          "cy": 112.126,
+          "track_id": 75,
+          "held": false
+        }
+      ]
+    }
+  ]
+}

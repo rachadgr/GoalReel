@@ -14,7 +14,41 @@
     "audio_codec": "aac",
     "audio_sample_rate": 44100,
     "audio_channels": 2,
-    "size_bytes": 11826444
+    "size_bytes": 16443689
+  },
+  "director": {
+    "status": "OK",
+    "errors": [],
+    "shots": 8,
+    "expected_frames": 484,
+    "total_frames": 484,
+    "contract": true,
+    "duration_preserved": true
+  },
+  "render": {
+    "out": "outputs/final_reel.mp4",
+    "written_frames": 484,
+    "planned_frames": 484,
+    "out_fps": 30,
+    "crop_w": 324,
+    "shots": 8,
+    "validation": {
+      "status": "OK",
+      "errors": [],
+      "shots": 8,
+      "expected_frames": 484,
+      "total_frames": 484,
+      "contract": true,
+      "duration_preserved": true
+    },
+    "grade": true,
+    "vignette": false,
+    "speed_mode": "TEMPORAL_RESAMPLE",
+    "rife_used": false,
+    "interpolated_frames": 194,
+    "interpolation_fallback": "LINEAR_BLEND_NO_RIFE",
+    "dissolve_frames_rendered": 1,
+    "duration_preserved": true
   },
   "reframe": {
     "source": "REAL_TRACKS",

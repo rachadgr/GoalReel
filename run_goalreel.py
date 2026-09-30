@@ -225,14 +225,48 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
         "targets_count": len(reframe_targets),
     })
 
+    # 5d) CINEMATIC DIRECTOR V2 ------------------------------------------
+    # Couche de décision déterministe : transforme la preuve réelle (suivi,
+    # événements, héros multi-preuves, ballon COCO, coupes/mouvement réels
+    # mesurés sur la source) en un PLAN DE MONTAGE explicite (phases, cadrages,
+    # vitesses, transitions). Le plan est enregistré
+    # (``cinematic_edit_plan.json``) puis exécuté par le renderer plan-aware.
+    # Aucun événement n'est inventé : les phases non soutenues par la preuve
+    # sont omises et listées avec leur raison.
+    from goalreel.cinematic.director import build_edit_plan
+    from goalreel.cinematic.evidence_model import scan_scene
+    from goalreel.cinematic.render_plan import render_plan, plan_validation
+
+    scene = scan_scene(video)
+    interp_state = manager.state("interpolation")
+    rife_available = bool(getattr(interp_state, "loaded", False))
+    edit_plan = build_edit_plan(
+        video, tracks=tracks, hero_moment=hero_moment, events=events,
+        ball_detections=ball_detections,
+        camera_transforms=(camera.get("metrics", {}) or {}).get("transforms"),
+        width=info.width, height=info.height, fps=info.fps,
+        total_frames=info.frames, scene=scene, rife_available=rife_available)
+    write_json(out / "cinematic_edit_plan.json", edit_plan.to_dict())
+    director_validation = plan_validation(edit_plan,
+                                          (edit_plan.time_map or {}).get("shots"))
+
     # 6) Rendu vertical final ----------------------------------------------
+    # Le renderer plan-aware exécute le plan du director. Si le plan ne
+    # contient aucun plan exploitable, on retombe honnêtement sur le reframe
+    # de suivi historique (jamais un rendu fabriqué).
     final_path = out / "final_reel.mp4"
-    render_vertical(video, str(final_path),
-                    reframe={"targets": reframe_targets, **reframe_meta})
+    render_info = None
+    if edit_plan.shots:
+        render_info = render_plan(video, str(final_path), edit_plan)
+    else:
+        render_vertical(video, str(final_path),
+                        reframe={"targets": reframe_targets, **reframe_meta})
     qc = final_qc(str(final_path))
     write_json(out / "final_qc.json", {
         "schema": "goalreel.final_qc.v1",
         **qc,
+        "director": director_validation,
+        "render": render_info,
         "reframe": {**reframe_meta, "hero_track": hero_moment.get("track_id"),
                     "targets_count": len(reframe_targets)},
     })
@@ -245,6 +279,7 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
         "hero_moment": str(out / "hero_moment.json"),
         "novel_view_status": str(out / "novel_view_status.json"),
         "camera_reframe": str(out / "camera_reframe.json"),
+        "cinematic_edit_plan": str(out / "cinematic_edit_plan.json"),
         "final_qc": str(out / "final_qc.json"),
         "final_reel": str(final_path),
     }
@@ -254,6 +289,15 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
         "outputs": outputs,
         "backend_summary": backend_status["summary"],
         "model_truth_summary": model_truth.get("summary"),
+        "cinematic_edit_plan": {
+            "shots": edit_plan.shot_count,
+            "phases_present": edit_plan.phases_present,
+            "hero_track": edit_plan.hero_track,
+            "followed_track": edit_plan.followed_track,
+            "hero_camera_contract": edit_plan.hero_camera_contract,
+            "duration_preserved": edit_plan.duration_preserved,
+            "director_validation": director_validation,
+        },
         "final_qc": qc,
     }
 
