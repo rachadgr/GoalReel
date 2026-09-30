@@ -1,65 +1,184 @@
 {
-  "schema": "goalreel.backends.v1",
-  "device": "auto",
+  "schema": "goalreel.backends.v2",
+  "device": "cpu",
+  "cuda": {
+    "available": false,
+    "count": 0
+  },
+  "torch": "2.14.0+cpu",
   "backends": [
     {
-      "name": "yolo",
-      "status": "MODEL_UNAVAILABLE",
-      "message": "Custom football YOLO checkpoint is a placeholder (not a trained model)",
-      "evidence": "UNKNOWN",
+      "name": "detector",
+      "stage": "detection",
+      "status": "OK",
+      "truth": "READY",
+      "device": "cpu",
+      "path": "/home/user/goalreel_repo/models/detection/yolov8s.pt",
+      "message": "YOLO loaded (80 classes, COCO/generic)",
       "metrics": {
-        "required": "models/best.pt",
-        "placeholder": true
-      },
-      "artifacts": []
+        "avg_infer_ms": 0.0,
+        "load_time_s": 0.2048,
+        "margin": {
+          "checkpoint": "/home/user/goalreel_repo/models/detection/yolov8s.pt",
+          "num_classes": 80,
+          "football_trained": false,
+          "class_report": {
+            "num_classes": 80,
+            "has_person": true,
+            "has_sports_ball": true,
+            "has_referee": false,
+            "football_trained": false,
+            "missing_football_classes": [
+              "player",
+              "referee",
+              "goal",
+              "goalkeeper"
+            ]
+          },
+          "device": "cpu"
+        }
+      }
+    },
+    {
+      "name": "segmenter",
+      "stage": "segmentation",
+      "status": "OK",
+      "truth": "READY",
+      "device": "cpu",
+      "path": "/home/user/goalreel_repo/models/segmentation/sam2.1_hiera_tiny.pt",
+      "message": "SAM2 predictor loaded (cfg=configs/sam2.1/sam2.1_hiera_t.yaml)",
+      "metrics": {
+        "avg_infer_ms": 0.0,
+        "load_time_s": 2.2749,
+        "margin": {
+          "checkpoint": "/home/user/goalreel_repo/models/segmentation/sam2.1_hiera_tiny.pt",
+          "config": "configs/sam2.1/sam2.1_hiera_t.yaml",
+          "runtime": "sam2",
+          "device": "cpu"
+        }
+      }
+    },
+    {
+      "name": "depth",
+      "stage": "depth",
+      "status": "OK",
+      "truth": "READY",
+      "device": "cpu",
+      "path": "/home/user/goalreel_repo/models/depth/depth_anything_v2_vits.pth",
+      "message": "Depth Anything V2 loaded (vendored); missing=0 unexpected=0",
+      "metrics": {
+        "avg_infer_ms": 0.0,
+        "load_time_s": 0.4747,
+        "margin": {
+          "checkpoint": "/home/user/goalreel_repo/models/depth/depth_anything_v2_vits.pth",
+          "source": "vendored",
+          "missing_keys": 0,
+          "unexpected_keys": 0,
+          "coverage": 1.0,
+          "device": "cpu"
+        }
+      }
     },
     {
       "name": "reid",
-      "status": "MODEL_UNAVAILABLE",
-      "message": "torchreid unavailable: No module named 'torchreid'",
-      "evidence": "UNKNOWN",
-      "metrics": {},
-      "artifacts": []
+      "stage": "reid",
+      "status": "OK",
+      "truth": "READY",
+      "device": "cpu",
+      "path": "/home/user/goalreel_repo/models/reid/osnet_x1_0_imagenet.pth",
+      "message": "OSNet x1.0 loaded; missing=0 unexpected=0",
+      "metrics": {
+        "avg_infer_ms": 0.0,
+        "load_time_s": 0.1076,
+        "margin": {
+          "checkpoint": "/home/user/goalreel_repo/models/reid/osnet_x1_0_imagenet.pth",
+          "backbone": "osnet_x1_0",
+          "pretraining": "imagenet (NOT Market-1501 / NOT football-specific)",
+          "embedding_dim": 512,
+          "missing_keys": 0,
+          "unexpected_keys": 0,
+          "coverage": 1.0,
+          "device": "cpu"
+        }
+      }
     },
     {
-      "name": "sam2.1",
+      "name": "interpolation",
+      "stage": "interpolation",
       "status": "MODEL_UNAVAILABLE",
-      "message": "SAM2 runtime unavailable: No module named 'sam2'",
-      "evidence": "UNKNOWN",
-      "metrics": {},
-      "artifacts": []
+      "truth": "CHECKPOINT_MISSING",
+      "device": "cpu",
+      "path": "/home/user/goalreel_repo/checkpoints/RIFE/flownet.pkl",
+      "message": "Checkpoint missing",
+      "metrics": {
+        "avg_infer_ms": 0.0,
+        "load_time_s": 0.0,
+        "margin": {
+          "required": "/home/user/goalreel_repo/checkpoints/RIFE/flownet.pkl"
+        }
+      }
     },
     {
-      "name": "depth_anything_v2",
+      "name": "super_resolution",
+      "stage": "super_resolution",
       "status": "MODEL_UNAVAILABLE",
-      "message": "No module named 'torch'",
-      "evidence": "UNKNOWN",
-      "metrics": {},
-      "artifacts": []
+      "truth": "DISABLED",
+      "device": "cpu",
+      "path": null,
+      "message": "Disabled by configuration",
+      "metrics": {
+        "avg_infer_ms": 0.0,
+        "load_time_s": 0.0,
+        "margin": {}
+      }
     },
     {
-      "name": "jersey_ocr",
+      "name": "virtual_camera",
+      "stage": "virtual_camera",
       "status": "MODEL_UNAVAILABLE",
-      "message": "No OCR backend configured",
-      "evidence": "UNKNOWN",
-      "metrics": {},
-      "artifacts": []
+      "truth": "DISABLED",
+      "device": "cpu",
+      "path": null,
+      "message": "Disabled by configuration",
+      "metrics": {
+        "avg_infer_ms": 0.0,
+        "load_time_s": 0.0,
+        "margin": {}
+      }
     },
     {
       "name": "pose",
+      "stage": "pose",
       "status": "MODEL_UNAVAILABLE",
+      "truth": "CHECKPOINT_MISSING",
+      "device": "cpu",
+      "path": null,
       "message": "No pose checkpoint configured",
-      "evidence": "UNKNOWN",
-      "metrics": {},
-      "artifacts": []
+      "metrics": {
+        "avg_infer_ms": 0.0,
+        "load_time_s": 0.0,
+        "margin": {}
+      }
     }
   ],
   "summary": {
-    "yolo": "MODEL_UNAVAILABLE",
-    "reid": "MODEL_UNAVAILABLE",
-    "sam2.1": "MODEL_UNAVAILABLE",
-    "depth_anything_v2": "MODEL_UNAVAILABLE",
-    "jersey_ocr": "MODEL_UNAVAILABLE",
+    "detector": "OK",
+    "segmenter": "OK",
+    "depth": "OK",
+    "reid": "OK",
+    "interpolation": "MODEL_UNAVAILABLE",
+    "super_resolution": "MODEL_UNAVAILABLE",
+    "virtual_camera": "MODEL_UNAVAILABLE",
     "pose": "MODEL_UNAVAILABLE"
+  },
+  "truth_summary": {
+    "detector": "READY",
+    "segmenter": "READY",
+    "depth": "READY",
+    "reid": "READY",
+    "interpolation": "CHECKPOINT_MISSING",
+    "super_resolution": "DISABLED",
+    "virtual_camera": "DISABLED",
+    "pose": "CHECKPOINT_MISSING"
   }
 }

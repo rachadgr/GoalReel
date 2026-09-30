@@ -20,75 +20,43 @@
     "sharpness": [
       {
         "frame": 0,
-        "laplacian_variance": 291.0591709019105
-      },
-      {
-        "frame": 30,
-        "laplacian_variance": 253.15923534333706
+        "laplacian_variance": 290.9223949151476
       },
       {
         "frame": 60,
-        "laplacian_variance": 324.52742957668437
-      },
-      {
-        "frame": 90,
-        "laplacian_variance": 337.12497103752077
+        "laplacian_variance": 324.4972869918946
       },
       {
         "frame": 120,
-        "laplacian_variance": 494.93629586640276
-      },
-      {
-        "frame": 150,
-        "laplacian_variance": 387.0902557726691
+        "laplacian_variance": 494.36309342748586
       },
       {
         "frame": 180,
-        "laplacian_variance": 380.5499016927917
-      },
-      {
-        "frame": 210,
-        "laplacian_variance": 365.8041846636154
+        "laplacian_variance": 380.5716132542066
       },
       {
         "frame": 240,
-        "laplacian_variance": 360.3089945879908
-      },
-      {
-        "frame": 270,
-        "laplacian_variance": 351.36130218575767
+        "laplacian_variance": 360.50957984732247
       },
       {
         "frame": 300,
-        "laplacian_variance": 305.8807095827069
-      },
-      {
-        "frame": 330,
-        "laplacian_variance": 284.7211398086769
+        "laplacian_variance": 305.9739679106149
       },
       {
         "frame": 360,
-        "laplacian_variance": 109.24695350487292
-      },
-      {
-        "frame": 390,
-        "laplacian_variance": 140.65110694821408
+        "laplacian_variance": 109.28180796993368
       },
       {
         "frame": 420,
-        "laplacian_variance": 3423.0729891869587
-      },
-      {
-        "frame": 450,
-        "laplacian_variance": 242.80939721987568
+        "laplacian_variance": 3422.9342969669065
       },
       {
         "frame": 480,
-        "laplacian_variance": 146.7146186980269
+        "laplacian_variance": 146.51361975596967
       }
     ],
-    "motion_mean": 8.045354846211064,
-    "motion_p95": 19.604813808865014
+    "motion_mean": 8.093115024465732,
+    "motion_p95": 19.668456692165798
   },
-  "sampled_frame_count": 17
+  "sampled_frame_count": 9
 }

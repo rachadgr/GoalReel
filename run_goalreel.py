@@ -52,6 +52,7 @@ def build_backend_status(models: Path, checkpoints: Path,
     """
     manager = manager or ModelManager()
     # Chargement best-effort de chaque modèle (aucune exception ne remonte).
+    # ``try_stage`` classe honnêtement l'indisponibilité (truth).
     for name in manager.settings.models:
         manager.try_stage(name)
     statuses = manager.statuses()
@@ -60,10 +61,12 @@ def build_backend_status(models: Path, checkpoints: Path,
             "name": name,
             "stage": st["stage"],
             "status": st["status"],
+            "truth": st.get("truth"),
             "device": st["device"],
             "path": st["path"],
             "message": st["message"],
-            "metrics": {"avg_infer_ms": st["avg_infer_ms"], "load_time_s": st["load_time_s"]},
+            "metrics": {"avg_infer_ms": st["avg_infer_ms"], "load_time_s": st["load_time_s"],
+                        "margin": st.get("meta", {})},
         }
         for name, st in statuses.items()
     ]
@@ -74,6 +77,7 @@ def build_backend_status(models: Path, checkpoints: Path,
         "torch": manager.health()["torch"],
         "backends": backends,
         "summary": {name: st["status"] for name, st in statuses.items()},
+        "truth_summary": {name: st.get("truth") for name, st in statuses.items()},
     }
 
 

@@ -14,13 +14,19 @@ from .manager import ModelUnavailable
 def load_pose(spec: ModelSpec, manager):
     path = spec.resolved_path()
     if path is None or not path.is_file():
-        raise ModelUnavailable("No pose checkpoint configured")
+        raise ModelUnavailable("No pose checkpoint configured",
+                               truth="CHECKPOINT_MISSING")
     try:
         from ultralytics import YOLO
     except Exception as exc:
-        raise ModelUnavailable(f"ultralytics unavailable: {exc}") from exc
+        raise ModelUnavailable(f"ultralytics unavailable: {exc}",
+                               truth="DEPENDENCY_MISSING") from exc
 
-    model = YOLO(str(path))
+    try:
+        model = YOLO(str(path))
+    except Exception as exc:
+        raise ModelUnavailable(f"Pose checkpoint unreadable: {exc}",
+                               truth="INCOMPATIBLE") from exc
 
     class _Pose:
         def __init__(self):

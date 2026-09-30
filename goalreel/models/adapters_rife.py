@@ -38,29 +38,54 @@ def build_network(manager: Any):
 
         return IFNet()
     except Exception as exc:
-        raise ModelUnavailable(f"RIFE IFNet unavailable: {exc}") from exc
+        raise ModelUnavailable(f"RIFE IFNet unavailable: {exc}",
+                               truth="DEPENDENCY_MISSING") from exc
 
 
 def load_interpolation(spec: ModelSpec, manager: Any):
     try:
         import torch
     except Exception as exc:
-        raise ModelUnavailable(f"torch unavailable: {exc}") from exc
+        raise ModelUnavailable(f"torch unavailable: {exc}",
+                               truth="DEPENDENCY_MISSING") from exc
 
     path = spec.resolved_path()
     device = manager.state(spec.name).device
 
     net = build_network(manager)
     if path is None or not path.is_file():
-        raise ModelUnavailable(f"RIFE checkpoint missing ({_RIFE_CKPT_NAME})")
+        # Le code est intégré (vendor/rife) mais le checkpoint est absent :
+        # ce n'est PAS une erreur. On rapporte CHECKPOINT_MISSING et le
+        # pipeline continue avec le fallback de blend (jamais présenté comme RIFE).
+        raise ModelUnavailable(f"RIFE checkpoint missing ({_RIFE_CKPT_NAME})",
+                               truth="CHECKPOINT_MISSING")
 
-    state = torch.load(str(path), map_location="cpu", weights_only=False)
+    try:
+        state = torch.load(str(path), map_location="cpu", weights_only=False)
+    except Exception as exc:
+        raise ModelUnavailable(f"RIFE checkpoint unreadable: {exc}",
+                               truth="INCOMPATIBLE") from exc
     if isinstance(state, dict) and "state_dict" in state:
         state = state["state_dict"]
     # RIFE renomme/strippe 'module.' selon l'entraînement distribué
     state = {k.replace("module.", ""): v for k, v in state.items()}
     missing, unexpected = net.load_state_dict(state, strict=False)
+    # Compatibilité : la majorité des clés du checkpoint doit s'apparier.
+    total = len(state) or 1
+    coverage = (total - len(missing)) / total
+    if coverage < 0.9:
+        raise ModelUnavailable(
+            f"RIFE checkpoint incompatible (coverage={coverage:.2f}, "
+            f"missing={len(missing)}, unexpected={len(unexpected)})",
+            truth="INCOMPATIBLE",
+        )
     net = net.to(device).eval()
+    manager.state(spec.name).meta.update({
+        "checkpoint": str(path),
+        "missing_keys": len(missing),
+        "unexpected_keys": len(unexpected),
+        "coverage": round(coverage, 4),
+    })
 
     class _Interp:
         def __init__(self):

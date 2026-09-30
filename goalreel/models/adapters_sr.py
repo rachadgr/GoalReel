@@ -13,8 +13,10 @@ from .manager import ModelUnavailable
 def load_super_resolution(spec: ModelSpec, manager):
     path = spec.resolved_path()
     if path is None or not path.is_file():
-        raise ModelUnavailable("No super-resolution checkpoint configured")
+        raise ModelUnavailable("No super-resolution checkpoint configured",
+                               truth="CHECKPOINT_MISSING")
     raise ModelUnavailable(
         "Super-resolution checkpoint present but no runtime adapter implemented "
-        "(add a Real-ESRGAN/SwinIR adapter here)"
+        "(add a Real-ESRGAN/SwinIR adapter here)",
+        truth="INCOMPATIBLE",
     )

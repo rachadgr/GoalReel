@@ -40,22 +40,33 @@ def _load_arch(manager: Any):
 def load_depth(spec: ModelSpec, manager: Any):
     path = spec.resolved_path()
     if path is None or not path.is_file():
-        raise ModelUnavailable("Depth Anywhere V2 checkpoint missing")
+        raise ModelUnavailable("Depth Anything V2 checkpoint missing",
+                               truth="CHECKPOINT_MISSING")
     try:
         import torch
     except Exception as exc:
-        raise ModelUnavailable(f"torch unavailable: {exc}") from exc
+        raise ModelUnavailable(f"torch unavailable: {exc}",
+                               truth="DEPENDENCY_MISSING") from exc
 
     DepthAnythingV2, src = _load_arch(manager)
     device = manager.state(spec.name).device
 
     model = DepthAnythingV2(**_VITS_KWARGS)
-    state = torch.load(str(path), map_location="cpu", weights_only=False)
+    try:
+        state = torch.load(str(path), map_location="cpu", weights_only=False)
+    except Exception as exc:
+        raise ModelUnavailable(f"Depth checkpoint unreadable: {exc}",
+                               truth="INCOMPATIBLE") from exc
     if isinstance(state, dict) and "model" in state and not any(
         k.startswith("pretrained.") for k in state
     ):
         state = state["model"]
-    missing, unexpected = model.load_state_dict(state, strict=False)
+    try:
+        missing, unexpected = model.load_state_dict(state, strict=False)
+    except Exception as exc:
+        # architecture incompatible avec le state_dict
+        raise ModelUnavailable(f"Depth architecture mismatch: {exc}",
+                               truth="INCOMPATIBLE") from exc
     model = model.to(device).eval()
 
     class _Depth:
@@ -73,5 +84,22 @@ def load_depth(spec: ModelSpec, manager: Any):
         def _raw_model(self):
             return self.model
 
+    # « Compatible » = la quasi-totalité des clés du checkpoint s'apparie.
+    total = len(state) or 1
+    coverage = (total - len(missing)) / total
+    manager.state(spec.name).meta.update({
+        "checkpoint": str(path),
+        "source": src,
+        "missing_keys": len(missing),
+        "unexpected_keys": len(unexpected),
+        "coverage": round(coverage, 4),
+    })
+    if coverage < 0.9:
+        raise ModelUnavailable(
+            f"Depth checkpoint incompatible with vits architecture "
+            f"(coverage={coverage:.2f}, missing={len(missing)}, "
+            f"unexpected={len(unexpected)})",
+            truth="INCOMPATIBLE",
+        )
     msg = f"Depth Anything V2 loaded ({src}); missing={len(missing)} unexpected={len(unexpected)}"
     return _Depth(), msg

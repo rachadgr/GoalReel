@@ -1,0 +1,240 @@
+{
+  "schema": "goalreel.analysis.v1",
+  "stages": [
+    {
+      "name": "detection",
+      "status": "OK",
+      "message": "Detected players/objects (sampled)",
+      "evidence": "VISIBLE_FROM_SOURCE",
+      "metrics": {
+        "sampled_frames": 4,
+        "objects": 49,
+        "persons": 49,
+        "balls": 0
+      },
+      "artifacts": []
+    },
+    {
+      "name": "tracking",
+      "status": "OK",
+      "message": "ByteTrack association",
+      "evidence": "TEMPORALLY_INFERRED",
+      "metrics": {
+        "unique_tracks": 24,
+        "frames": 4
+      },
+      "artifacts": []
+    },
+    {
+      "name": "reid",
+      "status": "OK",
+      "message": "Player embeddings + greedy identity clustering",
+      "evidence": "TEMPORALLY_INFERRED",
+      "metrics": {
+        "embeddings": 36,
+        "identities": 1
+      },
+      "artifacts": []
+    },
+    {
+      "name": "depth",
+      "status": "OK",
+      "message": "Depth maps computed (sampled)",
+      "evidence": "DEPTH_INFERRED",
+      "metrics": {
+        "samples": 2,
+        "first": {
+          "frame": 0,
+          "min": 0.36826181411743164,
+          "max": 7.2532758712768555,
+          "mean": 3.10374116897583
+        }
+      },
+      "artifacts": []
+    },
+    {
+      "name": "segmentation",
+      "status": "OK",
+      "message": "SAM2 masks computed",
+      "evidence": "VISIBLE_FROM_SOURCE",
+      "metrics": {
+        "masks": 2,
+        "first_score": 0.8854990601539612
+      },
+      "artifacts": []
+    },
+    {
+      "name": "pose",
+      "status": "OK",
+      "message": "Pose estimated",
+      "evidence": "VISIBLE_FROM_SOURCE",
+      "metrics": {
+        "persons": 0
+      },
+      "artifacts": []
+    }
+  ],
+  "model_status": {
+    "detector": {
+      "name": "detector",
+      "stage": "detection",
+      "path": "/home/user/goalreel_repo/models/detection/yolov8s.pt",
+      "status": "OK",
+      "truth": "READY",
+      "device": "cpu",
+      "loaded": true,
+      "message": "YOLO loaded (80 classes, COCO/generic)",
+      "load_time_s": 0.2048,
+      "infer_count": 4,
+      "avg_infer_ms": 149.772,
+      "last_error": null,
+      "meta": {
+        "checkpoint": "/home/user/goalreel_repo/models/detection/yolov8s.pt",
+        "num_classes": 80,
+        "football_trained": false,
+        "class_report": {
+          "num_classes": 80,
+          "has_person": true,
+          "has_sports_ball": true,
+          "has_referee": false,
+          "football_trained": false,
+          "missing_football_classes": [
+            "player",
+            "referee",
+            "goal",
+            "goalkeeper"
+          ]
+        },
+        "device": "cpu"
+      }
+    },
+    "segmenter": {
+      "name": "segmenter",
+      "stage": "segmentation",
+      "path": "/home/user/goalreel_repo/models/segmentation/sam2.1_hiera_tiny.pt",
+      "status": "OK",
+      "truth": "READY",
+      "device": "cpu",
+      "loaded": true,
+      "message": "SAM2 predictor loaded (cfg=configs/sam2.1/sam2.1_hiera_t.yaml)",
+      "load_time_s": 2.2749,
+      "infer_count": 2,
+      "avg_infer_ms": 1785.625,
+      "last_error": null,
+      "meta": {
+        "checkpoint": "/home/user/goalreel_repo/models/segmentation/sam2.1_hiera_tiny.pt",
+        "config": "configs/sam2.1/sam2.1_hiera_t.yaml",
+        "runtime": "sam2",
+        "device": "cpu"
+      }
+    },
+    "depth": {
+      "name": "depth",
+      "stage": "depth",
+      "path": "/home/user/goalreel_repo/models/depth/depth_anything_v2_vits.pth",
+      "status": "OK",
+      "truth": "READY",
+      "device": "cpu",
+      "loaded": true,
+      "message": "Depth Anything V2 loaded (vendored); missing=0 unexpected=0",
+      "load_time_s": 0.4747,
+      "infer_count": 2,
+      "avg_infer_ms": 2626.783,
+      "last_error": null,
+      "meta": {
+        "checkpoint": "/home/user/goalreel_repo/models/depth/depth_anything_v2_vits.pth",
+        "source": "vendored",
+        "missing_keys": 0,
+        "unexpected_keys": 0,
+        "coverage": 1.0,
+        "device": "cpu"
+      }
+    },
+    "reid": {
+      "name": "reid",
+      "stage": "reid",
+      "path": "/home/user/goalreel_repo/models/reid/osnet_x1_0_imagenet.pth",
+      "status": "OK",
+      "truth": "READY",
+      "device": "cpu",
+      "loaded": true,
+      "message": "OSNet x1.0 loaded; missing=0 unexpected=0",
+      "load_time_s": 0.1076,
+      "infer_count": 36,
+      "avg_infer_ms": 53.587,
+      "last_error": null,
+      "meta": {
+        "checkpoint": "/home/user/goalreel_repo/models/reid/osnet_x1_0_imagenet.pth",
+        "backbone": "osnet_x1_0",
+        "pretraining": "imagenet (NOT Market-1501 / NOT football-specific)",
+        "embedding_dim": 512,
+        "missing_keys": 0,
+        "unexpected_keys": 0,
+        "coverage": 1.0,
+        "device": "cpu"
+      }
+    },
+    "interpolation": {
+      "name": "interpolation",
+      "stage": "interpolation",
+      "path": "/home/user/goalreel_repo/checkpoints/RIFE/flownet.pkl",
+      "status": "MODEL_UNAVAILABLE",
+      "truth": "CHECKPOINT_MISSING",
+      "device": "cpu",
+      "loaded": false,
+      "message": "Checkpoint missing",
+      "load_time_s": 0.0,
+      "infer_count": 0,
+      "avg_infer_ms": 0.0,
+      "last_error": null,
+      "meta": {
+        "required": "/home/user/goalreel_repo/checkpoints/RIFE/flownet.pkl"
+      }
+    },
+    "super_resolution": {
+      "name": "super_resolution",
+      "stage": "super_resolution",
+      "path": null,
+      "status": "MODEL_UNAVAILABLE",
+      "truth": "DISABLED",
+      "device": "cpu",
+      "loaded": false,
+      "message": "Disabled by configuration",
+      "load_time_s": 0.0,
+      "infer_count": 0,
+      "avg_infer_ms": 0.0,
+      "last_error": null,
+      "meta": {}
+    },
+    "virtual_camera": {
+      "name": "virtual_camera",
+      "stage": "virtual_camera",
+      "path": null,
+      "status": "MODEL_UNAVAILABLE",
+      "truth": "DISABLED",
+      "device": "cpu",
+      "loaded": false,
+      "message": "Disabled by configuration",
+      "load_time_s": 0.0,
+      "infer_count": 0,
+      "avg_infer_ms": 0.0,
+      "last_error": null,
+      "meta": {}
+    },
+    "pose": {
+      "name": "pose",
+      "stage": "pose",
+      "path": null,
+      "status": "MODEL_UNAVAILABLE",
+      "truth": "CHECKPOINT_MISSING",
+      "device": "cpu",
+      "loaded": false,
+      "message": "No pose checkpoint configured",
+      "load_time_s": 0.0,
+      "infer_count": 0,
+      "avg_infer_ms": 0.0,
+      "last_error": null,
+      "meta": {}
+    }
+  }
+}

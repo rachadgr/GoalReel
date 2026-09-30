@@ -163,8 +163,11 @@ class AnalysisPipeline:
                            metrics={"masks": len(segs), "first_score": segs[0]["score"]})
 
     def _stage_pose(self, video, every, max_frames, records) -> StageResult:
-        if not self.pose.available:
-            return StageResult("pose", "MODEL_UNAVAILABLE", "Pose unavailable")
+        # On tente un VRAI chargement : un adapter sans checkpoint lève
+        # ModelUnavailable => None. On ne prétend donc jamais OK sans modèle.
+        if self.manager.load("pose") is None:
+            return StageResult("pose", "MODEL_UNAVAILABLE", "Pose unavailable",
+                               metrics={"truth": self.manager.state("pose").truth})
         total = 0
         for idx, frame in self._sample_frames(video, every, min(max_frames or 2, 2)):
             total += len(self.pose.estimate(frame))

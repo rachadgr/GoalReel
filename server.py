@@ -88,6 +88,7 @@ class Handler(BaseHTTPRequestHandler):
                 st = statuses.get(model) if model else None
                 out.append({"id": sid, "label": label, "model": model,
                             "status": st["status"] if st else "OK",
+                            "truth": st.get("truth") if st else None,
                             "device": st["device"] if st else None,
                             "avg_infer_ms": st["avg_infer_ms"] if st else 0})
             return self._json({"stages": out})

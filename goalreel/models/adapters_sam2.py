@@ -25,14 +25,16 @@ def _resolve_config(spec: ModelSpec) -> str:
 def load_segmenter(spec: ModelSpec, manager: Any):
     path = spec.resolved_path()
     if path is None or not path.is_file():
-        raise ModelUnavailable("SAM2 checkpoint missing")
+        raise ModelUnavailable("SAM2 checkpoint missing",
+                               truth="CHECKPOINT_MISSING")
 
     # API récente (SAM 2.1) : sam2.sam2_image_predictor
     try:
         from sam2.sam2_image_predictor import SAM2ImagePredictor
         from sam2.build_sam import build_sam2
     except Exception as exc:
-        raise ModelUnavailable(f"sam2 runtime unavailable: {exc}") from exc
+        raise ModelUnavailable(f"sam2 runtime unavailable: {exc}",
+                               truth="DEPENDENCY_MISSING") from exc
 
     device = manager.state(spec.name).device
     if device.startswith("cuda"):
@@ -43,7 +45,16 @@ def load_segmenter(spec: ModelSpec, manager: Any):
         model = build_sam2(cfg, str(path), device=device, apply_postprocessing=False)
         predictor = SAM2ImagePredictor(model)
     except Exception as exc:
-        raise ModelUnavailable(f"sam2 init failed: {exc}") from exc
+        # Le checkpoint est présent mais l'architecture/config ne s'apparie pas
+        # (ou une dépendance interne manque) : state honnête, pas de faux OK.
+        raise ModelUnavailable(f"sam2 init failed: {exc}",
+                               truth="INCOMPATIBLE") from exc
+
+    manager.state(spec.name).meta.update({
+        "checkpoint": str(path),
+        "config": cfg,
+        "runtime": "sam2",
+    })
 
     class _Segmenter:
         def __init__(self):

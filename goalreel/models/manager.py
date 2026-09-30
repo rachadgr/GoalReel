@@ -25,6 +25,12 @@ from typing import Any, Callable
 
 from ..config import ModelSpec, Settings, detect_device, load_settings
 from ..core.types import StageResult
+from .status import (
+    READY_TRUTHS,
+    UNAVAILABLE_TRUTHS,
+    ModelUnavailable,
+    pipeline_status,
+)
 
 logger = logging.getLogger("goalreel.models")
 
@@ -33,6 +39,20 @@ UNAVAILABLE = "MODEL_UNAVAILABLE"
 OK = "OK"
 ERROR = "ERROR"
 
+# États *véridiques* (voir goalreel/models/status.py). Le champ ``ModelState.truth``
+# porte le détail honnête ; ``ModelState.status`` reste l'état pipeline historique
+# (rétro-compatibilité API/frontend/tests).
+CHECKPOINT_MISSING = "CHECKPOINT_MISSING"
+DEPENDENCY_MISSING = "DEPENDENCY_MISSING"
+INCOMPATIBLE = "INCOMPATIBLE"
+GPU_REQUIRED = "GPU_REQUIRED"
+LOAD_ERROR = "LOAD_ERROR"
+READY = "READY"
+DISABLED = "DISABLED"
+
+__all__ = ["ModelManager", "ModelState", "ModelUnavailable", "default_manager",
+           "register_default_adapters"]
+
 
 @dataclass
 class ModelState:
@@ -40,6 +60,7 @@ class ModelState:
     stage: str
     path: str | None
     status: str = "UNLOADED"
+    truth: str = "UNLOADED"
     device: str = "cpu"
     loaded: bool = False
     message: str = ""
@@ -59,6 +80,7 @@ class ModelState:
             "stage": self.stage,
             "path": self.path,
             "status": self.status,
+            "truth": self.truth,
             "device": self.device,
             "loaded": self.loaded,
             "message": self.message,
@@ -68,10 +90,6 @@ class ModelState:
             "last_error": self.last_error,
             "meta": self.meta,
         }
-
-
-class ModelUnavailable(RuntimeError):
-    """Levée lorsqu'un modèle requis est indisponible."""
 
 
 class ModelManager:
@@ -139,29 +157,21 @@ class ModelManager:
                 return self._instances[name]
             spec = self.settings.models.get(name)
             if spec is None:
-                st.status = UNAVAILABLE
-                st.message = f"Unknown model '{name}'"
-                st.loaded = False
+                self._set_unavailable(st, UNAVAILABLE, f"Unknown model '{name}'")
                 return None
             if not spec.enabled:
-                st.status = "DISABLED"
-                st.message = "Disabled by configuration"
-                st.loaded = False
+                self._set_unavailable(st, DISABLED, "Disabled by configuration")
                 return None
             if name not in self._loaders:
-                st.status = UNAVAILABLE
-                st.message = f"No adapter registered for '{name}'"
-                st.loaded = False
+                self._set_unavailable(st, UNAVAILABLE, f"No adapter registered for '{name}'")
                 return None
             path = spec.resolved_path()
-            # Un chemin explicitement fourni mais absent => indisponible.
-            # Si path est None, l'adapter décide (certains backends n'ont pas
-            # de fichier de poids : il lèvera ModelUnavailable si nécessaire).
+            # Un chemin explicitement fourni mais absent => CHECKPOINT_MISSING.
+            # Si path est None, l'adapter décide (certains backends n'ont pas de
+            # fichier de poids : il lèvera ModelUnavailable si nécessaire).
             if path is not None and not path.is_file():
-                st.status = UNAVAILABLE
-                st.message = "Checkpoint missing"
                 st.meta["required"] = str(path)
-                st.loaded = False
+                self._set_unavailable(st, CHECKPOINT_MISSING, "Checkpoint missing")
                 return None
 
             loader = self._loaders[name]
@@ -171,14 +181,15 @@ class ModelManager:
             try:
                 inst = loader(spec, self)
             except ModelUnavailable as exc:
-                # runtime/dépendance absente : indisponible, pas une erreur
-                st.status = UNAVAILABLE
-                st.message = str(exc)
-                st.loaded = False
-                logger.warning("model '%s' unavailable: %s", name, exc)
+                # runtime/dépendance/config absente ou incompatible : ce n'est
+                # pas une erreur d'exécution mais une indisponibilité *classée*.
+                self._set_unavailable(st, getattr(exc, "truth", UNAVAILABLE), str(exc))
+                logger.warning("model '%s' unavailable (%s): %s",
+                               name, st.truth, exc)
                 return None
             except Exception as exc:  # erreur d'exécution réelle -> remontée
                 st.status = ERROR
+                st.truth = LOAD_ERROR
                 st.message = f"{type(exc).__name__}: {exc}"
                 st.last_error = str(exc)
                 st.loaded = False
@@ -191,12 +202,22 @@ class ModelManager:
                 st.message = message
             else:
                 st.message = "Loaded"
+            # READY == checkpoint présent + architecture compatible + chargement
+            # réussi + initialisation réussie (instance non nulle).
             st.status = OK
+            st.truth = READY if inst is not None else UNAVAILABLE
             st.loaded = inst is not None
             st.meta.setdefault("device", resolved_device)
             self._instances[name] = inst
             logger.info("model '%s' loaded in %.3fs on %s", name, st.load_time_s, resolved_device)
             return inst
+
+    def _set_unavailable(self, st: ModelState, truth: str, message: str) -> None:
+        """Renseigne un état d'indisponibilité *classé* (jamais un faux succès)."""
+        st.truth = truth
+        st.status = pipeline_status(truth)
+        st.message = message
+        st.loaded = False
 
     def get(self, name: str) -> Any:
         """Renvoie l'instance si déjà chargée, sinon tente un chargement."""
@@ -218,6 +239,7 @@ class ModelManager:
             st = self.state(name)
             st.loaded = False
             st.status = "UNLOADED"
+            st.truth = "UNLOADED"
             try:
                 import torch
 
@@ -257,23 +279,29 @@ class ModelManager:
 
         Ne lève jamais : pour un manque de checkpoint renvoie
         ``MODEL_UNAVAILABLE`` ; pour une erreur d'exécution renvoie ``ERROR``.
+        Le détail honnête de l'indisponibilité est conservé dans
+        ``metrics["truth"]`` (``CHECKPOINT_MISSING``, ``DEPENDENCY_MISSING``,
+        ``INCOMPATIBLE``, ``GPU_REQUIRED``, ``LOAD_ERROR`` …).
         """
         spec = self.settings.models.get(name)
-        stage_name = spec.stage if spec else name
         try:
             inst = self.load(name)
         except Exception as exc:
             st = self.state(name)
             return None, StageResult(name, ERROR, st.message or str(exc),
-                                     metrics={"device": st.device})
+                                     metrics={"device": st.device,
+                                              "truth": st.truth or LOAD_ERROR})
+        st = self.state(name)
         if inst is None:
-            st = self.state(name)
-            return None, StageResult(name, UNAVAILABLE, st.message or "Unavailable",
-                                     metrics={"required": st.path})
-        return inst, StageResult(name, OK, self.state(name).message or "Loaded",
+            return None, StageResult(name, pipeline_status(st.truth),
+                                     st.message or "Unavailable",
+                                     metrics={"required": st.path,
+                                              "truth": st.truth})
+        return inst, StageResult(name, OK, st.message or "Loaded",
                                  evidence="VISIBLE_FROM_SOURCE",
-                                 metrics={"device": self.state(name).device,
-                                          "path": self.state(name).path})
+                                 metrics={"device": st.device,
+                                          "path": st.path,
+                                          "truth": st.truth})
 
     def health(self) -> dict[str, Any]:
         """Résumé lisible de l'état de tous les modèles."""
@@ -287,6 +315,7 @@ class ModelManager:
                 "enabled": spec.enabled,
                 "checkpoint_present": exists,
                 "status": st.status if st.status != "UNLOADED" else ("READY" if exists and spec.enabled else st.status),
+                "truth": st.truth,
                 "device": st.device,
                 "avg_infer_ms": round(st.avg_infer_ms, 3),
             })
@@ -296,6 +325,38 @@ class ModelManager:
             "torch": _torch_version(),
             "models": checks,
         }
+
+    def diagnose(self, name: str) -> dict[str, Any]:
+        """Force une tentative de chargement et renvoie l'état *véridique*.
+
+        Utile pour un rapport honnête (CLI/tests) : distingue explicitement
+        ``CHECKPOINT_MISSING`` / ``DEPENDENCY_MISSING`` / ``INCOMPATIBLE`` /
+        ``GPU_REQUIRED`` / ``LOAD_ERROR`` / ``READY``.
+        """
+        try:
+            self.load(name, force=True)
+        except Exception:  # une LOAD_ERROR réelle est reflétée dans l'état
+            pass
+        st = self.state(name)
+        spec = self.settings.models.get(name)
+        return {
+            "name": name,
+            "stage": spec.stage if spec else "unknown",
+            "device": st.device,
+            "truth": st.truth,
+            "status": st.status,
+            "loaded": st.loaded,
+            "message": st.message,
+            "path": st.path,
+            "meta": dict(st.meta),
+        }
+
+    def readiness_report(self) -> dict[str, Any]:
+        """Vérité par modèle, sans faux succès (READY seulement si réellement chargé)."""
+        report: dict[str, Any] = {}
+        for name in self.settings.models:
+            report[name] = self.diagnose(name)
+        return report
 
 
 def _torch_version() -> str | None:
