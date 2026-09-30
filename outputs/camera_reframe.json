@@ -5,5 +5,7 @@
   "followed_track": 2,
   "followed_track_frames": 362,
   "target_frames": 362,
+  "selection": "HERO_TRACK",
+  "hero_track": 2,
   "targets_count": 362
 }

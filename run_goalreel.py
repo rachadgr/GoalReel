@@ -32,7 +32,7 @@ from goalreel.core.io import write_json                      # noqa: E402
 from goalreel.source.analysis import analyze_video           # noqa: E402
 from goalreel.scene.camera import CameraEstimator            # noqa: E402
 from goalreel.events.football import FootballEventEngine     # noqa: E402
-from goalreel.events.hero import score_hero                  # noqa: E402
+from goalreel.events.hero import score_hero, track_stats    # noqa: E402
 from goalreel.source.ffmpeg import render_vertical           # noqa: E402
 from goalreel.qc.final import final_qc                       # noqa: E402
 from goalreel.models.manager import ModelManager             # noqa: E402
@@ -142,9 +142,14 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
     write_json(out / "event_timeline.json", event_timeline)
 
     # 5) Moment héro --------------------------------------------------------
+    # Le héros est choisi à partir des événements RÉELS, en tenant compte de la
+    # persistance et de l'amplitude réelles des trajectoires suivies (aucun
+    # événement inventé). Le ``track_id`` retenu pilote ensuite la caméra 9:16
+    # afin que celle-ci suive RÉELLEMENT le sujet du moment héros.
+    tstats = track_stats(tracks)
     hero_moment = {
         "schema": "goalreel.hero_moment.v1",
-        **score_hero(events),
+        **score_hero(events, track_stats=tstats),
     }
     write_json(out / "hero_moment.json", hero_moment)
 
@@ -158,13 +163,17 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
 
     # 5c) Reframe 9:16 piloté par la PREUVE de suivi -----------------------
     # Si de vraies trajectoires existent, la caméra 9:16 SUIT réellement le
-    # sujet suivi (pan horizontal). Sinon => fallback statique (jamais un faux
-    # suivi). On ne réinvente rien : coordonnées issues du suivi ByteTrack.
+    # sujet suivi (pan horizontal). Le sujet suivi est celui du MOMENT HÉROS
+    # lorsqu'il est disponible (cohérence caméra <-> événement) ; sinon le plus
+    # persistant. Sinon => fallback statique (jamais un faux suivi). On ne
+    # réinvente rien : coordonnées issues du suivi ByteTrack.
     from goalreel.cinematic.reframe import build_reframe_targets
-    reframe_targets, reframe_meta = build_reframe_targets(tracks)
+    reframe_targets, reframe_meta = build_reframe_targets(
+        tracks, preferred_track=hero_moment.get("track_id"))
     write_json(out / "camera_reframe.json", {
         "schema": "goalreel.camera_reframe.v1",
         **reframe_meta,
+        "hero_track": hero_moment.get("track_id"),
         "targets_count": len(reframe_targets),
     })
 
@@ -176,7 +185,8 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
     write_json(out / "final_qc.json", {
         "schema": "goalreel.final_qc.v1",
         **qc,
-        "reframe": {**reframe_meta, "targets_count": len(reframe_targets)},
+        "reframe": {**reframe_meta, "hero_track": hero_moment.get("track_id"),
+                    "targets_count": len(reframe_targets)},
     })
 
     outputs = {

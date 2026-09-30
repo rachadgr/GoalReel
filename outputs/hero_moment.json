@@ -2,18 +2,30 @@
   "schema": "goalreel.hero_moment.v1",
   "status": "OK",
   "event": {
-    "event_id": "MOTION_1",
+    "event_id": "MOTION_2",
     "kind": "player_motion",
     "start_frame": 0,
-    "peak_frame": 129,
-    "end_frame": 258,
+    "peak_frame": 181,
+    "end_frame": 361,
     "confidence": 0.99,
     "evidence": [
-      "track:1",
-      "displacement:371.22"
+      "track:2",
+      "displacement:546.23"
     ],
     "status": "INFERRED"
   },
   "score": 0.99,
-  "method": "evidence_score"
+  "track_id": 2,
+  "method": "evidence_score",
+  "ranked_by": [
+    "evidence",
+    "persistence",
+    "amplitude",
+    "event_id"
+  ],
+  "candidates": 50,
+  "selection": {
+    "persistence_frames": 362,
+    "amplitude_px": 546.23
+  }
 }

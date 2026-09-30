@@ -106,7 +106,14 @@ def _render_vertical_tracked(source,out,width,height,fps,targets):
             if crop.shape[0]!=crop_h or crop.shape[1]!=crop_w:
                 crop=cv2.resize(frame,(crop_w,crop_h),interpolation=cv2.INTER_LINEAR)
             out_frame=cv2.resize(crop,(width,height),interpolation=cv2.INTER_LANCZOS4)
-            proc.stdin.write(np.ascontiguousarray(out_frame).tobytes())
+            try:
+                proc.stdin.write(np.ascontiguousarray(out_frame).tobytes())
+            except (BrokenPipeError, OSError):
+                # ffmpeg a pu s'arrêter tôt (ex. ``-shortest`` lorsque la piste
+                # audio est plus courte que la vidéo). On arrête proprement la
+                # lecture au lieu de propager une erreur de pipe, puis on laisse
+                # le ``finally`` réconcilier le processus.
+                break
             idx+=1
     finally:
         cap.release()

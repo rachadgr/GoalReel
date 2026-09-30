@@ -14,7 +14,7 @@
     "audio_codec": "aac",
     "audio_sample_rate": 44100,
     "audio_channels": 2,
-    "size_bytes": 12983783
+    "size_bytes": 12688046
   },
   "reframe": {
     "source": "REAL_TRACKS",
@@ -22,6 +22,8 @@
     "followed_track": 2,
     "followed_track_frames": 362,
     "target_frames": 362,
+    "selection": "HERO_TRACK",
+    "hero_track": 2,
     "targets_count": 362
   }
 }

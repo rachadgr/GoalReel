@@ -13,7 +13,7 @@ from .core.types import StageResult
 from .source.analysis import analyze_video
 from .scene.camera import CameraEstimator
 from .events.football import FootballEventEngine
-from .events.hero import score_hero
+from .events.hero import score_hero, track_stats
 from .source.ffmpeg import render_vertical, validate_output
 from .qc.final import final_qc
 from .models.manager import ModelManager
@@ -52,7 +52,7 @@ def run_analysis(video, out, models='models', every=15, manager=None,
         for t in tracked:
             tracks.setdefault(t['track_id'], []).append({'frame': frame_idx, **t})
     events = FootballEventEngine().infer(tracks=tracks)
-    hero = score_hero(events)
+    hero = score_hero(events, track_stats=track_stats(tracks))
 
     final_report = {
         'schema': 'goalreel.report.v2',

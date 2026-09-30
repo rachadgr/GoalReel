@@ -8,9 +8,9 @@
       "evidence": "VISIBLE_FROM_SOURCE",
       "metrics": {
         "sampled_frames": 484,
-        "objects": 5867,
-        "persons": 5722,
-        "balls": 40
+        "objects": 5927,
+        "persons": 5778,
+        "balls": 47
       },
       "artifacts": []
     },
@@ -20,7 +20,7 @@
       "message": "ByteTrack association",
       "evidence": "TEMPORALLY_INFERRED",
       "metrics": {
-        "unique_tracks": 85,
+        "unique_tracks": 82,
         "frames": 484
       },
       "artifacts": []
@@ -31,7 +31,7 @@
       "message": "Player embeddings + greedy identity clustering",
       "evidence": "TEMPORALLY_INFERRED",
       "metrics": {
-        "embeddings": 26,
+        "embeddings": 28,
         "identities": 1
       },
       "artifacts": []
@@ -45,22 +45,19 @@
         "samples": 2,
         "first": {
           "frame": 0,
-          "min": 0.36826181411743164,
-          "max": 7.2532758712768555,
-          "mean": 3.10374116897583
+          "min": 0.36994579434394836,
+          "max": 7.29331111907959,
+          "mean": 3.116159677505493
         }
       },
       "artifacts": []
     },
     {
       "name": "segmentation",
-      "status": "OK",
-      "message": "SAM2 masks computed",
-      "evidence": "VISIBLE_FROM_SOURCE",
-      "metrics": {
-        "masks": 2,
-        "first_score": 0.8854990601539612
-      },
+      "status": "UNKNOWN",
+      "message": "No person to segment in samples",
+      "evidence": "UNKNOWN",
+      "metrics": {},
       "artifacts": []
     },
     {
@@ -78,18 +75,18 @@
     "detector": {
       "name": "detector",
       "stage": "detection",
-      "path": "/home/user/goalreel_repo/models/detection/yolov8s.pt",
+      "path": "/home/user/GoalReel/models/detection/yolov8s.pt",
       "status": "OK",
       "truth": "READY",
       "device": "cpu",
       "loaded": true,
       "message": "YOLO loaded (80 classes, COCO/generic)",
-      "load_time_s": 0.1673,
+      "load_time_s": 1.1258,
       "infer_count": 484,
-      "avg_infer_ms": 93.434,
+      "avg_infer_ms": 161.093,
       "last_error": null,
       "meta": {
-        "checkpoint": "/home/user/goalreel_repo/models/detection/yolov8s.pt",
+        "checkpoint": "/home/user/GoalReel/models/detection/yolov8s.pt",
         "num_classes": 80,
         "football_trained": false,
         "class_report": {
@@ -111,38 +108,33 @@
     "segmenter": {
       "name": "segmenter",
       "stage": "segmentation",
-      "path": "/home/user/goalreel_repo/models/segmentation/sam2.1_hiera_tiny.pt",
-      "status": "OK",
-      "truth": "READY",
+      "path": "/home/user/GoalReel/models/segmentation/sam2.1_hiera_tiny.pt",
+      "status": "MODEL_UNAVAILABLE",
+      "truth": "DEPENDENCY_MISSING",
       "device": "cpu",
-      "loaded": true,
-      "message": "SAM2 predictor loaded (cfg=configs/sam2.1/sam2.1_hiera_t.yaml)",
-      "load_time_s": 2.2294,
-      "infer_count": 2,
-      "avg_infer_ms": 1799.98,
+      "loaded": false,
+      "message": "sam2 runtime unavailable: No module named 'sam2'",
+      "load_time_s": 0.0,
+      "infer_count": 0,
+      "avg_infer_ms": 0.0,
       "last_error": null,
-      "meta": {
-        "checkpoint": "/home/user/goalreel_repo/models/segmentation/sam2.1_hiera_tiny.pt",
-        "config": "configs/sam2.1/sam2.1_hiera_t.yaml",
-        "runtime": "sam2",
-        "device": "cpu"
-      }
+      "meta": {}
     },
     "depth": {
       "name": "depth",
       "stage": "depth",
-      "path": "/home/user/goalreel_repo/models/depth/depth_anything_v2_vits.pth",
+      "path": "/home/user/GoalReel/models/depth/depth_anything_v2_vits.pth",
       "status": "OK",
       "truth": "READY",
       "device": "cpu",
       "loaded": true,
       "message": "Depth Anything V2 loaded (vendored); missing=0 unexpected=0",
-      "load_time_s": 0.4357,
+      "load_time_s": 1.3247,
       "infer_count": 2,
-      "avg_infer_ms": 2492.879,
+      "avg_infer_ms": 3361.912,
       "last_error": null,
       "meta": {
-        "checkpoint": "/home/user/goalreel_repo/models/depth/depth_anything_v2_vits.pth",
+        "checkpoint": "/home/user/GoalReel/models/depth/depth_anything_v2_vits.pth",
         "source": "vendored",
         "missing_keys": 0,
         "unexpected_keys": 0,
@@ -153,18 +145,18 @@
     "reid": {
       "name": "reid",
       "stage": "reid",
-      "path": "/home/user/goalreel_repo/models/reid/osnet_x1_0_imagenet.pth",
+      "path": "/home/user/GoalReel/models/reid/osnet_x1_0_imagenet.pth",
       "status": "OK",
       "truth": "READY",
       "device": "cpu",
       "loaded": true,
       "message": "OSNet x1.0 loaded; missing=0 unexpected=0",
-      "load_time_s": 0.0983,
-      "infer_count": 26,
-      "avg_infer_ms": 56.528,
+      "load_time_s": 0.1028,
+      "infer_count": 28,
+      "avg_infer_ms": 58.626,
       "last_error": null,
       "meta": {
-        "checkpoint": "/home/user/goalreel_repo/models/reid/osnet_x1_0_imagenet.pth",
+        "checkpoint": "/home/user/GoalReel/models/reid/osnet_x1_0_imagenet.pth",
         "backbone": "osnet_x1_0",
         "pretraining": "imagenet (NOT Market-1501 / NOT football-specific)",
         "embedding_dim": 512,
@@ -177,19 +169,17 @@
     "interpolation": {
       "name": "interpolation",
       "stage": "interpolation",
-      "path": "/home/user/goalreel_repo/checkpoints/RIFE/flownet.pkl",
+      "path": "/home/user/GoalReel/checkpoints/RIFE/flownet.pkl",
       "status": "MODEL_UNAVAILABLE",
-      "truth": "CHECKPOINT_MISSING",
+      "truth": "INCOMPATIBLE",
       "device": "cpu",
       "loaded": false,
-      "message": "Checkpoint missing",
+      "message": "RIFE checkpoint incompatible with vendored IFNet: Error(s) in loading state_dict for IFNet:\n\tsize mismatch for block0.conv0.0.0.weight: copying a param with shape torch.Size([45, 11, 3, 3]) from checkpoint, the shape in current model is torch.Size([120, 6, 3, 3]).\n\tsize mismatch for block0.conv0.0.0.bias: copying a param with shape torch.Size([45]) from checkpoint, the shape in current model is torch.Size([120]).\n\tsize mismatch for block0.conv0.0.1.weight: copying a param with shape torch.Size([45]) from checkpoint, the shape in current model is torch.Size([120]).\n\tsize mismatch for block0.conv0.1.0.weight: copying a param with shape torch.Size([90, 45, 3, 3]) from checkpoint, the shape in current model is torch.Size([240, 120, 3, 3]).\n\tsize mismatch for block0.conv0.1.0.bias: copying a param with shape torch.Size([90]) from checkpoint, the shape in current model is torch.Size([240]).\n\tsize mismatch for block0.conv0.1.1.weight: copying a param with shape torch.Size([90]) from checkpoint, the shape in current model is torch.Size([240]).\n\tsize mismatch for block1.conv0.0.0.weight: copying a param with shape torch.Size([45, 11, 3, 3]) from checkpoint, the shape in current model is torch.Size([75, 17, 3, 3]).\n\tsize mismatch for block1.conv0.0.0.bias: copying a param with shape torch.Size([45]) from checkpoint, the shape in current model is torch.Size([75]).\n\tsize mismatch for block1.conv0.0.1.weight: copying a param with shape torch.Size([45]) from checkpoint, the shape in current model is torch.Size([75]).\n\tsize mismatch for block1.conv0.1.0.weight: copying a param with shape torch.Size([90, 45, 3, 3]) from checkpoint, the shape in current model is torch.Size([150, 75, 3, 3]).\n\tsize mismatch for block1.conv0.1.0.bias: copying a param with shape torch.Size([90]) from checkpoint, the shape in current model is torch.Size([150]).\n\tsize mismatch for block1.conv0.1.1.weight: copying a param with shape torch.Size([90]) from checkpoint, the shape in current model is torch.Size([150]).\n\tsize mismatch for block2.conv0.0.0.weight: copying a param with shape torch.Size([45, 11, 3, 3]) from checkpoint, the shape in current model is torch.Size([45, 17, 3, 3]).\n\tsize mismatch for block_tea.conv0.0.0.weight: copying a param with shape torch.Size([45, 14, 3, 3]) from checkpoint, the shape in current model is torch.Size([45, 20, 3, 3]).",
       "load_time_s": 0.0,
       "infer_count": 0,
       "avg_infer_ms": 0.0,
       "last_error": null,
-      "meta": {
-        "required": "/home/user/goalreel_repo/checkpoints/RIFE/flownet.pkl"
-      }
+      "meta": {}
     },
     "super_resolution": {
       "name": "super_resolution",

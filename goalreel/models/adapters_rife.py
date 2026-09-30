@@ -69,7 +69,18 @@ def load_interpolation(spec: ModelSpec, manager: Any):
         state = state["state_dict"]
     # RIFE renomme/strippe 'module.' selon l'entraînement distribué
     state = {k.replace("module.", ""): v for k, v in state.items()}
-    missing, unexpected = net.load_state_dict(state, strict=False)
+    try:
+        missing, unexpected = net.load_state_dict(state, strict=False)
+    except RuntimeError as exc:
+        # ``strict=False`` ignore les clés manquantes/superflues mais LÈVE
+        # toujours sur une incompatibilité de *forme* (size mismatch). Un
+        # checkpoint d'une autre variante IFNet ne doit PAS faire planter le
+        # pipeline : on le classe honnêtement INCOMPATIBLE (le fallback de blend
+        # documenté prend alors le relais, jamais présenté comme du RIFE).
+        raise ModelUnavailable(
+            f"RIFE checkpoint incompatible with vendored IFNet: {exc}",
+            truth="INCOMPATIBLE",
+        ) from exc
     # Compatibilité : la majorité des clés du checkpoint doit s'apparier.
     total = len(state) or 1
     coverage = (total - len(missing)) / total
