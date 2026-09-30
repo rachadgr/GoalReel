@@ -50,6 +50,21 @@
     "dissolve_frames_rendered": 1,
     "duration_preserved": true
   },
+  "continuity": {
+    "schema": "goalreel.track_continuity.v1",
+    "raw_tracks": 82,
+    "identity_count": 63,
+    "links_accepted": 19,
+    "hero_identity": {
+      "canonical_track_id": 9,
+      "source_track_ids": [
+        9
+      ],
+      "confidence": 1.0,
+      "fallback": "UNRESOLVED_TRACK_FRAGMENT"
+    },
+    "camera_follow_mode": "RAW_TRACK"
+  },
   "reframe": {
     "source": "REAL_TRACKS",
     "mode": "FOLLOW_TRACKED_SUBJECT",
@@ -58,6 +73,8 @@
     "target_frames": 394,
     "selection": "HERO_TRACK",
     "reason": "HERO_TRACK_AVAILABLE",
+    "canonical_lineage": [],
+    "camera_follow_mode": "RAW_TRACK",
     "phases": {
       "22": "hero_moment",
       "23": "hero_moment",

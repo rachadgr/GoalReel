@@ -7,6 +7,8 @@
   "target_frames": 394,
   "selection": "HERO_TRACK",
   "reason": "HERO_TRACK_AVAILABLE",
+  "canonical_lineage": [],
+  "camera_follow_mode": "RAW_TRACK",
   "phases": {
     "22": "hero_moment",
     "23": "hero_moment",

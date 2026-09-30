@@ -215,7 +215,7 @@
         "event_proximity": 0.694891,
         "spatial_relevance": 0.516044,
         "event_confidence": 0.99,
-        "ball_proximity": 0.909513
+        "ball_proximity": 0.909514
       },
       "raw": {
         "persistence_frames": 129,
@@ -263,7 +263,7 @@
         "event_proximity": 0.706099,
         "spatial_relevance": 0.324086,
         "event_confidence": 0.99,
-        "ball_proximity": 0.552825
+        "ball_proximity": 0.552824
       },
       "raw": {
         "persistence_frames": 137,

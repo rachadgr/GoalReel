@@ -153,7 +153,8 @@ def plan_camera(primary_frames, event=None, width=None,
 
 def build_reframe_targets(tracks, preferred_track=None, hero_event=None,
                           width=None, anticipation=ANTICIPATION_FRAMES,
-                          reaction=REACTION_FRAMES, celebration=CELEBRATION_FRAMES):
+                          reaction=REACTION_FRAMES, celebration=CELEBRATION_FRAMES,
+                          identity=None):
     """Cibles caméra 9:16 à partir des trajectoires RÉELLES suivies.
 
     ``tracks`` : ``track_id -> [ {frame, bbox, ...}, ... ]`` (ByteTrack sur de
@@ -163,6 +164,11 @@ def build_reframe_targets(tracks, preferred_track=None, hero_event=None,
     dès qu'une trajectoire réelle existe pour cet id (cohérence événement →
     caméra). Sinon, fallback documenté sur la trajectoire la plus persistante
     (``LONGEST_TRACK``) et ``reason`` enregistrée.
+
+    ``identity`` (Subject Continuity V2.1) : identité canonique héros. Si elle
+    regroupe plusieurs fragments bruts, la caméra suit la **concaténation réelle**
+    des fragments (même identité à travers ses fragments actifs), jamais un id
+    fabriqué ; ``followed_track`` reste l'id canonique (contrat préservé).
 
     ``hero_event`` : événement héros (avec ``start_frame``/``peak_frame``/
     ``end_frame``). S'il est fourni, la ligne temporelle est structurée en
@@ -175,10 +181,24 @@ def build_reframe_targets(tracks, preferred_track=None, hero_event=None,
         return {}, _no_tracks_meta()
 
     hero_known = preferred_track is not None and bool(tracks.get(preferred_track))
+    lineage_ids: list[int] = []
+    if identity and preferred_track is not None:
+        src = [int(t) for t in identity.get("source_track_ids", [])]
+        if len(src) > 1:
+            # lignée réelle : on suit la concaténation réelle des fragments.
+            from ..tracking.continuity import identity_frames
+
+            frames = identity_frames(tracks, identity)
+            if frames:
+                lineage_ids = src
+                tracks = dict(tracks)
+                tracks[int(preferred_track)] = frames
+                hero_known = True
+
     if hero_known:
         primary_id = preferred_track
-        selection = "HERO_TRACK"
-        reason = "HERO_TRACK_AVAILABLE"
+        selection = "CANONICAL_HERO_IDENTITY" if lineage_ids else "HERO_TRACK"
+        reason = "HERO_IDENTITY_AVAILABLE" if lineage_ids else "HERO_TRACK_AVAILABLE"
     else:
         # Fallback documenté, déterministe : trajectoire la plus persistante.
         # Départage stable par id décroissant (jamais l'ordre d'insertion).
@@ -210,6 +230,8 @@ def build_reframe_targets(tracks, preferred_track=None, hero_event=None,
         "target_frames": len(plan_targets),
         "selection": selection,
         "reason": reason,
+        "canonical_lineage": lineage_ids,
+        "camera_follow_mode": ("HERO_IDENTITY" if lineage_ids else "RAW_TRACK"),
         "phases": phases,
         "phases_summary": plan_meta.get("phases_summary", {}),
         "event_window": plan_meta.get("event_window"),

@@ -5,7 +5,7 @@
     "available": false,
     "count": 0
   },
-  "torch": "2.14.0+cpu",
+  "torch": "2.6.0+cpu",
   "backends": [
     {
       "name": "detector",
@@ -17,7 +17,7 @@
       "message": "YOLO loaded (80 classes, COCO/generic)",
       "metrics": {
         "avg_infer_ms": 0.0,
-        "load_time_s": 0.2129,
+        "load_time_s": 0.3752,
         "margin": {
           "checkpoint": "/home/user/GoalReel/models/detection/yolov8s.pt",
           "num_classes": 80,
@@ -42,20 +42,15 @@
     {
       "name": "segmenter",
       "stage": "segmentation",
-      "status": "OK",
-      "truth": "READY",
+      "status": "MODEL_UNAVAILABLE",
+      "truth": "DEPENDENCY_MISSING",
       "device": "cpu",
       "path": "/home/user/GoalReel/models/segmentation/sam2.1_hiera_tiny.pt",
-      "message": "SAM2 predictor loaded (cfg=configs/sam2.1/sam2.1_hiera_t.yaml)",
+      "message": "sam2 runtime unavailable: No module named 'sam2'",
       "metrics": {
         "avg_infer_ms": 0.0,
-        "load_time_s": 2.3174,
-        "margin": {
-          "checkpoint": "/home/user/GoalReel/models/segmentation/sam2.1_hiera_tiny.pt",
-          "config": "configs/sam2.1/sam2.1_hiera_t.yaml",
-          "runtime": "sam2",
-          "device": "cpu"
-        }
+        "load_time_s": 0.0,
+        "margin": {}
       }
     },
     {
@@ -68,7 +63,7 @@
       "message": "Depth Anything V2 loaded (vendored); missing=0 unexpected=0",
       "metrics": {
         "avg_infer_ms": 0.0,
-        "load_time_s": 0.4673,
+        "load_time_s": 2.3635,
         "margin": {
           "checkpoint": "/home/user/GoalReel/models/depth/depth_anything_v2_vits.pth",
           "source": "vendored",
@@ -89,7 +84,7 @@
       "message": "OSNet x1.0 loaded; missing=0 unexpected=0",
       "metrics": {
         "avg_infer_ms": 0.0,
-        "load_time_s": 0.1052,
+        "load_time_s": 0.1014,
         "margin": {
           "checkpoint": "/home/user/GoalReel/models/reid/osnet_x1_0_imagenet.pth",
           "backbone": "osnet_x1_0",
@@ -163,7 +158,7 @@
   ],
   "summary": {
     "detector": "OK",
-    "segmenter": "OK",
+    "segmenter": "MODEL_UNAVAILABLE",
     "depth": "OK",
     "reid": "OK",
     "interpolation": "MODEL_UNAVAILABLE",
@@ -173,7 +168,7 @@
   },
   "truth_summary": {
     "detector": "READY",
-    "segmenter": "READY",
+    "segmenter": "DEPENDENCY_MISSING",
     "depth": "READY",
     "reid": "READY",
     "interpolation": "CHECKPOINT_MISSING",

@@ -268,6 +268,15 @@ class Shot:
     reason: str = ""
     fallback: str | None = None
     boundary: str = "CONTINUOUS"
+    # Identité visée par le plan : ``CANONICAL_HERO_IDENTITY`` (lignée héros,
+    # Subject Continuity V2.1) ou ``RAW_TRACK`` (fragment de suivi brut).
+    target_identity: str = "RAW_TRACK"
+    # Identité canonique résolue pour ce plan (même si le fragment actif change).
+    canonical_identity_id: int | None = None
+    # Fragment de suivi RÉEL actif de l'identité à la frame de départ du plan
+    # (peut différer de ``selected_track`` : la caméra suit l'identité canonique
+    # à travers ses fragments, jamais un id fabriqué).
+    active_fragment: int | None = None
     # Cibles caméra réelles (frame -> centre source réel suivi), preuve suivie.
     targets: list[dict[str, Any]] = field(default_factory=list)
 
@@ -299,6 +308,18 @@ class EditPlan:
     hero_method: str | None = None
     followed_track: int | None = None
     policy: str = "NO_EVENT_WITHOUT_EVIDENCE"
+    # --- Subject Continuity V2.1 : identité canonique héros pour le montage ---
+    # L'id ``hero_track`` reste l'id brut (contrat ``hero_track == followed_track``
+    # préservé) ; ``hero_identity`` porte la lignée canonique complète
+    # (``canonical_track_id`` + ``source_track_ids``). ``camera_follow_mode``
+    # documente si la caméra suit l'identité canonique (fragments multiples) ou
+    # un fragment brut unique.
+    hero_identity: dict[str, Any] = field(default_factory=dict)
+    hero_lineage: list[int] = field(default_factory=list)
+    continuity_links: list[dict[str, Any]] = field(default_factory=list)
+    continuity_confidence: float = 0.0
+    continuity_evidence: list[str] = field(default_factory=list)
+    camera_follow_mode: str = "RAW_TRACK"
     # Contrat événement -> héros -> caméra (hero_track == followed_track).
     hero_camera_contract: bool = False
     duration_preserved: bool = True

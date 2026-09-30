@@ -11,13 +11,13 @@
     "available": false,
     "count": 0
   },
-  "torch": "2.14.0+cpu",
+  "torch": "2.6.0+cpu",
   "gpu_validated": false,
   "summary": {
     "detector": "VERIFIED",
     "reid": "VERIFIED",
     "depth": "VERIFIED",
-    "segmenter": "VERIFIED",
+    "segmenter": "DEPENDENCY_MISSING",
     "interpolation": "CHECKPOINT_MISSING"
   },
   "models": {
@@ -84,9 +84,9 @@
           576,
           1024
         ],
-        "min": 0.36994612216949463,
-        "max": 7.2933125495910645,
-        "mean": 3.1161601543426514
+        "min": 0.36994579434394836,
+        "max": 7.29331111907959,
+        "mean": 3.116159677505493
       }
     },
     "segmenter": {
@@ -95,14 +95,12 @@
       "labels": [
         "CODE_INTEGRATED",
         "CHECKPOINT_PRESENT",
-        "MODEL_LOADS",
-        "INFERENCE_WORKS"
+        "DEPENDENCY_MISSING"
       ],
-      "verified": true,
+      "verified": false,
       "evidence": {
-        "score": 0.8853868246078491,
-        "mask_pixels": 589824,
-        "mask_nonzero": 732
+        "truth": "DEPENDENCY_MISSING",
+        "message": "sam2 runtime unavailable: No module named 'sam2'"
       }
     },
     "interpolation": {

@@ -45,22 +45,19 @@
         "samples": 2,
         "first": {
           "frame": 0,
-          "min": 0.36994612216949463,
-          "max": 7.2933125495910645,
-          "mean": 3.1161601543426514
+          "min": 0.36994579434394836,
+          "max": 7.29331111907959,
+          "mean": 3.116159677505493
         }
       },
       "artifacts": []
     },
     {
       "name": "segmentation",
-      "status": "OK",
-      "message": "SAM2 masks computed",
-      "evidence": "VISIBLE_FROM_SOURCE",
-      "metrics": {
-        "masks": 2,
-        "first_score": 0.8853868246078491
-      },
+      "status": "UNKNOWN",
+      "message": "No person to segment in samples",
+      "evidence": "UNKNOWN",
+      "metrics": {},
       "artifacts": []
     },
     {
@@ -84,9 +81,9 @@
       "device": "cpu",
       "loaded": true,
       "message": "YOLO loaded (80 classes, COCO/generic)",
-      "load_time_s": 0.2129,
+      "load_time_s": 0.3752,
       "infer_count": 484,
-      "avg_infer_ms": 95.669,
+      "avg_infer_ms": 101.818,
       "last_error": null,
       "meta": {
         "checkpoint": "/home/user/GoalReel/models/detection/yolov8s.pt",
@@ -112,21 +109,16 @@
       "name": "segmenter",
       "stage": "segmentation",
       "path": "/home/user/GoalReel/models/segmentation/sam2.1_hiera_tiny.pt",
-      "status": "OK",
-      "truth": "READY",
+      "status": "MODEL_UNAVAILABLE",
+      "truth": "DEPENDENCY_MISSING",
       "device": "cpu",
-      "loaded": true,
-      "message": "SAM2 predictor loaded (cfg=configs/sam2.1/sam2.1_hiera_t.yaml)",
-      "load_time_s": 2.3174,
-      "infer_count": 3,
-      "avg_infer_ms": 1764.761,
+      "loaded": false,
+      "message": "sam2 runtime unavailable: No module named 'sam2'",
+      "load_time_s": 0.0,
+      "infer_count": 0,
+      "avg_infer_ms": 0.0,
       "last_error": null,
-      "meta": {
-        "checkpoint": "/home/user/GoalReel/models/segmentation/sam2.1_hiera_tiny.pt",
-        "config": "configs/sam2.1/sam2.1_hiera_t.yaml",
-        "runtime": "sam2",
-        "device": "cpu"
-      }
+      "meta": {}
     },
     "depth": {
       "name": "depth",
@@ -137,9 +129,9 @@
       "device": "cpu",
       "loaded": true,
       "message": "Depth Anything V2 loaded (vendored); missing=0 unexpected=0",
-      "load_time_s": 0.4673,
+      "load_time_s": 2.3635,
       "infer_count": 2,
-      "avg_infer_ms": 2382.614,
+      "avg_infer_ms": 2584.021,
       "last_error": null,
       "meta": {
         "checkpoint": "/home/user/GoalReel/models/depth/depth_anything_v2_vits.pth",
@@ -159,9 +151,9 @@
       "device": "cpu",
       "loaded": true,
       "message": "OSNet x1.0 loaded; missing=0 unexpected=0",
-      "load_time_s": 0.1052,
+      "load_time_s": 0.1014,
       "infer_count": 28,
-      "avg_infer_ms": 54.434,
+      "avg_infer_ms": 54.71,
       "last_error": null,
       "meta": {
         "checkpoint": "/home/user/GoalReel/models/reid/osnet_x1_0_imagenet.pth",

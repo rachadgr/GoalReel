@@ -32,11 +32,96 @@ from goalreel.core.io import write_json                      # noqa: E402
 from goalreel.source.analysis import analyze_video           # noqa: E402
 from goalreel.scene.camera import CameraEstimator            # noqa: E402
 from goalreel.events.football import FootballEventEngine     # noqa: E402
-from goalreel.events.hero import score_hero, track_stats    # noqa: E402
+from goalreel.events.hero import score_hero, track_stats     # noqa: E402
 from goalreel.source.ffmpeg import render_vertical           # noqa: E402
 from goalreel.qc.final import final_qc                       # noqa: E402
 from goalreel.models.manager import ModelManager             # noqa: E402
 from goalreel.services.analysis_pipeline import AnalysisPipeline  # noqa: E402
+from goalreel.tracking.continuity import analyze_continuity  # noqa: E402
+
+# Bornes de coût pour les embeddings OSNet de continuité (Subject Continuity V2.1).
+CONTINUITY_MAX_TRACKS = 80      # nombre max de fragments embeddés
+CONTINUITY_CROPS_PER_TRACK = 3  # crops échantillonnés par fragment
+CONTINUITY_MAX_TOTAL = 320      # plafond dur d'inférences Re-ID
+
+
+def _track_embeddings(manager: ModelManager, video: str, tracks: dict) -> tuple[dict, str]:
+    """Embeddings OSNet réels par fragment (moyennés, L2-normalisés).
+
+    Renvoie ``(embeddings, truth)`` où ``truth`` ∈ {``osnet``, ``MODEL_UNAVAILABLE``,
+    ``NO_TRACKS``, ``NO_EMBEDDINGS``}. Aucun embedding n'est simulé : si OSNet
+    est indisponible, on renvoie ``{}`` et la continuité continue avec les
+    autres preuves mesurées (échec en douceur).
+    """
+    if not tracks:
+        return {}, "NO_TRACKS"
+    reid = manager.load("reid")
+    if reid is None:
+        return {}, "MODEL_UNAVAILABLE"
+
+    import cv2
+    import numpy as np
+
+    # Fragments triés par persistance décroissante (déterministe), plafonnés.
+    order = sorted(tracks, key=lambda tid: (-len(tracks[tid]), int(tid)))
+    order = order[:CONTINUITY_MAX_TRACKS]
+
+    needed: dict[int, list] = {}
+    for tid in order:
+        items = [it for it in tracks[tid] if isinstance(it, dict) and it.get("bbox")]
+        if not items:
+            continue
+        n = len(items)
+        idxs = sorted({0, n // 2, n - 1})
+        idxs = idxs[:CONTINUITY_CROPS_PER_TRACK]
+        for i in idxs:
+            it = items[i]
+            fr = int(it.get("frame", i))
+            needed.setdefault(fr, []).append((int(tid), it["bbox"]))
+
+    # Décodage séquentiel unique ; collecte des embeddings disponibles.
+    cap = cv2.VideoCapture(str(video))
+    if not cap.isOpened():
+        return {}, "NO_EMBEDDINGS"
+    sums: dict[int, np.ndarray] = {}
+    counts: dict[int, int] = {}
+    total = 0
+    idx = 0
+    try:
+        while total < CONTINUITY_MAX_TOTAL:
+            ok, frame = cap.read()
+            if not ok:
+                break
+            todo = needed.get(idx)
+            if todo:
+                for tid, bbox in todo:
+                    x1, y1, x2, y2 = [int(v) for v in bbox]
+                    x1, y1 = max(0, x1), max(0, y1)
+                    x2, y2 = max(x1 + 1, x2), max(y1 + 1, y2)
+                    crop = frame[y1:y2, x1:x2]
+                    if crop.size == 0:
+                        continue
+                    with manager.time_it("reid"):
+                        emb = reid.embed(crop)
+                    if emb is None:
+                        continue
+                    sums[tid] = (sums[tid] + emb) if tid in sums else emb.copy()
+                    counts[tid] = counts.get(tid, 0) + 1
+                    total += 1
+                    if total >= CONTINUITY_MAX_TOTAL:
+                        break
+            idx += 1
+    finally:
+        cap.release()
+
+    embeddings: dict[int, np.ndarray] = {}
+    for tid, s in sums.items():
+        v = s / float(counts.get(tid, 1))
+        n = float(np.linalg.norm(v))
+        if n > 0:
+            embeddings[tid] = (v / n).astype("float32")
+    return embeddings, ("osnet" if embeddings else "NO_EMBEDDINGS")
+
 
 
 def _stage_to_dict(stage):
@@ -83,7 +168,8 @@ def build_backend_status(models: Path, checkpoints: Path,
 
 def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
         manager: ModelManager | None = None, analyze: bool = True,
-        max_frames: int = 0, stages: list[str] | None = None) -> dict:
+        max_frames: int = 0, stages: list[str] | None = None,
+        continuity_embeddings: bool = True) -> dict:
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     video = str(video)
@@ -197,6 +283,29 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
     }
     write_json(out / "hero_moment.json", hero_moment)
 
+    # 5a) SUBJECT CONTINUITY V2.1 -----------------------------------------
+    # Relie les fragments de suivi bruts d'un MÊME joueur en une identité
+    # canonique lorsque des preuves mesurées suffisent (trou borné + continuité
+    # spatiale/vitesse/géométrie + apparence OSNet si disponible). Ne fabrique
+    # aucune identité, ne remplace aucun traqueur. Le résultat
+    # (``track_continuity.json``) alimente le Director V2 et le reframe.
+    continuity_embeddings_map: dict = {}
+    embeddings_truth = "DISABLED"
+    if continuity_embeddings and tracks:
+        try:
+            continuity_embeddings_map, embeddings_truth = _track_embeddings(
+                manager, video, tracks)
+        except Exception as exc:  # la continuité ne doit jamais casser le pipeline
+            continuity_embeddings_map, embeddings_truth = {}, f"ERROR:{type(exc).__name__}"
+    track_continuity = analyze_continuity(
+        tracks, embeddings=continuity_embeddings_map,
+        ball_detections=ball_detections, hero_track=hero_moment.get("track_id"),
+        width=info.width, height=info.height)
+    track_continuity["appearance"]["source"] = (
+        "osnet" if embeddings_truth == "osnet" else None)
+    track_continuity["appearance"]["pipeline_truth"] = embeddings_truth
+    write_json(out / "track_continuity.json", track_continuity)
+
     # 5b) Novel-view / caméra virtuelle (état réel du backend) -------------
     from goalreel.generation.novel_view.planner import NovelViewPlanner
     novel_view_status = NovelViewPlanner().status()
@@ -217,7 +326,8 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
     from goalreel.cinematic.reframe import build_reframe_targets
     reframe_targets, reframe_meta = build_reframe_targets(
         tracks, preferred_track=hero_moment.get("track_id"),
-        hero_event=hero_moment.get("event"), width=info.width)
+        hero_event=hero_moment.get("event"), width=info.width,
+        identity=track_continuity.get("hero_identity"))
     write_json(out / "camera_reframe.json", {
         "schema": "goalreel.camera_reframe.v1",
         **reframe_meta,
@@ -228,11 +338,11 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
     # 5d) CINEMATIC DIRECTOR V2 ------------------------------------------
     # Couche de décision déterministe : transforme la preuve réelle (suivi,
     # événements, héros multi-preuves, ballon COCO, coupes/mouvement réels
-    # mesurés sur la source) en un PLAN DE MONTAGE explicite (phases, cadrages,
-    # vitesses, transitions). Le plan est enregistré
-    # (``cinematic_edit_plan.json``) puis exécuté par le renderer plan-aware.
-    # Aucun événement n'est inventé : les phases non soutenues par la preuve
-    # sont omises et listées avec leur raison.
+    # mesurés sur la source, identité canonique de continuité) en un PLAN DE
+    # MONTAGE explicite (phases, cadrages, vitesses, transitions). Le plan est
+    # enregistré (``cinematic_edit_plan.json``) puis exécuté par le renderer
+    # plan-aware. Aucun événement n'est inventé : les phases non soutenues par
+    # la preuve sont omises et listées avec leur raison.
     from goalreel.cinematic.director import build_edit_plan
     from goalreel.cinematic.evidence_model import scan_scene
     from goalreel.cinematic.render_plan import render_plan, plan_validation
@@ -245,7 +355,8 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
         ball_detections=ball_detections,
         camera_transforms=(camera.get("metrics", {}) or {}).get("transforms"),
         width=info.width, height=info.height, fps=info.fps,
-        total_frames=info.frames, scene=scene, rife_available=rife_available)
+        total_frames=info.frames, scene=scene, rife_available=rife_available,
+        continuity=track_continuity)
     write_json(out / "cinematic_edit_plan.json", edit_plan.to_dict())
     director_validation = plan_validation(edit_plan,
                                           (edit_plan.time_map or {}).get("shots"))
@@ -267,6 +378,19 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
         **qc,
         "director": director_validation,
         "render": render_info,
+        "continuity": {
+            "schema": track_continuity.get("schema"),
+            "raw_tracks": track_continuity.get("stats", {}).get("raw_tracks"),
+            "identity_count": track_continuity.get("stats", {}).get("identity_count"),
+            "links_accepted": track_continuity.get("stats", {}).get("links_accepted"),
+            "hero_identity": {
+                "canonical_track_id": track_continuity.get("hero_identity", {}).get("canonical_track_id"),
+                "source_track_ids": track_continuity.get("hero_identity", {}).get("source_track_ids"),
+                "confidence": track_continuity.get("hero_identity", {}).get("confidence"),
+                "fallback": track_continuity.get("hero_identity", {}).get("fallback"),
+            },
+            "camera_follow_mode": edit_plan.camera_follow_mode,
+        },
         "reframe": {**reframe_meta, "hero_track": hero_moment.get("track_id"),
                     "targets_count": len(reframe_targets)},
     })
@@ -277,6 +401,7 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
         "model_truth": str(out / "model_truth.json"),
         "event_timeline": str(out / "event_timeline.json"),
         "hero_moment": str(out / "hero_moment.json"),
+        "track_continuity": str(out / "track_continuity.json"),
         "novel_view_status": str(out / "novel_view_status.json"),
         "camera_reframe": str(out / "camera_reframe.json"),
         "cinematic_edit_plan": str(out / "cinematic_edit_plan.json"),
@@ -289,12 +414,21 @@ def run(video: str, out: Path, models: Path, checkpoints: Path, every: int = 15,
         "outputs": outputs,
         "backend_summary": backend_status["summary"],
         "model_truth_summary": model_truth.get("summary"),
+        "continuity": {
+            "raw_tracks": track_continuity.get("stats", {}).get("raw_tracks"),
+            "identity_count": track_continuity.get("stats", {}).get("identity_count"),
+            "links_accepted": track_continuity.get("stats", {}).get("links_accepted"),
+            "hero_identity": track_continuity.get("hero_identity", {}),
+            "appearance": track_continuity.get("appearance", {}),
+        },
         "cinematic_edit_plan": {
             "shots": edit_plan.shot_count,
             "phases_present": edit_plan.phases_present,
             "hero_track": edit_plan.hero_track,
             "followed_track": edit_plan.followed_track,
             "hero_camera_contract": edit_plan.hero_camera_contract,
+            "hero_lineage": edit_plan.hero_lineage,
+            "camera_follow_mode": edit_plan.camera_follow_mode,
             "duration_preserved": edit_plan.duration_preserved,
             "director_validation": director_validation,
         },
@@ -317,12 +451,15 @@ def main() -> None:
                     help="étapes à exécuter (ex: detection,tracking,reid,depth)")
     ap.add_argument("--no-analyze", action="store_true",
                     help="désactiver l'analyse par modèles (manifest + rendu seulement)")
+    ap.add_argument("--no-continuity-embeddings", action="store_true",
+                    help="désactiver les embeddings OSNet pour la continuité de sujet")
     args = ap.parse_args()
     stages = args.stages.split(",") if args.stages else None
 
     report = run(args.video, Path(args.out), Path(args.models),
                  Path(args.checkpoints), args.every, analyze=not args.no_analyze,
-                 max_frames=args.max_frames, stages=stages)
+                 max_frames=args.max_frames, stages=stages,
+                 continuity_embeddings=not args.no_continuity_embeddings)
     print(json.dumps(report, indent=2, ensure_ascii=False))
 
 

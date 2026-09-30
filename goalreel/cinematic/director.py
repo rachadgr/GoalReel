@@ -104,6 +104,12 @@ from .evidence_model import (
 )
 from .speed_design import speed_curve
 from .transitions import resolve_transitions
+from ..tracking.continuity import (
+    active_track_at,
+    analyze_continuity,
+    hero_identity,
+    identity_frames,
+)
 
 # ---------------------------------------------------------------------------
 # Paramètres de montage (documentés, déterministes).
@@ -299,12 +305,19 @@ def dominant_track_at(tracks: dict[Any, list], frame: int,
 
 
 def track_targets(tracks: dict[Any, list], track_id: int | None,
-                  start_frame: int, end_frame: int) -> list[dict[str, Any]]:
+                  start_frame: int, end_frame: int,
+                  identity: dict[str, Any] | None = None,
+                  canonical_id: int | None = None) -> list[dict[str, Any]]:
     """Cibles caméra RÉELLES d'une trajectoire sur ``[start, end]``.
 
     Chaque cible reprend le centre de bbox réellement suivi ; les frames sans
     suivi **maintiennent la dernière position réelle connue** (jamais une
     position inventée). Renvoie ``[]`` si aucune preuve.
+
+    Quand ``identity`` (Subject Continuity V2.1) est fourni, chaque cible porte
+    aussi ``fragment`` = fragment de suivi RÉEL actif à cette frame, et
+    ``identity`` = ``canonical_id`` : la caméra reste couplée au fragment actif
+    de la **même** identité canonique (aucun id fabriqué).
     """
     if track_id is None or int(track_id) not in {int(k) for k in (tracks or {})}:
         return []
@@ -330,10 +343,25 @@ def track_targets(tracks: dict[Any, list], track_id: int | None,
         else:
             cx, cy = hold(f)
             held = True
-        out.append({"frame": int(f), "cx": round_scale(cx, 3),
-                    "cy": round_scale(cy, 3), "track_id": int(track_id),
-                    "held": bool(held)})
+        tgt: dict[str, Any] = {"frame": int(f), "cx": round_scale(cx, 3),
+                               "cy": round_scale(cy, 3), "track_id": int(track_id),
+                               "held": bool(held)}
+        if identity is not None and canonical_id is not None:
+            frag = active_track_at(identity, f)
+            tgt["fragment"] = int(frag) if frag is not None else int(track_id)
+            tgt["identity"] = int(canonical_id)
+        out.append(tgt)
     return out
+
+
+def _active_fragment_at(identity: dict[str, Any] | None, track_id: int | None,
+                        frame: int) -> int | None:
+    """Fragment de suivi RÉEL actif d'une identité à ``frame`` (fallback ``track_id``)."""
+    if identity is not None:
+        frag = active_track_at(identity, frame)
+        if frag is not None:
+            return int(frag)
+    return int(track_id) if track_id is not None else None
 
 
 def _clamp_crop(value: float) -> float:
@@ -345,7 +373,9 @@ def _phase_shot(phase: str, start: int, end: int, tracks: dict[Any, list],
                 rife_available: bool, motion_interp: str,
                 real_cuts: list[int], index: int, prev_phase: str | None,
                 is_last_phase: bool, boundary: str,
-                hero_evidence: dict[str, Any]) -> Shot | None:
+                hero_evidence: dict[str, Any],
+                hero_lineage_identity: dict[str, Any] | None = None,
+                canonical_id: int | None = None) -> Shot | None:
     """Construit un :class:`Shot` pour une phase sur ``[start, end]``."""
     n = end - start + 1
     if n < MIN_SHOT_FRAMES:
@@ -371,7 +401,20 @@ def _phase_shot(phase: str, start: int, end: int, tracks: dict[Any, list],
         selected: int | None = int(hero_track)
     else:
         selected = dominant_track_at(tracks, start)
-    targets = track_targets(tracks, selected, start, end)
+    targets = track_targets(tracks, selected, start, end,
+                            identity=(hero_lineage_identity if hero_centric else None),
+                            canonical_id=canonical_id)
+
+    # Identité visée : identité canonique héros pour les plans centrés héros,
+    # fragment de suivi brut sinon (distinction explicite exigée).
+    if hero_centric and hero_known and hero_lineage_identity is not None:
+        target_identity = "CANONICAL_HERO_IDENTITY"
+        canonical_identity_id: int | None = canonical_id
+        active_fragment = _active_fragment_at(hero_lineage_identity, selected, start)
+    else:
+        target_identity = "RAW_TRACK"
+        canonical_identity_id = None
+        active_fragment = selected
 
     event_supported = phase in EVENT_SPEED_PHASES and bool(hero_event)
     curve = speed_curve(phase, event_supported=event_supported,
@@ -390,6 +433,10 @@ def _phase_shot(phase: str, start: int, end: int, tracks: dict[Any, list],
         evidence.append(f"track:{selected}")
     if hero_centric:
         evidence.append("hero_centric:true")
+    if target_identity == "CANONICAL_HERO_IDENTITY":
+        evidence.append(f"identity:{canonical_identity_id}")
+        if active_fragment is not None and active_fragment != canonical_identity_id:
+            evidence.append(f"active_fragment:{active_fragment}")
     if boundary == "REAL_SOURCE_CUT":
         evidence.append("source_cut_boundary")
     evidence.append(f"speed:{curve.behavior}")
@@ -397,6 +444,9 @@ def _phase_shot(phase: str, start: int, end: int, tracks: dict[Any, list],
     reason = f"{phase} on tracked evidence; transition={t_reason}"
     if hero_centric and not hero_known:
         reason += "; hero track unavailable -> real dominant track used"
+    if target_identity == "CANONICAL_HERO_IDENTITY" and active_fragment is not None \
+            and active_fragment != canonical_identity_id:
+        reason += f"; follows canonical hero via active fragment {active_fragment}"
     if selected is None:
         reason += "; no tracked subject at shot start (wide-safe framing)"
 
@@ -427,6 +477,9 @@ def _phase_shot(phase: str, start: int, end: int, tracks: dict[Any, list],
         reason=reason,
         fallback=curve.fallback,
         boundary=boundary,
+        target_identity=target_identity,
+        canonical_identity_id=canonical_identity_id,
+        active_fragment=(int(active_fragment) if active_fragment is not None else None),
         targets=targets,
     )
 
@@ -435,7 +488,9 @@ def _segments_to_shots(segments: list[tuple[int, int, str]],
                        tracks: dict[Any, list], hero_track: int | None,
                        hero_event: Any, fps: float, rife_available: bool,
                        motion_interp: str, real_cuts: list[int],
-                       hero_evidence: dict[str, Any]) -> list[Shot]:
+                       hero_evidence: dict[str, Any],
+                       hero_lineage_identity: dict[str, Any] | None = None,
+                       canonical_id: int | None = None) -> list[Shot]:
     """Transforme des segments ``(start, end, phase)`` en :class:`Shot` ordonnés."""
     shots: list[Shot] = []
     prev_phase: str | None = None
@@ -448,7 +503,9 @@ def _segments_to_shots(segments: list[tuple[int, int, str]],
         shot = _phase_shot(ph, s, e, tracks, hero_track, hero_event, fps,
                            rife_available, motion_interp, real_cuts, len(shots),
                            prev_phase, is_last_phase=(i == len(segments) - 1),
-                           boundary=boundary, hero_evidence=hero_evidence)
+                           boundary=boundary, hero_evidence=hero_evidence,
+                           hero_lineage_identity=hero_lineage_identity,
+                           canonical_id=canonical_id)
         if shot is None:
             continue
         shots.append(shot)
@@ -758,6 +815,66 @@ def _evidence_summary(evidence: dict[str, Any], scene: dict[str, Any],
     return out
 
 
+# ---------------------------------------------------------------------------
+# Subject Continuity V2.1 — helpers d'identité canonique
+# ---------------------------------------------------------------------------
+def _identity_has_lineage(identity: dict[str, Any] | None) -> bool:
+    """Vrai si l'identité canonique regroupe plus d'un fragment brut."""
+    return bool(identity) and len(identity.get("source_track_ids", [])) > 1
+
+
+def _identity_confidence(identity: dict[str, Any] | None) -> float:
+    if not identity:
+        return 0.0
+    return float(identity.get("confidence", 0.0) or 0.0)
+
+
+def _identity_evidence(identity: dict[str, Any] | None) -> list[str]:
+    if not identity:
+        return []
+    return [str(e) for e in identity.get("evidence", [])]
+
+
+def resolve_hero_identity(tracks: dict[Any, list] | None,
+                          hero_moment: dict[str, Any] | None,
+                          continuity: dict[str, Any] | None = None,
+                          ) -> tuple[dict[str, Any] | None, dict[Any, list]]:
+    """Résout l'identité canonique du héros et les trajectoires de plan.
+
+    Renvoie ``(identity, plan_tracks)`` :
+
+      * ``identity`` : identité canonique héros (lignée) ou ``None`` si le héros
+        n'est pas suivi ;
+      * ``plan_tracks`` : le dict de trajectoires à consommer par le director.
+        Quand la lignée regroupe plusieurs fragments, le héros y est remplacé par
+        la **concaténation réelle** de ses fragments (sous son id canonique),
+        afin que vitesse/beats/cibles proviennent de la trajectoire continue
+        réelle — jamais d'une identité fabriquée.
+    """
+    tracks = tracks or {}
+    hero_moment = hero_moment or {}
+    hero_track = hero_moment.get("hero_track")
+    if hero_track is None:
+        hero_track = hero_moment.get("track_id")
+    hero_track = int(hero_track) if hero_track is not None else None
+    if hero_track is None:
+        return None, dict(tracks)
+
+    if continuity is None:
+        continuity = analyze_continuity(tracks, hero_track=hero_track)
+
+    identity = continuity.get("hero_identity")
+    if not identity:
+        identity = hero_identity(continuity, hero_track, tracks=tracks)
+
+    plan_tracks = dict(tracks)
+    if _identity_has_lineage(identity):
+        frames = identity_frames(tracks, identity)
+        if frames:
+            plan_tracks[hero_track] = frames
+    return identity, plan_tracks
+
+
 def build_edit_plan(video: str, tracks: dict[Any, list] | None = None,
                     hero_moment: dict[str, Any] | None = None,
                     events: list[dict] | None = None,
@@ -767,11 +884,19 @@ def build_edit_plan(video: str, tracks: dict[Any, list] | None = None,
                     total_frames: int = 0, scene: dict[str, Any] | None = None,
                     rife_available: bool = False,
                     motion_interpolation: str = "TEMPORAL_RESAMPLE_NO_RIFE",
+                    continuity: dict[str, Any] | None = None,
                     ) -> EditPlan:
     """Construit le plan de montage cinématique — déterministe, piloté par la preuve.
 
     Toutes les entrées proviennent des sorties réelles du pipeline. Le plan
     résultant partitionne **exactement** ``total_frames`` (durée préservée).
+
+    ``continuity`` (Subject Continuity V2.1) : rapport de continuité de sujet
+    (``track_continuity.json``). Quand il regroupe plusieurs fragments bruts en
+    une identité canonique héros, le director consomme cette lignée : les beats,
+    la vitesse et les cibles caméra proviennent de la trajectoire continue réelle,
+    et la caméra suit l'**identité canonique** à travers ses fragments actifs.
+    ``continuity=None`` préserve exactement le comportement historique.
     """
     tracks = tracks or {}
     hero_moment = hero_moment or {}
@@ -801,14 +926,24 @@ def build_edit_plan(video: str, tracks: dict[Any, list] | None = None,
     hero_event = hero_moment.get("event") or None
     hero_conf = float(hero_moment.get("score") or 0.0)
 
-    evidence = build_evidence(tracks=tracks, ball_detections=ball_detections,
+    # --- Subject Continuity V2.1 : identité canonique + trajectoires de plan --
+    hero_ident, plan_tracks = resolve_hero_identity(tracks, hero_moment, continuity)
+    has_lineage = _identity_has_lineage(hero_ident)
+    continuity_links = list((hero_ident or {}).get("links", [])) if hero_ident else []
+    continuity_conf = _identity_confidence(hero_ident)
+    continuity_evid = _identity_evidence(hero_ident)
+    hero_lineage = list((hero_ident or {}).get("source_track_ids", [])) if hero_ident else []
+    camera_follow_mode = ("HERO_IDENTITY" if has_lineage
+                          else ("RAW_TRACK" if hero_track is not None else "NONE"))
+
+    evidence = build_evidence(tracks=plan_tracks, ball_detections=ball_detections,
                               camera_transforms=camera_transforms, width=width,
                               height=height, total_frames=total_frames, scene=scene)
     motion = scene.get("motion")
     real_cuts = list(scene.get("cut_frames", []))
 
-    presence = hero_presence(hero_track, tracks)
-    hero_frames = tracks.get(hero_track, []) if hero_track is not None else []
+    presence = hero_presence(hero_track, plan_tracks)
+    hero_frames = plan_tracks.get(hero_track, []) if hero_track is not None else []
     hero_supported = bool(presence.get("present")) and is_person_sized(hero_frames)
 
     # --- Cas sans héros réellement suivi : plan minimal honnête --------------
@@ -827,7 +962,7 @@ def build_edit_plan(video: str, tracks: dict[Any, list] | None = None,
         else:
             segments = [(0, total_frames - 1, HOOK)]
         shots = _segments_to_shots(
-            segments, tracks=tracks, hero_track=None, hero_event=None, fps=fps,
+            segments, tracks=plan_tracks, hero_track=None, hero_event=None, fps=fps,
             rife_available=rife_available, motion_interp=motion_interpolation,
             real_cuts=real_cuts, hero_evidence={"confidence": 0.0})
         phases_present = sorted({s.phase for s in shots},
@@ -843,7 +978,13 @@ def build_edit_plan(video: str, tracks: dict[Any, list] | None = None,
             phases_present=phases_present,
             phases_absent=[_absent(p, "NO_HERO_EVIDENCE") for p in PHASE_ORDER
                            if p not in phases_present],
-            shots=shots)
+            shots=shots,
+            hero_identity=(hero_ident or {}),
+            hero_lineage=hero_lineage,
+            continuity_links=continuity_links,
+            continuity_confidence=continuity_conf,
+            continuity_evidence=continuity_evid,
+            camera_follow_mode="NONE")
         plan.time_map = allocate_output_frames(shots, total_frames)
         plan.duration_preserved = bool(plan.time_map.get("duration_preserved"))
         plan.claims = {
@@ -881,6 +1022,17 @@ def build_edit_plan(video: str, tracks: dict[Any, list] | None = None,
     if beats.get("secondary") is None and not beats.get("insufficient_evidence"):
         fallbacks.append({"stage": "final_hero", "reason": "HERO_NOT_TRACKED_IN_FINAL_WINDOW",
                           "detail": f"trajectoire héros terminée à la frame {hero_last}"})
+    # Subject Continuity V2.1 : si une continuation proche du héros a été
+    # REJETÉE faute de preuve suffisante, on l'expose honnêtement (jamais un
+    # fragment fusionné de force).
+    if hero_ident and hero_ident.get("fallback"):
+        fallbacks.append({
+            "stage": "continuity",
+            "reason": str(hero_ident.get("fallback")),
+            "detail": ("aucune continuation crédible du héros : fragment de suivi "
+                       "laissé non résolu (pas de merge fabriqué)"),
+            "target_track_id": (hero_ident.get("fallback_detail") or {}).get("target_track_id"),
+        })
 
     candidates = _candidates(hero_first, hero_peak, hero_last, total_frames,
                              scene_for_candidates, fallbacks, speed_profile=profile)
@@ -890,12 +1042,14 @@ def build_edit_plan(video: str, tracks: dict[Any, list] | None = None,
                           "detail": "aucun segment candidat résolu"})
         segments = [(0, total_frames - 1, HOOK)]
 
-    shots = _segments_to_shots(segments, tracks=tracks, hero_track=hero_track,
+    shots = _segments_to_shots(segments, tracks=plan_tracks, hero_track=hero_track,
                               hero_event=hero_event, fps=fps,
                               rife_available=rife_available,
                               motion_interp=motion_interpolation,
                               real_cuts=real_cuts,
-                              hero_evidence={"confidence": hero_conf})
+                              hero_evidence={"confidence": hero_conf},
+                              hero_lineage_identity=hero_ident,
+                              canonical_id=hero_track)
 
     phases_present = sorted({s.phase for s in shots},
                             key=lambda p: PHASE_ORDER.index(p) if p in PHASE_ORDER else 99)
@@ -933,7 +1087,23 @@ def build_edit_plan(video: str, tracks: dict[Any, list] | None = None,
         phases_present=phases_present,
         phases_absent=phases_absent,
         shots=shots,
+        hero_identity=(hero_ident or {}),
+        hero_lineage=hero_lineage,
+        continuity_links=continuity_links,
+        continuity_confidence=continuity_conf,
+        continuity_evidence=continuity_evid,
+        camera_follow_mode=camera_follow_mode,
     )
+    # Preuve de continuité consignée (identité canonique, lignée, contrat caméra).
+    plan.evidence_used["hero_identity"] = {
+        "canonical_track_id": (hero_ident or {}).get("canonical_track_id"),
+        "source_track_ids": hero_lineage,
+        "fragments": len(hero_lineage),
+        "confidence": continuity_conf,
+        "fallback": (hero_ident or {}).get("fallback"),
+        "camera_follow_mode": camera_follow_mode,
+        "has_lineage": bool(has_lineage),
+    }
     plan.time_map = allocate_output_frames(shots, total_frames)
     plan.duration_preserved = bool(plan.time_map.get("duration_preserved"))
     plan.claims = {
