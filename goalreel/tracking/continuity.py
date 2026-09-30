@@ -1,4 +1,4 @@
-"""Subject Continuity V2.1 — identité canonique à partir de fragments de suivi.
+"""Subject Continuity V2.2 — identité canonique + association prédictive.
 
 Rôle
 ----
@@ -8,6 +8,28 @@ raté du détecteur, un croisement de joueurs ou une brève disparition. Le suje
 « héros » se retrouve alors tronqué (ex. le track 9 s'arrête à la frame 361
 alors que la source en contient 484), ce qui empêche toute continuation fiable
 (REACTION / FINAL_HERO / SECONDARY).
+
+V2.2 — association prédictive bornée
+------------------------------------
+V2.1 comparait le déplacement **instantané** entre deux fragments, ce qui
+rejetait un fragment pourtant plausible lorsque le dernier point du fragment
+source était « gelé » (maintien ByteTrack) ou que le trou était court mais la
+vitesse bruitée. V2.2 introduit, **sans retirer aucun garde-fou** :
+
+  * une **prédiction de position bornée** du fragment source (vitesse médiane
+    robuste sur plusieurs observations récentes, fenêtre temporelle bornée) ;
+  * une **erreur de prédiction normalisée** (par la diagonale/la taille de bbox
+    et la distance temporelle) ;
+  * une **tolérance de vitesse robuste** (médiane récente + dispersion MAD,
+    tolérance d'accélération bornée, dépendante du trou) ;
+  * un nouveau motif de rejet explicite ``PREDICTION_ERROR_TOO_LARGE`` ;
+  * une **représentation d'apparence de la lignée héros** (moyenne des
+    embeddings OSNet réels des fragments déjà acceptés) pour comparer un
+    candidat à l'identité canonique complète, et non au seul dernier fragment.
+
+La politique de vérité reste inchangée : **aucune fusion sans preuve**, aucune
+identité fabriquée, aucune réécriture des tracks bruts. Si la preuve reste
+insuffisante, le fragment est laissé ``UNRESOLVED_TRACK_FRAGMENT``.
 
 Cette couche **n'ajoute aucun nouveau traqueur** et **ne fabrique aucune
 identité**. Elle relie, de façon *déterministe*, des fragments de suivi bruts
@@ -53,7 +75,9 @@ from typing import Any
 
 import numpy as np
 
-SCHEMA = "goalreel.track_continuity.v1"
+SCHEMA = "goalreel.track_continuity.v2"
+SCHEMA_LEGACY = "goalreel.track_continuity.v1"
+METHOD = "subject_continuity_v2.2"
 POLICY = "NO_MERGE_WITHOUT_EVIDENCE"
 FALLBACK_UNRESOLVED = "UNRESOLVED_TRACK_FRAGMENT"
 FALLBACK_NO_APPEARANCE = "APPEARANCE_EVIDENCE_UNAVAILABLE"
@@ -84,6 +108,26 @@ APPEARANCE_MIN_COS = 0.20     # cosine en dessous duquel l'apparence CONTREDIT
 SPATIAL_REJECT_PX = 260.0     # saut de position absolu rédhibitoire (px)
 SPATIAL_SOFT_PX = 150.0       # saut modéré qui, combiné à une vitesse incohérente, rejette
 VELOCITY_REJECT = 14.0        # incohérence de vitesse (px/frame) rédhibitoire
+
+# ---------------------------------------------------------------------------
+# V2.2 — Association prédictive bornée (constantes documentées).
+#
+# La prédiction n'extrapole JAMAIS indéfiniment : la fenêtre de prédiction est
+# bornée par ``PREDICTION_MAX_HORIZON`` frames et par ``MAX_GAP_FRAMES``. La
+# vitesse utilisée est la **médiane** des déplacements observés (robuste aux
+# points gelés / outliers ByteTrack), complétée par la dispersion MAD et le
+# support du mouvement. Aucune de ces valeurs n'est spécifique à une vidéo.
+# ---------------------------------------------------------------------------
+PREDICTION_WINDOW = 6             # nombre d'observations récentes utilisées
+PREDICTION_MAX_HORIZON = 30       # horizon maximal d'extrapolation (frames)
+VELOCITY_MAD_FLOOR = 0.75         # dispersion minimale (px/frame) pour la tolérance
+# Erreur de prédiction tolérée (normalisée par la géométrie) avant rejet dur.
+PREDICTION_NORM_REJECT = 3.0      # erreur / bbox-diagonale rédhibitoire
+# Tolérance de vitesse bornée : base + part proportionnelle à la dispersion.
+VELOCITY_TOL_BASE = 3.0           # px/frame
+VELOCITY_TOL_DISPERSION = 2.5     # multiples de MAD
+VELOCITY_TOL_GAP_GAIN = 0.12      # croissance linéaire par frame de trou
+VELOCITY_TOL_ACCEL_MAX = 10.0     # tolérance maximale (px/frame)
 
 # ---------------------------------------------------------------------------
 # Échelles de saturation (constantes, documentées).
@@ -257,6 +301,152 @@ def _predict_center(frag: Fragment, at_frame: int) -> tuple[float, float]:
     return (cx + vx * dt, cy + vy * dt)
 
 
+def _recent_velocity(frag: Fragment, window: int = PREDICTION_WINDOW,
+                     at_start: bool = False) -> dict[str, Any]:
+    """Vitesse **robuste** récente d'un fragment (médiane + dispersion MAD).
+
+    On mesure les déplacements réels entre frames **consécutives** de la fenêtre
+    choisie (les N dernières pour la fin du fragment, les N premières pour son
+    début). La vitesse retenue est la **médiane** des composantes, ce qui est
+    insensible aux points gelés (déplacement nul) et aux outliers ByteTrack. La
+    dispersion est le MAD (median absolute deviation) du **module** des
+    déplacements, plancher borné par ``VELOCITY_MAD_FLOOR``.
+
+    Aucune hypothèse n'est faite sur la vidéo : tout provient des centres réels.
+    """
+    keys = sorted(frag.centers)
+    if len(keys) < 2:
+        return {"vx": 0.0, "vy": 0.0, "speed": 0.0, "dispersion": VELOCITY_MAD_FLOOR,
+                "support": 0, "samples": 0, "moving": False}
+    if at_start:
+        seg = keys[: window + 1]
+    else:
+        seg = keys[-(window + 1):]
+    vxs: list[float] = []
+    vys: list[float] = []
+    mags: list[float] = []
+    for a, b in zip(seg, seg[1:]):
+        dt = float(b - a)
+        if dt <= 0:
+            continue
+        ca, cb = frag.centers[a], frag.centers[b]
+        dx = (cb[0] - ca[0]) / dt
+        dy = (cb[1] - ca[1]) / dt
+        vxs.append(dx)
+        vys.append(dy)
+        mags.append(math.hypot(dx, dy))
+    if not vxs:
+        return {"vx": 0.0, "vy": 0.0, "speed": 0.0, "dispersion": VELOCITY_MAD_FLOOR,
+                "support": 0, "samples": 0, "moving": False}
+
+    def _median(xs: list[float]) -> float:
+        s = sorted(xs)
+        n = len(s)
+        mid = n // 2
+        return s[mid] if n % 2 else 0.5 * (s[mid - 1] + s[mid])
+
+    vx = _median(vxs)
+    vy = _median(vys)
+    speed = math.hypot(vx, vy)
+    med_mag = _median(mags)
+    mad = _median([abs(m - med_mag) for m in mags])
+    moving = any(m > EPS for m in mags)     # au moins un déplacement réel non nul
+    return {
+        "vx": vx, "vy": vy, "speed": speed,
+        "dispersion": max(VELOCITY_MAD_FLOOR, mad),
+        "support": int(seg[-1] - seg[0]) if len(seg) >= 2 else 0,
+        "samples": len(vxs),
+        "moving": bool(moving),
+    }
+
+
+def predict_position(frag: Fragment, at_frame: int) -> dict[str, Any]:
+    """Prédit la position du fragment à ``at_frame`` (extrapolation bornée).
+
+    Renvoie un dict explicable : position prédite, horizon effectif borné,
+    vitesse médiane robuste et dispersion. L'horizon est borné par
+    ``PREDICTION_MAX_HORIZON`` **et** par ``MAX_GAP_FRAMES`` : jamais
+    d'extrapolation indéfinie.
+    """
+    last = int(frag.last_frame)
+    raw_dt = int(at_frame) - last
+    horizon = int(max(0, min(PREDICTION_MAX_HORIZON, min(MAX_GAP_FRAMES, raw_dt))))
+    vel = _recent_velocity(frag, at_start=False)
+    base = frag.centers[last]
+    pred = (base[0] + vel["vx"] * horizon, base[1] + vel["vy"] * horizon)
+    return {
+        "predicted_center": pred,
+        "base_center": base,
+        "horizon_frames": horizon,
+        "raw_gap_frames": int(raw_dt),
+        "velocity": vel,
+    }
+
+
+def prediction_error(frag_a: Fragment, frag_b: Fragment) -> dict[str, Any]:
+    """Erreur de prédiction du lien ``a → b`` + normalisations (preuve mesurée).
+
+    L'erreur est la distance entre la position prédite du fragment source et la
+    position **réelle** du début du fragment candidat. Elle est normalisée par :
+
+      * la diagonale de la bbox cible (taille du sujet) ;
+      * la largeur/hauteur de la bbox cible ;
+      * la distance temporelle (frames).
+
+    Aucune constante n'est spécifique à une vidéo : tout dérive de la géométrie
+    et de la temporisation réellement mesurées.
+    """
+    info = predict_position(frag_a, frag_b.first_frame)
+    pred = info["predicted_center"]
+    actual = frag_b.centers[frag_b.first_frame]
+    err = math.hypot(pred[0] - actual[0], pred[1] - actual[1])
+    bw, bh = frag_b.mean_size
+    diag = max(EPS, math.hypot(bw, bh))
+    gap = max(MIN_GAP_FRAMES, int(frag_b.first_frame) - int(frag_a.last_frame))
+    return {
+        "predicted_center": pred,
+        "actual_center": actual,
+        "prediction_error_px": err,
+        "normalized_by_diagonal": err / diag,
+        "normalized_by_width": err / max(EPS, bw),
+        "normalized_by_height": err / max(EPS, bh),
+        "normalized_by_gap": err / float(gap),
+        "bbox_diagonal": diag,
+        "horizon_frames": int(info["horizon_frames"]),
+        "raw_gap_frames": int(info["raw_gap_frames"]),
+        "velocity": info["velocity"],
+    }
+
+
+def velocity_tolerance(frag_a: Fragment, frag_b: Fragment,
+                       gap: int) -> dict[str, Any]:
+    """Tolérance de vitesse **robuste** et dépendante du trou (documentée).
+
+    La tolérance n'est PAS un simple ``VELOCITY_REJECT`` global : elle dépend
+
+      * de la dispersion récente de la vitesse (MAD) du fragment source ;
+      * de la dispersion récente du fragment cible ;
+      * de la taille du trou temporel (``gap``), plafonnée.
+
+    Elle autorise une petite accélération bornée (changement de rythme réel)
+    sans ouvrir la porte à un saut incohérent.
+    """
+    va = _recent_velocity(frag_a, at_start=False)
+    vb = _recent_velocity(frag_b, at_start=True)
+    dispersion = max(va["dispersion"], vb["dispersion"])
+    tol = (VELOCITY_TOL_BASE
+           + VELOCITY_TOL_DISPERSION * dispersion
+           + VELOCITY_TOL_GAP_GAIN * float(max(0, gap)))
+    tol = float(min(VELOCITY_TOL_ACCEL_MAX, tol))
+    return {
+        "tolerance": tol,
+        "dispersion_source": va["dispersion"],
+        "dispersion_target": vb["dispersion"],
+        "velocity_source": va,
+        "velocity_target": vb,
+    }
+
+
 # ---------------------------------------------------------------------------
 # Apparence (OSNet) — cosine sur embeddings L2-normalisés réels, sinon ``None``.
 # ---------------------------------------------------------------------------
@@ -274,25 +464,71 @@ def _cosine(a, b) -> float | None:
     return float(np.dot(a, b) / (na * nb))
 
 
+def appearance_representation(embeddings: dict[int, Any] | None,
+                              track_ids: list[int]) -> Any | None:
+    """Représentation d'apparence d'une **lignée** = moyenne L2-normalisée.
+
+    À partir des embeddings OSNet RÉELS des fragments déjà acceptés dans une
+    identité canonique, on calcule la moyenne des vecteurs disponibles puis on la
+    L2-normalise (embedding de référence de l'identité). Renvoie ``None`` si
+    aucun embedding réel n'est disponible : la preuve d'apparence reste alors
+    ``unavailable`` (jamais inventée).
+    """
+    embs = embeddings or {}
+    vecs = []
+    for tid in sorted({int(t) for t in track_ids}):
+        v = embs.get(tid)
+        if v is None:
+            continue
+        arr = np.asarray(v, dtype="float64")
+        if arr.size == 0:
+            continue
+        vecs.append(arr)
+    if not vecs:
+        return None
+    shape = vecs[0].shape
+    vecs = [v for v in vecs if v.shape == shape]
+    if not vecs:
+        return None
+    mean = np.mean(np.stack(vecs, axis=0), axis=0)
+    n = float(np.linalg.norm(mean))
+    if n <= EPS:
+        return None
+    return (mean / n).astype("float32")
+
+
 # ---------------------------------------------------------------------------
 # Score d'un lien candidat (source → target)
 # ---------------------------------------------------------------------------
 def score_link(a: Fragment, b: Fragment, *, embeddings: dict[int, Any] | None = None,
                ball_centers: dict[int, tuple[float, float]] | None = None,
+               appearance_ref: Any | None = None,
                ) -> dict[str, Any]:
     """Calcule le score borné d'un lien ``a → b`` + tous ses termes de preuve.
+
+    V2.2 : la position de ``a`` est **prédite** à la frame de départ de ``b``
+    via une vitesse médiane robuste bornée (voir :func:`predict_position`) ;
+    l'erreur de prédiction est normalisée par la géométrie de bbox et le trou.
+    La vitesse comparée est la vitesse **robuste** (médiane) des deux extrémités.
+
+    ``appearance_ref`` (V2.2) : si fourni (embedding de référence d'une lignée
+    héros), la similarité d'apparence compare le **candidat** à cette référence
+    (identité canonique complète) au lieu du seul dernier fragment. Sinon, la
+    comparaison reste ``a`` vs ``b`` (comportement V2.1).
 
     Ne décide pas : renvoie un dict explicable (``terms``, ``raw``, ``score``).
     La décision (ACCEPTED/REJECTED) est prise par :func:`_decide`.
     """
     gap = int(b.first_frame) - int(a.last_frame)
-    pred = _predict_center(a, b.first_frame)
-    actual = b.centers[b.first_frame]
-    dist = math.hypot(pred[0] - actual[0], pred[1] - actual[1])
+    perr = prediction_error(a, b)
+    pred = perr["predicted_center"]
+    actual = perr["actual_center"]
+    dist = float(perr["prediction_error_px"])
 
-    v_pred = _velocity_at_end(a)
-    v_target = _velocity_at_start(b)
-    vel_delta = math.hypot(v_pred[0] - v_target[0], v_pred[1] - v_target[1])
+    v_pred = _recent_velocity(a, at_start=False)
+    v_target = _recent_velocity(b, at_start=True)
+    vel_delta = math.hypot(v_pred["vx"] - v_target["vx"], v_pred["vy"] - v_target["vy"])
+    vtol = velocity_tolerance(a, b, gap)
 
     sw_a, sh_a = a.mean_size
     sw_b, sh_b = b.mean_size
@@ -324,15 +560,22 @@ def score_link(a: Fragment, b: Fragment, *, embeddings: dict[int, Any] | None = 
         "weight": None, "contribution": None,
     }
 
-    cos = _cosine((embeddings or {}).get(a.track_id), (embeddings or {}).get(b.track_id))
+    emb = embeddings or {}
+    if appearance_ref is not None:
+        cos = _cosine(emb.get(b.track_id), appearance_ref)
+        appearance_source = "lineage_reference"
+    else:
+        cos = _cosine(emb.get(a.track_id), emb.get(b.track_id))
+        appearance_source = "pair"
     appearance_available = cos is not None
     if appearance_available:
         # mappe cosine [-1,1] -> [0,1] (cosine 0 => 0.5)
         terms["appearance"] = {"value": max(0.0, min(1.0, (cos + 1.0) / 2.0)),
-                               "available": True, "weight": None, "contribution": None}
+                               "available": True, "source": appearance_source,
+                               "weight": None, "contribution": None}
     else:
         terms["appearance"] = {"value": None, "available": False,
-                               "weight": None, "contribution": None}
+                               "source": None, "weight": None, "contribution": None}
 
     event_score = None
     if ball_centers:
@@ -371,18 +614,55 @@ def score_link(a: Fragment, b: Fragment, *, embeddings: dict[int, Any] | None = 
             "predicted_center": [round_scale(pred[0], 3), round_scale(pred[1], 3)],
             "target_center": [round_scale(actual[0], 3), round_scale(actual[1], 3)],
             "spatial_distance_px": round_scale(dist, 3),
-            "velocity_pred": [round_scale(v_pred[0], 3), round_scale(v_pred[1], 3)],
-            "velocity_target": [round_scale(v_target[0], 3), round_scale(v_target[1], 3)],
+            "velocity_pred": [round_scale(v_pred["vx"], 3), round_scale(v_pred["vy"], 3)],
+            "velocity_target": [round_scale(v_target["vx"], 3), round_scale(v_target["vy"], 3)],
             "velocity_delta": round_scale(vel_delta, 3),
+            "velocity_speed_source": round_scale(v_pred["speed"], 3),
+            "velocity_speed_target": round_scale(v_target["speed"], 3),
+            "velocity_dispersion": round_scale(vtol["dispersion_source"], 3),
+            "velocity_tolerance": round_scale(vtol["tolerance"], 3),
             "size_delta_px": round_scale(size_delta, 3),
             "aspect_delta": round_scale(ar_delta, 4),
             "appearance_cosine": (round_scale(cos, 4) if cos is not None else None),
             "appearance_available": bool(appearance_available),
+            "appearance_source": terms["appearance"].get("source"),
             "event_score": (round_scale(event_score, 4) if event_score is not None else None),
+            # --- V2.2 : diagnostic de prédiction (borné) --------------------
+            "prediction": {
+                "predicted_center": [round_scale(pred[0], 3), round_scale(pred[1], 3)],
+                "actual_center": [round_scale(actual[0], 3), round_scale(actual[1], 3)],
+                "prediction_error_px": round_scale(dist, 3),
+                "normalized_by_diagonal": round_scale(perr["normalized_by_diagonal"], 4),
+                "normalized_by_width": round_scale(perr["normalized_by_width"], 4),
+                "normalized_by_height": round_scale(perr["normalized_by_height"], 4),
+                "normalized_by_gap": round_scale(perr["normalized_by_gap"], 4),
+                "bbox_diagonal": round_scale(perr["bbox_diagonal"], 3),
+                "horizon_frames": int(perr["horizon_frames"]),
+                "raw_gap_frames": int(perr["raw_gap_frames"]),
+            },
+            "velocity_stats": {
+                "source": {
+                    "vx": round_scale(v_pred["vx"], 3), "vy": round_scale(v_pred["vy"], 3),
+                    "speed": round_scale(v_pred["speed"], 3),
+                    "dispersion": round_scale(v_pred["dispersion"], 3),
+                    "samples": int(v_pred["samples"]), "moving": bool(v_pred["moving"]),
+                },
+                "target": {
+                    "vx": round_scale(v_target["vx"], 3), "vy": round_scale(v_target["vy"], 3),
+                    "speed": round_scale(v_target["speed"], 3),
+                    "dispersion": round_scale(v_target["dispersion"], 3),
+                    "samples": int(v_target["samples"]), "moving": bool(v_target["moving"]),
+                },
+                "delta": round_scale(vel_delta, 3),
+                "tolerance": round_scale(vtol["tolerance"], 3),
+            },
         },
         "_dist": dist,
         "_vel_delta": vel_delta,
         "_cos": cos,
+        "_norm_diag": float(perr["normalized_by_diagonal"]),
+        "_velocity_tolerance": float(vtol["tolerance"]),
+        "_source_moving": bool(v_pred["moving"]),
     }
 
 
@@ -404,13 +684,35 @@ def _ball_proximity(pred, actual, ball_centers: dict[int, tuple[float, float]]) 
 
 
 def _decide(scored: dict[str, Any]) -> tuple[str, str | None, float]:
-    """Décision déterministe : ``(decision, rejection_reason, confidence)``."""
+    """Décision déterministe : ``(decision, rejection_reason, confidence)``.
+
+    Ordre des garde-fous (du plus dur au plus souple) :
+
+      1. ``TEMPORAL_OVERLAP``  — un trou nul n'est pas une continuation ;
+      2. ``LONG_GAP``          — au-delà de ``MAX_GAP_FRAMES``, aucun pontage ;
+      3. ``CONTRADICTORY_APPEARANCE`` — apparence OSNet réelle qui contredit ;
+      4. ``SPATIAL_VELOCITY_CONFLICT`` — saut de position absolu rédhibitoire, ou
+         saut modéré aggravé par une vitesse incohérente **au-delà de la
+         tolérance robuste** (dépendante de la dispersion et du trou) ;
+      5. ``PREDICTION_ERROR_TOO_LARGE`` — erreur de prédiction normalisée par la
+         géométrie du sujet rédhibitoire (le candidat n'est pas là où le sujet
+         prédit devait être, à l'échelle de sa propre taille) ;
+      6. ``BELOW_THRESHOLD``   — score combiné insuffisant.
+
+    V2.2 : la tolérance de vitesse n'est plus un seuil global ; elle dépend de la
+    dispersion récente (MAD) et du trou. Cela évite de rejeter un fragment
+    plausible quand la vitesse instantanée de bord est bruitée, sans jamais
+    accepter un saut franchement incohérent. Aucun garde-fou n'est retiré.
+    """
     raw = scored["raw"]
     gap = int(raw["gap_frames"])
     score = float(scored["score"])
     dist = float(scored["_dist"])
     vel_delta = float(scored["_vel_delta"])
     cos = scored["_cos"]
+    norm_diag = float(scored.get("_norm_diag", 0.0))
+    vel_tol = float(scored.get("_velocity_tolerance", VELOCITY_REJECT))
+    source_moving = bool(scored.get("_source_moving", False))
 
     if gap < MIN_GAP_FRAMES:
         return "REJECTED", "TEMPORAL_OVERLAP", 0.0
@@ -420,11 +722,16 @@ def _decide(scored: dict[str, Any]) -> tuple[str, str | None, float]:
     if cos is not None and cos < APPEARANCE_MIN_COS:
         return "REJECTED", "CONTRADICTORY_APPEARANCE", 0.0
     # Contradiction spatiale : saut de position absolu rédhibitoire, ou saut
-    # modéré aggravé par un mouvement incohérent.
+    # modéré aggravé par une vitesse incohérente au-delà de la tolérance robuste.
     if dist > SPATIAL_REJECT_PX:
         return "REJECTED", "SPATIAL_VELOCITY_CONFLICT", 0.0
-    if dist > SPATIAL_SOFT_PX and vel_delta > VELOCITY_REJECT:
+    if dist > SPATIAL_SOFT_PX and vel_delta > vel_tol:
         return "REJECTED", "SPATIAL_VELOCITY_CONFLICT", 0.0
+    # V2.2 : erreur de prédiction normalisée par la géométrie. Si le sujet source
+    # bougeait réellement, une erreur > N diagones signifie que le candidat n'est
+    # pas là où une continuation physique devait mener : rejet explicite.
+    if source_moving and norm_diag > PREDICTION_NORM_REJECT:
+        return "REJECTED", "PREDICTION_ERROR_TOO_LARGE", 0.0
     if score < ACCEPT_THRESHOLD:
         return "REJECTED", "BELOW_THRESHOLD", round_scale(score)
     return "ACCEPTED", None, round_scale(score)
@@ -527,6 +834,7 @@ def link_fragments(tracks: dict[Any, list], *,
 
     report = {
         "schema": SCHEMA,
+        "schema_legacy": SCHEMA_LEGACY,
         "policy": POLICY,
         "config": {
             "core_weights": CORE_WEIGHTS,
@@ -538,6 +846,16 @@ def link_fragments(tracks: dict[Any, list], *,
             "spatial_reject_px": SPATIAL_REJECT_PX,
             "spatial_soft_px": SPATIAL_SOFT_PX,
             "velocity_reject": VELOCITY_REJECT,
+            "prediction": {
+                "window": PREDICTION_WINDOW,
+                "max_horizon": PREDICTION_MAX_HORIZON,
+                "velocity_mad_floor": VELOCITY_MAD_FLOOR,
+                "norm_reject": PREDICTION_NORM_REJECT,
+                "velocity_tol_base": VELOCITY_TOL_BASE,
+                "velocity_tol_dispersion": VELOCITY_TOL_DISPERSION,
+                "velocity_tol_gap_gain": VELOCITY_TOL_GAP_GAIN,
+                "velocity_tol_accel_max": VELOCITY_TOL_ACCEL_MAX,
+            },
             "scales": {"temporal": TEMPORAL_SCALE, "spatial": SPATIAL_SCALE,
                        "velocity": VELOCITY_SCALE, "geometry": GEOMETRY_SCALE,
                        "persistence": PERSISTENCE_SCALE, "ball": BALL_SCALE},
@@ -686,7 +1004,7 @@ def hero_identity(report: dict[str, Any], hero_track: int | None,
 
     out = dict(ident)
     out["canonical_track_id"] = int(hero_track)
-    out["method"] = "subject_continuity_v2.1"
+    out["method"] = METHOD
     # Fallback renseigné : la lignée héros ne s'est-elle pas étendue alors qu'un
     # fragment de continuation proche a été REJETÉ (preuve insuffisante) ?
     if len(out["source_track_ids"]) <= 1:
