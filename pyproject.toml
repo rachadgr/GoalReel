@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "goalreel"
-version = "1.0.0"
-description = "Evidence-constrained football virtual cinema engine"
+version = "2.4.0"
+description = "Evidence-constrained football virtual cinema engine + AI Football Reel Studio (ComfyUI + Wan 2.2 TI2V 5B)"
 requires-python = ">=3.10"
 dependencies = [
   "numpy>=1.24",
@@ -14,7 +14,13 @@ dependencies = [
   "pydantic>=2.0",
   "PyYAML>=6.0",
   "torch>=2.1",
-  "torchvision>=0.16"
+  "torchvision>=0.16",
+  # Reel Studio (FastAPI + ComfyUI client)
+  "fastapi>=0.110",
+  "uvicorn[standard]>=0.29",
+  "python-multipart>=0.0.9",
+  "httpx>=0.27",
+  "Pillow>=10.0"
 ]
 
 [project.optional-dependencies]

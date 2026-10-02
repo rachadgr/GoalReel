@@ -22,6 +22,9 @@ outputs/_frames/
 outputs/_validation/
 *.log
 
+# --- Reel Studio : uploads + clips générés (jamais versionnés) ------------
+outputs/studio/
+
 # --- Checkpoints / poids volumineux (voir MODELS.md + scripts/download_models.sh)
 # Les fichiers > 100 Mo ne peuvent pas être poussés sur GitHub sans Git LFS.
 checkpoints/**/*.pt

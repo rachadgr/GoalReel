@@ -20,11 +20,22 @@ IGNORE_NAMES = {"README.md", "NO_GEMINI.md"}
 IGNORE_SUFFIXES = {".py", ".ts", ".tsx", ".js", ".jsx", ".json",
                    ".toml", ".yaml", ".yml", ".env.example"}
 
+# Répertoires ignorés : dépendances et artefacts de build (non versionnés,
+# absents en CI). Le scan ne doit porter que sur le code source du dépôt.
+IGNORE_DIRS = {
+    "node_modules", "dist", "build", ".git", ".venv", "venv",
+    "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache",
+    ".model_cache", "runs",
+}
+
 
 def scan(root: Path):
     bad = []
     for p in root.rglob("*"):
         if not p.is_file():
+            continue
+        rel_parts = set(p.relative_to(root).parts)
+        if rel_parts & IGNORE_DIRS:
             continue
         if p.name in IGNORE_NAMES or p.name == "check_no_gemini.py":
             continue
